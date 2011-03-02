@@ -1,7 +1,8 @@
 datetime2
 =========
 
-Datetime2 provides new classes for date and times in Python.
+The `datetime2 <http://pypi.python.org/pypi/datetime2>`_ module
+provides new date and time classes to Python.
 
 This module will provide date and time classes, as the original 
 `datetime <http://docs.python.org/py3k/library/datetime.html>`_ module does.
@@ -10,6 +11,6 @@ representation, on the other hand they will provide new calendars and time
 measurement systems. 
 
 Current development stage is *planning*. Until first release, I will follow a
-"document-write tests-write" code cycle.
+"write documentation, write tests, write code" cycle.
 
 Stay tuned for the first pre-alpha version.
