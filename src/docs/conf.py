@@ -25,7 +25,7 @@ import sys, os
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = []
+extensions = ['sphinx.ext.intersphinx']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = []
@@ -37,7 +37,7 @@ source_suffix = '.rst'
 #source_encoding = 'utf-8-sig'
 
 # The master toctree document.
-master_doc = 'datetime2'
+master_doc = 'index'
 
 # General information about the project.
 project = u'datetime2'
@@ -138,7 +138,7 @@ html_static_path = []
 #html_additional_pages = {}
 
 # If false, no module index is generated.
-#html_domain_indices = True
+html_domain_indices = False
 
 # If false, no index is generated.
 #html_use_index = True
@@ -214,3 +214,10 @@ man_pages = [
     ('datetime2_', 'datetime2', u'datetime2 Documentation',
      [u'Francesco Ricciardi'], 1)
 ]
+
+
+# -- Options for intersphinx ---------------------------------------------------
+
+intersphinx_mapping = {'python': ('http://docs.python.org/3.2', None)}
+
+
