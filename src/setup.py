@@ -6,7 +6,7 @@ setup(
     packages=['datetime2'],
     author='Francesco Ricciardi',
     author_email='francescor2010 at yahoo dot it',
-    license='Expat License',
+    license='BSD License',
     description='New date and time classes',
     long_description=open('README.txt').read(),
     url='http://pypi.python.org/pypi/datetime',
