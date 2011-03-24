@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='datetime2',
-    version='0.1plan',
+    version='0.1a1',
     packages=['datetime2'],
     author='Francesco Ricciardi',
     author_email='francescor2010 at yahoo dot it',
@@ -11,7 +11,7 @@ setup(
     long_description=open('README.txt').read(),
     url='http://pypi.python.org/pypi/datetime',
     classifiers=[
-          'Development Status :: 1 - Planning',
+          'Development Status :: 3 - Alpha',
           'Operating System :: OS Independent',
           'Programming Language :: Python :: 3.2',
           'Topic :: Scientific/Engineering',
