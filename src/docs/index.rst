@@ -176,7 +176,8 @@ Instance methods
 
 .. method:: date.__str__()
 
-   Return ``R.D.`` followed by the day count.
+   Return ``R.D.`` followed by the day count. ``R.D.`` stands for Rata Die, the Latin
+   for "fixed date".
 
 
 

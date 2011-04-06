@@ -1,9 +1,31 @@
-# datetime2 test modules
+# datetime2 package test
 
-"""Test the datetime2 module.
-
-"""
-
+# Copyright (c) 2011 Francesco Ricciardi
+#
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# * Redistributions of source code must retain the above copyright notice, 
+#   this list of conditions and the following disclaimer.
+# * Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
+# * Neither the name(s) of the copyright holders nor the names of its
+#   contributors may be used to endorse or promote products derived from this
+#   software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AS IS AND ANY EXPRESS OR
+# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+# EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+# OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+# NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+# EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import decimal
 import pickle
@@ -35,7 +57,7 @@ class TestDate(unittest.TestCase):
         self.assertRaises(TypeError, Date)
         self.assertRaises(TypeError, Date, 1, 2)
         # exception with non-numeric types
-        for par in ("1", (1), [1], {1:1}, (), [], {}, None, True, False):
+        for par in ("1", (1,), [1], {1:1}, (), [], {}, None):
             self.assertRaises(TypeError, Date, par)
         # exception with invalid numeric types
         for par in (1.0, Fraction(1, 1), decimal.Decimal(1), 1j):
@@ -49,21 +71,14 @@ class TestDate(unittest.TestCase):
         for dummy in range(3):
             today = Date.today()
             # let's use the good old date module
-            t = datetime.date.today()
-            # compute number of days from january 1st, 1
-            days_before_year = 365 * (t.year - 1) + (t.year - 1) // 4 - (t.year - 1) // 100 + (t.year - 1) // 400
-            days_before_month = sum([31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30][:(t.month - 1)])
-            leap_day =  0 if (t.month <= 2 or t.year % 4 != 0 or (t.year % 100 == 0 and t.year % 400 != 0)) else 1
-            t_day_count = days_before_year + days_before_month + leap_day + t.day
-            if t_day_count != today.day_count:
+            day_count = datetime.date.today().toordinal()
+            if day_count != today.day_count:
                 break
-        self.assertEqual(today.day_count, t_day_count)
+        self.assertEqual(today.day_count, day_count)
 
     def test_030_write_attribute(self):
         d = Date(1)
-        self.assertRaise(AttributeError, setattr, d, 'day_count', 3)
-        self.assertRaise(AttributeError, setattr, d, 'dummy', 3)
-        self.assertRaise(AttributeError, getattr, d, 'dummy')
+        self.assertRaises(AttributeError, setattr, d, 'day_count', 3)
 
     def test_100_computations(self):
         eq = self.assertEqual
