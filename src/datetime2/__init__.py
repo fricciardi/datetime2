@@ -38,7 +38,7 @@ __all__ = ['Date']
 
 
 class TimeDelta:
-    # This is a stub in version 0.1a1
+    # This is a stub in version 0.2
     def __init__(self, days):
         self._days = days
         
@@ -91,6 +91,7 @@ class Date:
         else:
             raise NotImplemented
         
+    # TODO: undestand if we want to use total ordering
     def __eq__(self, other):
         return isinstance(other, Date) and self.day_count == other.day_count
 
@@ -102,4 +103,23 @@ class Date:
         
     def __hash__(self):
         return hash(self._day_count)
-    
+
+
+def gregorian_date_constructor(year, month, day):
+    def is_leap_year(year):
+        return (year % 4 == 0) and (year % 400 not in (100, 200, 300))
+
+    # TODO: insert value check
+    return Date(365 * (year - 1) + (year - 1) // 4 - (year - 1) // 100 + (year - 1) // 400
+                + (367 * month - 362) // 12
+                + ((-2 if not is_leap_year(year) else -1) if month > 2 else 0) + day)
+
+def gregorian_year_day_contructor(year, day):
+    def is_leap_year(year):
+        return (year % 4 == 0) and (year % 400 not in (100, 200, 300))
+
+    # TODO: insert value check
+    return Date(365 * (year - 1) + (year - 1) // 4 - (year - 1) // 100 + (year - 1) // 400 + day)
+
+gregorian_date_constructor.year_day = gregorian_year_day_contructor
+Date.Gregorian = gregorian_date_constructor

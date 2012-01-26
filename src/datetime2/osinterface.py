@@ -1,5 +1,5 @@
-# datetime2 package - osinterface
-# This package collects all calls that are OS dependent
+# datetime2 package - osinterface.py
+# This module contains all methods that are OS dependent
 
 # Copyright (c) 2011 Francesco Ricciardi
 #
