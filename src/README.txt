@@ -2,17 +2,17 @@
 datetime2
 =========
 
-The `datetime2 <http://pypi.python.org/pypi/datetime2>`_ module
-provides new classes date and time classes.
+The `datetime2 <http://pypi.python.org/pypi/datetime2>`_ module provides date
+and time classes to Python.
 
-This module will provide date and time classes, as the original 
-`datetime <http://docs.python.org/py3k/library/datetime.html>`_ module does.
-However, the new classes on the one hand will separate date and time handling from
-their representation, on the other hand they will provide new calendars and
-time measurement systems.
+It will enhance the standard `datetime <http://docs.python.org/py3k/library/datetime.html>`_
+module, adding the capability of constructing and representing date and time in
+many formats and removing a few limits that the original package has.
 
-Code is hosted at `GitHub <http://github.com/fricciardi/datetime2>`_: see
-that page for development information.
+Code is hosted at `GitHub <http://github.com/fricciardi/datetime2>`_: the
+`wiki pages <https://github.com/fricciardi/datetime2/wiki>`_ host development
+discussions. *datetime2* is a one-man, free-time work. Although I am deeply
+committed in completing the project, do not expect regular updates.
 
 Project objectives
 ==================
@@ -20,13 +20,18 @@ Project objectives
 * Decoupling between operations on date and time objects and their
   representation.
 * Access to different calendars, for input parsing and output formatting.
-* Access to different time representation systems, also for input and output.
-* Ability to dynamically load new formatting classes.
+* Access to different time representations, also for input and output.
+* Ability to dynamically register new formatting classes.
 * Internationalization.
 * Implementation of the part of the Unicode Locale Database concerned with
   dates and times.
 * Interface with other Python modules or inclusion of their
   functionalities in its submodules.
+
+These objectives are very long term ones, which I am setting because it is
+important to establish a direction for the project. Do not expect to see them
+implemented in initial versions of the module, even if you will be able to see
+traces of them early.
 
 License
 =======

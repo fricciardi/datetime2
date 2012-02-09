@@ -27,15 +27,112 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+__author__ = 'Francesco Ricciardi <francescor2010 at yahoo.it>'
+
 
 from math import floor
 from functools import total_ordering
 
 import datetime2.osinterface
+import datetime2.gregorian
 
 
-__all__ = ['Date']
+__all__ = ['Date', 'TimeDelta']
 
+
+##############################################################################
+# support classes and functions
+#
+def constructor_wrapper(meth, wrapping_class, attr_to_set, method_to_call):
+    def new_method(*args):
+        ret_obj = meth(*args)
+        if hasattr(ret_obj, method_to_call):
+            wrapping_obj = wrapping_class(getattr(ret_obj, method_to_call)())
+            setattr(wrapping_obj, attr_to_set, ret_obj)
+            return wrapping_obj
+        else:
+            return ret_obj
+    return new_method
+
+class DynamicAttributeProxy:
+    def __init__(self, proxying_class, attr_to_set, proxied_class, meth_to_call):
+        self.proxying_class = proxying_class
+        self.attr_to_set = attr_to_set
+        self.proxied_class = proxied_class
+        self.meth_to_call = meth_to_call
+
+    def __call__(self, *args, **kwargs):
+        retobj = self.proxied_class(*args, **kwargs)
+        proxying_obj = self.proxying_class(getattr(retobj, self.meth_to_call)())
+        setattr(proxying_obj, self.attr_to_set, retobj)
+        return proxying_obj
+
+    def __getattr__(self, name):
+        attr_obj = getattr(self.proxied_class, name)
+        if callable(attr_obj):
+            return constructor_wrapper(attr_obj, self.proxying_class, self.attr_to_set, self.meth_to_call)
+        else:
+            return attr_obj
+
+class DynamicAtributeMeta(type):
+    """ We need a metaclass because we want to redefine how core classes will
+    find the calendars or time representations they need using the attribute
+    notation.
+    """
+    def __new__(mcs, name, bases, classdict):
+        """Check at creation time that class defines the following
+        attributes:
+          - dynamic_attrs : the dictionary that contains or will contain the
+            dynamic class constructors and methods
+          - method_to_call : name of the method that has to be called to
+            retrieve the value to be set in the proxing cls
+        """
+        #TODO add check that values are identifiers
+        if ("dynamic_attrs" in classdict and
+            "method_to_call" in classdict):
+            return type.__new__(mcs, name, bases, classdict)
+        else:
+            raise NotImplementedError("Classes of DynamicDatetimeMeta type should have two attributes.")
+
+    def __getattr__(cls, name):
+        if name in cls.dynamic_attrs:
+            return DynamicAttributeProxy(cls, name, cls.dynamic_attrs[name], cls.method_to_call)
+        else:
+            raise AttributeError("type object '{}' has no attribute '{}'".format(cls.__name__, name))
+
+class DynamicAttrsCls:
+    def __getattr__(self, name):
+        if name in self.dynamic_attrs:
+            attr_obj = self.dynamic_attrs[name].from_rata_die(self.day_count)
+            setattr(self, name, attr_obj)
+            return attr_obj
+        else:
+            raise AttributeError("'{}' object has no attribute '{}'".format(self.__class__.__name__, name))
+
+
+##############################################################################
+# interface with calendars and time representations
+#
+_identifier_restricted_re = re.compile("[_a-zA-Z]\\w*")
+_datetime2_calendars = {}
+
+def register_calendar(name, calendar):
+    if not _identifier_restricted_re.match(name):
+        raise RuntimeError("Calendar must have a valid name.")
+    if not hasattr(calendar, 'to_rata_die') or not callable(getattr(calendar, 'to_rata_die')):
+        raise RuntimeError("Calendar must have a callable 'to_rata_die' function.")
+    if not hasattr(calendar, 'from_rata_die') or not callable(getattr(calendar, 'from_rata_die')):
+        raise RuntimeError("Calendar must have a callable 'to_rata_die' function.")
+    _datetime2_calendars[name] = calendar
+
+#TODO: add code to manage the calendars (list, check if present, etc)
+
+register_calendar('gregorian', datetime2.gregorian.GregorianCalendar)
+
+
+##############################################################################
+# Core classes
+#
 
 class TimeDelta:
     # This is a stub in version 0.2
@@ -52,8 +149,11 @@ class TimeDelta:
     def __add__(self, other):
         raise TypeError   # required to let Date tests pass
 
-@total_ordering    
-class Date:
+@total_ordering
+class Date(DynamicAttrsCls, metaclass=DynamicAtributeMeta):
+    dynamic_attrs = _datetime2_calendars
+    method_to_call = "to_rata_die"
+
     def __init__(self, day_count):
         if isinstance(day_count, int):
             self._day_count = day_count
@@ -78,7 +178,7 @@ class Date:
         if isinstance(other, TimeDelta):
             return Date(self.day_count + other.days)
         else:
-            raise NotImplemented
+            return NotImplemented
         
     def __radd__(self, other):
         return self + other
@@ -89,7 +189,7 @@ class Date:
         elif isinstance(other, TimeDelta):
             return Date(self.day_count - other.days)
         else:
-            raise NotImplemented
+            return NotImplemented
         
     # TODO: undestand if we want to use total ordering
     def __eq__(self, other):
@@ -99,27 +199,7 @@ class Date:
         if isinstance(other, Date):
             return self.day_count < other.day_count
         else:
-            raise NotImplemented
+            return NotImplemented
         
     def __hash__(self):
         return hash(self._day_count)
-
-
-def gregorian_date_constructor(year, month, day):
-    def is_leap_year(year):
-        return (year % 4 == 0) and (year % 400 not in (100, 200, 300))
-
-    # TODO: insert value check
-    return Date(365 * (year - 1) + (year - 1) // 4 - (year - 1) // 100 + (year - 1) // 400
-                + (367 * month - 362) // 12
-                + ((-2 if not is_leap_year(year) else -1) if month > 2 else 0) + day)
-
-def gregorian_year_day_contructor(year, day):
-    def is_leap_year(year):
-        return (year % 4 == 0) and (year % 400 not in (100, 200, 300))
-
-    # TODO: insert value check
-    return Date(365 * (year - 1) + (year - 1) // 4 - (year - 1) // 100 + (year - 1) // 400 + day)
-
-gregorian_date_constructor.year_day = gregorian_year_day_contructor
-Date.Gregorian = gregorian_date_constructor

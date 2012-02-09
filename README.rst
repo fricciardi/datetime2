@@ -1,13 +1,16 @@
 datetime2
 =========
 
-The `datetime2 <http://pypi.python.org/pypi/datetime2>`_ module provides date
-and time classes to Python, like the standard
-`datetime <http://docs.python.org/py3k/library/datetime.html>`_ module.
+The *datetime2* module provides date
+and time classes to Python. It will enhance the standard
+`datetime <http://docs.python.org/py3k/library/datetime.html>`_ module, adding the capability
+of constructing and representing date and time in many formats
+and removing a few limits that the original package has.
 
-However, the `datetime2 <http://pypi.python.org/pypi/datetime2>`_ module is
-not restricted to the gregorian calendar, and allows also to represent time
-with fancier methods than the usual hour, minutes, second way.
+*datetime2* is a one-man, free-time work. Although
+I am deeply committed in completing the project, do not expect regular updates on it.
 
-You can have a look at the `wiki <https://github.com/fricciardi/datetime2/wiki>`_
-for further information on development and documentation.
+If you are looking for more information, check the following:
+* `datetime2 PyPI pages <http://pypi.python.org/pypi/datetime2>`_, where versions are uploaded;
+* `wiki pages <https://github.com/fricciardi/datetime2/wiki>`_, for further information on development
+  and documentation.
