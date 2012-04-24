@@ -35,7 +35,8 @@ import decimal
 import fractions
 import unittest
 
-from datetime2 import Date, TimeDelta
+#from datetime2 import Date, TimeDelta
+from datetime2.gregorian import GregorianCalendar
 
 
 
@@ -187,110 +188,115 @@ gregorian_invalid_data = [
     (   1, 12,  32)
 ]
 
-class TestDateGregorian(unittest.TestCase):
+class TestGregorian(unittest.TestCase):
 
-    def test_000_constructors(self):
+    def test_000_constructor(self):
+        for test_row in gregorian_test_data:
+            year = test_row[2][0]
+            month = test_row[2][1]
+            day = test_row[2][2]
+            greg = GregorianCalendar(year, month, day)
+            self.assertEqual(greg.year, year)
+            self.assertEqual(greg.month, month)
+            self.assertEqual(greg.day, day)
+
+    def test_003_constructor_year_day(self):
+        for test_row in gregorian_test_data:
+            year = test_row[2][0]
+            month = test_row[2][1]
+            day = test_row[2][2]
+            doy = test_row[3]
+            greg_yd = GregorianCalendar.year_day(year, doy)
+            self.assertEqual(greg_yd.year, year)
+            self.assertEqual(greg_yd.month, month)
+            self.assertEqual(greg_yd.day, day)
+
+    def test_006_constructor_rata_die(self):
         for test_row in gregorian_test_data:
             rd = test_row[0]
             year = test_row[2][0]
             month = test_row[2][1]
             day = test_row[2][2]
-            doy = test_row[3]
-            self.assertEqual(Date.gregorian(year, month, day), Date(rd), msg = 'gregorian with rd = {}'.format(rd))
-            self.assertEqual(Date.gregorian.year_day(year, doy), Date(rd), msg = 'gregorian.year_day with rd = {}'.format(rd))
+            greg_rd = GregorianCalendar.from_rata_die(rd)
+            self.assertEqual(greg_rd.year, year)
+            self.assertEqual(greg_rd.month, month)
+            self.assertEqual(greg_rd.day, day)
 
     def test_010_invalid_parameter_types(self):
         # exception with none, two or four parameters
-        self.assertRaises(TypeError, Date.gregorian)
-        self.assertRaises(TypeError, Date.gregorian, 1, 2)
-        self.assertRaises(TypeError, Date.gregorian, 1, 2, 1, 2)
+        self.assertRaises(TypeError, GregorianCalendar)
+        self.assertRaises(TypeError, GregorianCalendar, 1, 2)
+        self.assertRaises(TypeError, GregorianCalendar, 1, 2, 3, 4)
         # exception with non-numeric types
         for par in ("1", (1,), [1], {1:1}, (), [], {}, None):
-            self.assertRaises(TypeError, Date.gregorian, par, 1, 1)
-            self.assertRaises(TypeError, Date.gregorian, 1, par, 1)
-            self.assertRaises(TypeError, Date.gregorian, 1, 1, par)
-            # exception with invalid numeric types
+            self.assertRaises(TypeError, GregorianCalendar, par, 1, 1)
+            self.assertRaises(TypeError, GregorianCalendar, 1, par, 1)
+            self.assertRaises(TypeError, GregorianCalendar, 1, 1, par)
+        # exception with invalid numeric types
         for par in (1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j):
-            self.assertRaises(TypeError, Date.gregorian, par, 1, 1)
-            self.assertRaises(TypeError, Date.gregorian, 1, par, 1)
-            self.assertRaises(TypeError, Date.gregorian, 1, 1, par)
+            self.assertRaises(TypeError, GregorianCalendar, par, 1, 1)
+            self.assertRaises(TypeError, GregorianCalendar, 1, par, 1)
+            self.assertRaises(TypeError, GregorianCalendar, 1, 1, par)
 
-    def test_015_invalid_parameter_types_year_day(self):
-        # exception with none, one or three parameters
-        self.assertRaises(TypeError, Date.gregorian.year_day)
-        self.assertRaises(TypeError, Date.gregorian.year_day, 1)
-        self.assertRaises(TypeError, Date.gregorian.year_day, 1, 2, 3)
+    def test_013_invalid_parameter_types_year_day(self):
+        # exception with none, two or four parameters
+        self.assertRaises(TypeError, GregorianCalendar.year_day)
+        self.assertRaises(TypeError, GregorianCalendar.year_day, 1)
+        self.assertRaises(TypeError, GregorianCalendar.year_day, 1, 2, 3)
         # exception with non-numeric types
         for par in ("1", (1,), [1], {1:1}, (), [], {}, None):
-            self.assertRaises(TypeError, Date.gregorian.year_day, par)
-            # exception with invalid numeric types
+            self.assertRaises(TypeError, GregorianCalendar.year_day, par, 1)
+            self.assertRaises(TypeError, GregorianCalendar.year_day, 1, par)
+        # exception with invalid numeric types
         for par in (1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j):
-            self.assertRaises(TypeError, Date.gregorian.year_day, par)
+            self.assertRaises(TypeError, GregorianCalendar.year_day, par, 1)
+            self.assertRaises(TypeError, GregorianCalendar.year_day, 1, par)
+
+    def test_016_invalid_parameter_types_rata_die(self):
+        # exception with none, two or four parameters
+        self.assertRaises(TypeError, GregorianCalendar.from_rata_die)
+        self.assertRaises(TypeError, GregorianCalendar.from_rata_die, 1, 2)
+        # exception with non-numeric types
+        for par in ("1", (1,), [1], {1:1}, (), [], {}, None):
+            self.assertRaises(TypeError, GregorianCalendar.from_rata_die, par)
+        # exception with invalid numeric types
+        for par in (1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j):
+            self.assertRaises(TypeError, GregorianCalendar.from_rata_die, par)
 
     def test_020_invalid_values(self):
         for test_row in gregorian_invalid_data:
             year = test_row[0]
             month = test_row[1]
             day = test_row[2]
-            print(year,month,day)
-            self.assertRaises(ValueError, Date.gregorian, year, month, day)
+            self.assertRaises(ValueError, GregorianCalendar, year, month, day)
 
-    def test_025_invalid_values_year_day(self):
+    def test_023_invalid_values_year_day(self):
         for year, day_count in ((1, 0), (1, -1), (1, 366), (4, 367)):
-            self.assertRaises(ValueError, Date.gregorian.year_day, year, day_count)
+            self.assertRaises(ValueError, GregorianCalendar.year_day, year, day_count)
 
-    def test_030_attributes(self):
-        for test_row in gregorian_test_data:
-            rd = test_row[0]
-            year = test_row[2][0]
-            month = test_row[2][1]
-            day = test_row[2][2]
-            d = Date(rd)
-            self.assertEqual(d.gregorian.year, year, msg = 'gregorian year, rd = {}'.format(rd))
-            self.assertEqual(d.gregorian.month, month, msg = 'gregorian month, rd = {}'.format(rd))
-            self.assertEqual(d.gregorian.day, day, msg = 'gregorian day, rd = {}'.format(rd))
-
-    @unittest.skip("not supported")
     def test_040_write_attribute(self):
-        d = Date(1)
-        self.assertRaises(AttributeError, setattr, d.gregorian, 'year', 3)
-        self.assertRaises(AttributeError, setattr, d.gregorian, 'month', 3)
-        self.assertRaises(AttributeError, setattr, d.gregorian, 'day', 3)
+        greg = GregorianCalendar(1, 1, 1)
+        self.assertRaises(AttributeError, setattr, greg, 'year', 3)
+        self.assertRaises(AttributeError, setattr, greg, 'month', 3)
+        self.assertRaises(AttributeError, setattr, greg, 'day', 3)
 
-    @unittest.skip("not supported")
     def test_050_get_unknown_attribute(self):
-        self.assertRaises(AttributeError, getattr, Date.gregorian, 'unknown')
-        d = Date(1)
-        self.assertRaises(AttributeError, getattr, d.gregorian, 'unknown')
+        self.assertRaises(AttributeError, getattr, GregorianCalendar, 'unknown')
+        greg = GregorianCalendar(1, 1, 1)
+        self.assertRaises(AttributeError, getattr, greg, 'unknown')
 
-    @unittest.skip("not supported")
     def test_100_leap_years(self):
         # leap years
         for year in (-10000, -2000, -1996, -804, -800, -104, -4, 0,
-                     10000,  2000,  1996,  804,  800,  100,  4):
-            self.assertTrue(Date.gregorian.is_leap_year(year), msg = 'is_leap_year, year = {}'.format(year))
-            self.assertEqual(Date.gregorian.days_in_year(year), 366, msg = 'days_in_year, year = {}'.format(year))
-            # non-leap years
-        for year in (-2001, -1900, -1000, -999, -100, -99, -10, -1, 0,
+                     10000,  2000,  1996,  804,  800,  104,  4):
+            self.assertTrue(GregorianCalendar.is_leap_year(year), msg = 'is_leap_year, year = {}'.format(year))
+            self.assertEqual(GregorianCalendar.days_in_year(year), 366, msg = 'days_in_year, year = {}'.format(year))
+        # non-leap years
+        for year in (-2001, -1900, -1000, -999, -100, -99, -10, -1,
                      2001,  1900,  1000,  999,  100,  99,  10,  1):
-            self.assertFalse(Date.gregorian.is_leap_year(year), msg = 'is_leap_year, year = {}'.format(year))
-            self.assertEqual(Date.gregorian.days_in_year(year), 365, msg = 'days_in_year, year = {}'.format(year))
+            self.assertFalse(GregorianCalendar.is_leap_year(year), msg = 'is_leap_year, year = {}'.format(year))
+            self.assertEqual(GregorianCalendar.days_in_year(year), 365, msg = 'days_in_year, year = {}'.format(year))
 
-    @unittest.skip("not supported")
-    def test_110_weekday(self):
-        for test_row in gregorian_test_data:
-            rd = test_row[0]
-            weekday = test_row[1]
-            self.assertEqual(Date(rd).gregorian.weekday(), weekday, msg = 'weekday, RD = {}'.format(rd))
-
-    @unittest.skip("not supported")
-    def test_120_day_of_year(self):
-        for test_row in gregorian_test_data:
-            rd = test_row[0]
-            doy = test_row[3]
-            self.assertEqual(Date(rd).gregorian.day_of_year(), doy, msg = 'day_of_year, RD = {}'.format(rd))
-
-    @unittest.skip("not supported")
     def test_120_replace(self):
         # we use the test data from Calendrical Calculations
         for test_row in gregorian_test_data[:33]:
@@ -298,11 +304,15 @@ class TestDateGregorian(unittest.TestCase):
             year = test_row[2][0]
             month = test_row[2][1]
             day = test_row[2][2]
-            d = Date.gregorian(year, month, day)
-            self.assertEqual(d.replace(), Date(rd), msg = 'replace, no change')
-            self.assertEqual(d.replace(year = 10), Date.gregorian(10, month, day), msg = 'replaced year = 10')
-            self.assertEqual(d.replace(month = 10), Date.gregorian(year, 10, day), msg = 'replaced month = 10')
-            self.assertEqual(d.replace(day = 10), Date.gregorian(year, month, 10), msg = 'replaced day = 10')
+            greg = GregorianCalendar(year, month, day)
+            self.assertIsInstance(greg.replace(), GregorianCalendar)
+            self.assertEqual(greg.replace(), GregorianCalendar.from_rata_die(rd), msg = 'replace, no change')
+            self.assertIsInstance(greg.replace(year = 10), GregorianCalendar)
+            self.assertEqual(greg.replace(year = 10), GregorianCalendar(10, month, day), msg = 'replaced year = 10')
+            self.assertIsInstance(greg.replace(month = 10), GregorianCalendar)
+            self.assertEqual(greg.replace(month = 10), GregorianCalendar(year, 10, day), msg = 'replaced month = 10')
+            self.assertIsInstance(greg.replace(day = 10), GregorianCalendar)
+            self.assertEqual(greg.replace(day = 10), GregorianCalendar(year, month, 10), msg = 'replaced day = 10')
 
     @unittest.skip("not supported")
     def test_125_replace_invalid_parameter_types(self):
@@ -343,6 +353,18 @@ class TestDateGregorian(unittest.TestCase):
         self.assertRaises(ValueError, d.replace, month = 2, day = 29)
         self.assertRaises(ValueError, d.replace, year = 2012, month = 2, day = 30)
         d.replace(year = 2012, month = 2, day = 29)  # this is valid
+
+    def test_110_weekday(self):
+        for test_row in gregorian_test_data:
+            rd = test_row[0]
+            weekday = test_row[1]
+            self.assertEqual(Date(rd).gregorian.weekday(), weekday, msg = 'weekday, RD = {}'.format(rd))
+
+    def test_120_day_of_year(self):
+        for test_row in gregorian_test_data:
+            rd = test_row[0]
+            doy = test_row[3]
+            self.assertEqual(Date(rd).gregorian.day_of_year(), doy, msg = 'day_of_year, RD = {}'.format(rd))
 
     @unittest.skip("not supported")
     def test_130_week_and_day(self):
@@ -412,3 +434,226 @@ class TestDateGregorian(unittest.TestCase):
                 # TODO: add more characters outside standard ASCII range
                 format_string = '%' + c
                 self.assertEqual(d.cformat(format_string), format_string, msg = "cformat('{}')".format(format_string))
+
+
+#class TestDateGregorian(unittest.TestCase):
+#
+#    def test_000_constructors(self):
+#        for test_row in gregorian_test_data:
+#            rd = test_row[0]
+#            year = test_row[2][0]
+#            month = test_row[2][1]
+#            day = test_row[2][2]
+#            doy = test_row[3]
+#            self.assertEqual(Date.gregorian(year, month, day), Date(rd), msg = 'gregorian with rd = {}'.format(rd))
+#            self.assertEqual(Date.gregorian.year_day(year, doy), Date(rd), msg = 'gregorian.year_day with rd = {}'.format(rd))
+#
+#    def test_010_invalid_parameter_types(self):
+#        # exception with none, two or four parameters
+#        self.assertRaises(TypeError, Date.gregorian)
+#        self.assertRaises(TypeError, Date.gregorian, 1, 2)
+#        self.assertRaises(TypeError, Date.gregorian, 1, 2, 1, 2)
+#        # exception with non-numeric types
+#        for par in ("1", (1,), [1], {1:1}, (), [], {}, None):
+#            self.assertRaises(TypeError, Date.gregorian, par, 1, 1)
+#            self.assertRaises(TypeError, Date.gregorian, 1, par, 1)
+#            self.assertRaises(TypeError, Date.gregorian, 1, 1, par)
+#            # exception with invalid numeric types
+#        for par in (1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j):
+#            self.assertRaises(TypeError, Date.gregorian, par, 1, 1)
+#            self.assertRaises(TypeError, Date.gregorian, 1, par, 1)
+#            self.assertRaises(TypeError, Date.gregorian, 1, 1, par)
+#
+#    def test_015_invalid_parameter_types_year_day(self):
+#        # exception with none, one or three parameters
+#        self.assertRaises(TypeError, Date.gregorian.year_day)
+#        self.assertRaises(TypeError, Date.gregorian.year_day, 1)
+#        self.assertRaises(TypeError, Date.gregorian.year_day, 1, 2, 3)
+#        # exception with non-numeric types
+#        for par in ("1", (1,), [1], {1:1}, (), [], {}, None):
+#            self.assertRaises(TypeError, Date.gregorian.year_day, par)
+#            # exception with invalid numeric types
+#        for par in (1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j):
+#            self.assertRaises(TypeError, Date.gregorian.year_day, par)
+#
+#    def test_020_invalid_values(self):
+#        for test_row in gregorian_invalid_data:
+#            year = test_row[0]
+#            month = test_row[1]
+#            day = test_row[2]
+#            print(year,month,day)
+#            self.assertRaises(ValueError, Date.gregorian, year, month, day)
+#
+#    def test_025_invalid_values_year_day(self):
+#        for year, day_count in ((1, 0), (1, -1), (1, 366), (4, 367)):
+#            self.assertRaises(ValueError, Date.gregorian.year_day, year, day_count)
+#
+#    def test_030_attributes(self):
+#        for test_row in gregorian_test_data:
+#            rd = test_row[0]
+#            year = test_row[2][0]
+#            month = test_row[2][1]
+#            day = test_row[2][2]
+#            d = Date(rd)
+#            self.assertEqual(d.gregorian.year, year, msg = 'gregorian year, rd = {}'.format(rd))
+#            self.assertEqual(d.gregorian.month, month, msg = 'gregorian month, rd = {}'.format(rd))
+#            self.assertEqual(d.gregorian.day, day, msg = 'gregorian day, rd = {}'.format(rd))
+#
+#    def test_040_write_attribute(self):
+#        d = Date(1)
+#        self.assertRaises(AttributeError, setattr, d.gregorian, 'year', 3)
+#        self.assertRaises(AttributeError, setattr, d.gregorian, 'month', 3)
+#        self.assertRaises(AttributeError, setattr, d.gregorian, 'day', 3)
+#
+#    def test_050_get_unknown_attribute(self):
+#        self.assertRaises(AttributeError, getattr, Date.gregorian, 'unknown')
+#        d = Date(1)
+#        self.assertRaises(AttributeError, getattr, d.gregorian, 'unknown')
+#
+#    @unittest.skip("not supported")
+#    def test_120_replace(self):
+#        # we use the test data from Calendrical Calculations
+#        for test_row in gregorian_test_data[:33]:
+#            rd = test_row[0]
+#            year = test_row[2][0]
+#            month = test_row[2][1]
+#            day = test_row[2][2]
+#            d = Date.gregorian(year, month, day)
+#            self.assertEqual(d.replace(), Date(rd), msg = 'replace, no change')
+#            self.assertEqual(d.replace(year = 10), Date.gregorian(10, month, day), msg = 'replaced year = 10')
+#            self.assertEqual(d.replace(month = 10), Date.gregorian(year, 10, day), msg = 'replaced month = 10')
+#            self.assertEqual(d.replace(day = 10), Date.gregorian(year, month, 10), msg = 'replaced day = 10')
+#
+#    @unittest.skip("not supported")
+#    def test_125_replace_invalid_parameter_types(self):
+#        d = Date(12345678)
+#        # exception with positional parameters
+#        self.assertRaises(TypeError, d.replace, 1)
+#        self.assertRaises(TypeError, d.replace, 1, 2)
+#        self.assertRaises(TypeError, d.replace, 1, 2, 3)
+#        self.assertRaises(TypeError, d.replace, 1, 2, 3, 4)
+#        # exception with positional and key parameters
+#        self.assertRaises(TypeError, d.replace, 1, day = 14)
+#        self.assertRaises(TypeError, d.replace, 1, month = 7)
+#        self.assertRaises(TypeError, d.replace, 1, year = 1234)
+#        # exception with non-numeric types
+#        for par in ("1", (1,), [1], {1:1}, (), [], {}, None):
+#            self.assertRaises(TypeError, d.replace, day = par)
+#            self.assertRaises(TypeError, d.replace, month = par)
+#            self.assertRaises(TypeError, d.replace, year = par)
+#            # exception with invalid numeric types
+#        for par in (1.0, Fraction(1, 1), decimal.Decimal(1), 1j):
+#            self.assertRaises(TypeError, d.replace, day = par)
+#            self.assertRaises(TypeError, d.replace, month = par)
+#            self.assertRaises(TypeError, d.replace, year = par)
+#
+#    @unittest.skip("not supported")
+#    def test_127_replace_invalid_values(self):
+#        d = Date(12345678)
+#        # generic invalid values
+#        self.assertRaises(ValueError, d.replace, day = -1)
+#        self.assertRaises(ValueError, d.replace, day = 0)
+#        self.assertRaises(ValueError, d.replace, day = 32)
+#        self.assertRaises(ValueError, d.replace, month = -1)
+#        self.assertRaises(ValueError, d.replace, month = 0)
+#        self.assertRaises(ValueError, d.replace, month = 13)
+#        # leap day invalid values
+#        d = Date.gregorian(2011, 3, 1)
+#        self.assertRaises(ValueError, d.replace, month = 2, day = 30)
+#        self.assertRaises(ValueError, d.replace, month = 2, day = 29)
+#        self.assertRaises(ValueError, d.replace, year = 2012, month = 2, day = 30)
+#        d.replace(year = 2012, month = 2, day = 29)  # this is valid
+#
+#    def test_100_leap_years(self):
+#        # leap years
+#        for year in (-10000, -2000, -1996, -804, -800, -104, -4, 0,
+#                     10000,  2000,  1996,  804,  800,  100,  4):
+#            self.assertTrue(Date.gregorian.is_leap_year(year), msg = 'is_leap_year, year = {}'.format(year))
+#            self.assertEqual(Date.gregorian.days_in_year(year), 366, msg = 'days_in_year, year = {}'.format(year))
+#            # non-leap years
+#        for year in (-2001, -1900, -1000, -999, -100, -99, -10, -1, 0,
+#                     2001,  1900,  1000,  999,  100,  99,  10,  1):
+#            self.assertFalse(Date.gregorian.is_leap_year(year), msg = 'is_leap_year, year = {}'.format(year))
+#            self.assertEqual(Date.gregorian.days_in_year(year), 365, msg = 'days_in_year, year = {}'.format(year))
+#
+#    def test_110_weekday(self):
+#        for test_row in gregorian_test_data:
+#            rd = test_row[0]
+#            weekday = test_row[1]
+#            self.assertEqual(Date(rd).gregorian.weekday(), weekday, msg = 'weekday, RD = {}'.format(rd))
+#
+#    def test_120_day_of_year(self):
+#        for test_row in gregorian_test_data:
+#            rd = test_row[0]
+#            doy = test_row[3]
+#            self.assertEqual(Date(rd).gregorian.day_of_year(), doy, msg = 'day_of_year, RD = {}'.format(rd))
+#
+#    @unittest.skip("not supported")
+#    def test_130_week_and_day(self):
+#        # I am using all dates (even if computation is longer, because many boundary conditions are interesting here
+#        for test_row in gregorian_test_data:
+#            rd = test_row[0]
+#            year = test_row[2][0]
+#            d = Date(rd)
+#            jan1st = Date.gregorian(year, 1, 1).weekday()
+#            for week_start in range(7):
+#                week, day = d.gregorian.week_and_day(week_start)
+#                tentative_day_of_year = (week - 1) * 7 + day + ((week_start - jan1st + 7) % 7)
+#                self.assertEqual(d.gregorian.day_of_year(), tentative_day_of_year, msg = 'week_and_day, RD = {}, week_start = {}'.format(rd, week_start))
+#
+#    @unittest.skip("not supported")
+#    def test_135_invalid_week_and_day(self):
+#        d = Date(12345678)
+#        # exception with none or two parameters
+#        self.assertRaises(TypeError, d.gregorian.week_and_day)
+#        self.assertRaises(TypeError, d.gregorian.week_and_day, 1, 2)
+#        # exception with non-numeric types
+#        for par in ("1", (1,), [1], {1:1}, (), [], {}, None):
+#            self.assertRaises(TypeError, d.gregorian.week_and_day, par)
+#            # exception with invalid numeric types
+#        for par in (1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j):
+#            self.assertRaises(TypeError, d.gregorian.week_and_day, par)
+#
+#    @unittest.skip("not supported")
+#    def test_200_str(self):
+#        for test_row in gregorian_test_data:
+#            rd = test_row[0]
+#            year = test_row[2][0]
+#            month = test_row[2][1]
+#            day = test_row[2][2]
+#            d = Date.gregorian(year, month, day)
+#            expected_format = "[04]-{02}-{02}" if year >= 0 and year <= 9999 else "{+05}-{02}-{02}"
+#            self.assertEqual(str(d.gregorian), expected_format.format(year, month, day), msg = 'str, RD = {}'.format(rd))
+#
+#    @unittest.skip("not supported")
+#    def test_210_cformat(self):
+#        wd = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+#        abbr_wd = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+#        mo = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+#        abbr_mo = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+#        for test_row in gregorian_test_data:
+#            rd = test_row[0]
+#            weekday = test_row[1]
+#            year = test_row[2][0]
+#            month = test_row[2][1]
+#            day = test_row[2][2]
+#            doy = test_row[3]
+#            d = Date(rd)
+#            self.assertEqual(d.cformat('%a'), abbr_wd[weekday], msg = "cformat('%a')")
+#            self.assertEqual(d.cformat('%A'), wd[weekday], msg = "cformat('%A')")
+#            self.assertEqual(d.cformat('%b'), abbr_mo[month], msg = "cformat('%b')")
+#            self.assertEqual(d.cformat('%B'), mo[month], msg = "cformat('%B')")
+#            self.assertEqual(d.cformat('%d'), day.format('{02d}'), msg = "cformat('%d')")
+#            self.assertEqual(d.cformat('%j'), doy.format('{03d}'), msg = "cformat('%j')")
+#            self.assertEqual(d.cformat('%m'), month.format('{02d}'), msg = "cformat('%m')")
+#            self.assertEqual(d.cformat('%U'), format((doy - weekday) // 7, '{d}'), msg = "cformat('%U')")
+#            self.assertEqual(d.cformat('%w'), weekday.format('{d}'), msg = "cformat('%w')")
+#            self.assertEqual(d.cformat('%W'), format((doy - (weekday + 1) % 7) // 7, '{d}'), msg = "cformat('%W')")
+#            self.assertEqual(d.cformat('%y'), year.format('{02d}')[-2:], msg = "cformat('%y')")
+#            self.assertEqual(d.cformat('%Y'), year.format('{d}'), msg = "cformat('%Y')")
+#            self.assertEqual(d.cformat('%%'), '%', msg = "cformat('%%')")
+#            for c in "DEJefgu":    # a collection of random characters in the unsupported set
+#                # TODO: add more characters outside standard ASCII range
+#                format_string = '%' + c
+#                self.assertEqual(d.cformat(format_string), format_string, msg = "cformat('{}')".format(format_string))
+

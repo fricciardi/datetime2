@@ -11,6 +11,8 @@ and removing a few limits that the original package has.
 I am deeply committed in completing the project, do not expect regular updates on it.
 
 If you are looking for more information, check the following:
+
 * `datetime2 PyPI pages <http://pypi.python.org/pypi/datetime2>`_, where versions are uploaded;
-* `wiki pages <https://github.com/fricciardi/datetime2/wiki>`_, for further information on development
-  and documentation.
+
+* `wiki pages <https://github.com/fricciardi/datetime2/wiki>`_, for further
+  information on development and documentation.

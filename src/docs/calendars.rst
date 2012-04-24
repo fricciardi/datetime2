@@ -1,7 +1,7 @@
 Calendars
 =========
 
-This chapter lists the calendars defined in the :mod:`datetime2` module. As
+This chapter lists the calendars defined in the :mod:`datetime2` package. As
 described :ref:`here <register-classes>`, it is possible to add calendars to
 the *datetime2* module at run time.
 
@@ -10,59 +10,65 @@ the *datetime2* module at run time.
 Gregorian calendar
 ^^^^^^^^^^^^^^^^^^
 
-The Gregorian representation uses the calendar generally used in western
-countries. It is a solar calendar dividing day count in years of 365 or 366
-days, each year is then divided in 12 months of 30, 31 and 28 or 29 days.
+An instance of the :class:`GregorianCalendar` class represents a day in the
+calendar generally used in western countries. It is a solar calendar dividing
+day count in years of 365 or 366 days, each year is then divided in 12 months
+of 30, 31 and 28 or 29 days.
 
-The default constructor for Gregorian dates is:
+There are three constructors for a Gregorian day. The default one:
 
-.. class:: Date.gregorian(year, month, day)
+.. class:: GregorianCalendar(year, month, day)
 
-   Return a :class:`Date` object that represents the date given with Gregorian
-   year, month and day. Month is entered as a number, not as a string. All
-   arguments are required and must be integers. Values for ``month`` and ``day``
-   must lie in the following ranges:
+   Return an object that represents the date given with Gregorian year, month
+   and day. Month is entered as a number, not as a string. All arguments are
+   required and must be integers. Values for ``month`` and ``day`` must lie in
+   the following ranges:
 
    * ``1 <= month <= 12``
    * ``1 <= day <= number of days in the given month and year``
 
-   If an argument outside those ranges is given, :exc:`ValueError` is raised.
+   If an argument is outside those ranges, a :exc:`ValueError` exception is
+   raised.
 
-Another constructor:
+The other two constructors are:
 
-.. class:: Date.gregorian.year_day(year, day_of_year)
+.. class:: GregorianCalendar.year_day(year, day_of_year)
 
-   Returns a :class:`Date` object that represents the date given with Gregorian
-   year, and day in year. Both arguments are required and must be integers.
+   Return an object that represents the day specified by a Gregorian year and
+   the day in that year. Both arguments are required and must be integers.
    Value for ``day_of_year`` must be between 1 and the number of days in the year
    (either 365 or 366), otherwise a :exc:`ValueError` exception is raised.
 
-There are two classmethods:
+.. class:: GregorianCalendar.from_rata_die(day_count)
 
-.. classmethod:: Date.gregorian.is_leap_year(year)
+   Return an object that represents the day specified by counting all elapsed
+   days from January 1\ :sup:`st` of year 1 plus the current day. The
+   ``day_count`` argument is required and must be an integer.
+
+A GregorianCalendar object has three attributes:
+
+.. attribute:: gregorian_calendar_day.year
+
+.. attribute:: gregorian_calendar_day.month
+
+.. attribute:: gregorian_calendar_day.day
+
+   These attributes are read-only integer numbers. Month will be between 1 and
+   12, day will be between 1 and the number of days in the corresponding month.
+
+There are two static methods:
+
+.. classmethod:: GregorianCalendar.is_leap_year(year)
 
    Return ``True`` if *year* is a leap year in the Gregorian calendar.
-   ``False`` otherwise. For example, ``Date.gregorian.is_leap_year(2008) == True``.
+   ``False`` otherwise. For example,
+   ``GregorianCalendar.is_leap_year(2008) == True``.
 
-.. classmethod:: Date.gregorian.days_in_year(year)
+.. classmethod:: GregorianCalendar.days_in_year(year)
 
    Return 366 if *year* is a leap year in the Gregorian calendar, 365
-   otherwise. For example, ``Date.gregorian.days_in_year(2100) == 365``.
+   otherwise. For example, ``GregorianCalendar.days_in_year(2100) == 365``.
 
-   .. versionadded:: 0.3.2
-      :meth:`days_in_year` will be added in version 0.3.2.
-
-
-The Gregorian representation of a :class:`Date` instance has three attributes:
-
-.. attribute:: date.gregorian.year
-
-.. attribute:: date.gregorian.month
-
-.. attribute:: date.gregorian.day
-
-   These attributes are read-only integer numbers. Month will be between 1 and 12, day
-   will be between 1 and the number of days in the corresponding month.
 
 The Gregorian representation of a :class:`Date` object has the following
 methods:

@@ -109,12 +109,68 @@ class DynamicAttrsCls:
         else:
             raise AttributeError("'{}' object has no attribute '{}'".format(self.__class__.__name__, name))
 
+class CalendarObjectProxy:
+    def __init__(self, calendar_obj):
+        self.calendar_obj = calendar_obj
+
+
+class CalendarClassMethodProxy:
+    def __init__(self, method, proxying_class, calendar_class, attr_name):
+        self.method = method
+        self.proxying_class = proxying_class
+        self.calendar_class = calendar_class
+        self.attr_name = attr_name
+
+    def __call__(self, *args, **kwargs):
+        return_obj = self.method(*args, **kwargs)
+        if isinstance(return_obj, self.calendar_class):
+            proxying_obj = self.proxying_class.from_rata_die(return_obj.to_rata_die())
+            setattr(proxying_obj, self.attr_name, CalendarObjectProxy(return_obj, self.proxying_class))
+            return proxying_obj
+        else:
+            return return_obj
+
+
+class CalendarClassProxy:
+    def __init__(self, proxying_class, calendar_class, attr_name):
+        self.proxying_class = proxying_class
+        self.calendar_cls = calendar_class
+        self.attr_name = attr_name
+
+    def __call__(self, *args, **kwargs):
+        calendar_obj = self.calendar_cls(*args, **kwargs)
+        proxying_obj = self.proxying_class.from_rata_die(calendar_obj.to_rata_die())
+        setattr(proxying_obj, self.attr_name, CalendarObjectProxy(calendar_obj, self.proxying_class))
+        return proxying_obj
+
+    def __getattr__(self, name):
+        return CalendarClassMethodProxy(getattr(self.calendar_cls, name), self.proxying_class, self.calendar_cls)
+
+class ContextDependentCalendarAttribute:
+    def __init__(self, name, calendar_cls):
+        self.name = '_' + name
+        self.calendar_cls = calendar_cls
+
+    def __get__(self, obj, cls):
+        if obj == None:
+            return CalendarClassProxy(cls, self.calendar_cls, self.name)
+        else:
+            return getattr(obj, self.name)
+
+
+##############################################################################
+# calendar classes for Date objects
+#
+#class GregorianCalendarToDate(datetime2.gregorian.GregorianCalendar):
+#    def replace(self, ):
+#
+#        pass
+
 
 ##############################################################################
 # interface with calendars and time representations
 #
-_identifier_restricted_re = re.compile("[_a-zA-Z]\\w*")
-_datetime2_calendars = {}
+_identifier_name_re = re.compile("[a-zA-Z][_a-zA-Z]*")
 
 def register_calendar(name, calendar):
     if not _identifier_restricted_re.match(name):
@@ -123,11 +179,12 @@ def register_calendar(name, calendar):
         raise RuntimeError("Calendar must have a callable 'to_rata_die' function.")
     if not hasattr(calendar, 'from_rata_die') or not callable(getattr(calendar, 'from_rata_die')):
         raise RuntimeError("Calendar must have a callable 'to_rata_die' function.")
-    _datetime2_calendars[name] = calendar
+    setattr(datetime2.Date, name, obj)
 
+#TODO: generalize registration process, so that other classes can use it
 #TODO: add code to manage the calendars (list, check if present, etc)
 
-register_calendar('gregorian', datetime2.gregorian.GregorianCalendar)
+#register_calendar('gregorian', datetime2.gregorian.GregorianCalendar)
 
 
 ##############################################################################

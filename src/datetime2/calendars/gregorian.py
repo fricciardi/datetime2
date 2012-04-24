@@ -1,6 +1,6 @@
-# datetime2 package main file
+# Gregorian calendar in calendars package
 
-# Copyright (c) 2011 Francesco Ricciardi
+# Copyright (c) 2012 Francesco Ricciardi
 #
 # All rights reserved.
 #
@@ -46,6 +46,8 @@ _days_in_previous_months = [ [ sum(_days_in_month[leap_year][:month]) for month 
 #
 class GregorianCalendar:
     def __init__(self, year, month, day):
+        if not isinstance(year, int) or not isinstance(month, int) or not isinstance(day, int):
+            raise TypeError("integer argument expected")
         if month < 1 or month > 12:
             raise ValueError("Month must be between 1 and 12, while it is {}.".format(month))
         if day < 1 or day > _days_in_month[GregorianCalendar.is_leap_year(year)][month - 1]:
@@ -53,6 +55,7 @@ class GregorianCalendar:
         self._year = year
         self._month = month
         self._day = day
+        self._rata_die = None
 
     @property
     def year(self):
@@ -66,17 +69,10 @@ class GregorianCalendar:
     def day(self):
         return self._day
 
-    def to_rata_die(self):
-        return (365 * (self._year - 1) + (self._year - 1) // 4 - (self._year - 1) // 100 + (self._year - 1) // 400
-                + (367 * self._month - 362) // 12
-                + ((-1 if GregorianCalendar.is_leap_year(self._year) else -2) if self._month > 2 else 0) + self._day)
-
-    @staticmethod
-    def is_leap_year(year):
-        return (year % 4 == 0) and (year % 400 not in (100, 200, 300))
-
     @classmethod
     def year_day(cls, year, day):
+        if not isinstance(year, int) or not isinstance(day, int):
+            raise TypeError("integer argument expected")
         if day < 1 or day > (366 if GregorianCalendar.is_leap_year(year) else 365):
             raise ValueError("Day must be between 1 and number of days in year, while it is {}.".format(day))
         month = bisect.bisect_left(_days_in_previous_months[GregorianCalendar.is_leap_year(year)], day)
@@ -85,10 +81,27 @@ class GregorianCalendar:
 
     @classmethod
     def from_rata_die(cls, day_count):
+        if not isinstance(day_count, int):
+            raise TypeError("integer argument expected")
         y400, d400 = divmod(day_count - 1, 146097)
         y100, d100 = divmod(d400, 36524)
         y4, d4 = divmod(d100, 1461)
         y1 = d4 // 365
         year_minus_one = 400 * y400 + 100 * y100 + 4 * y4 + y1 - (1 if (y100 == 4 or y1 == 4) else 0)
         days = day_count - 365 * year_minus_one - year_minus_one // 4 + year_minus_one // 100 - year_minus_one // 400      # days from january 1st (included) to today
-        return cls.year_day(year_minus_one + 1, days)
+        greg_day = cls.year_day(year_minus_one + 1, days)
+        greg_day._rata_die = day_count
+        return greg_day
+
+    @staticmethod
+    def is_leap_year(year):
+        return (year % 4 == 0) and (year % 400 not in (100, 200, 300))
+
+    @staticmethod
+    def days_in_year(year):
+        return 365 if not GregorianCalendar.is_leap_year(year) else 366
+
+    def to_rata_die(self):
+        return (365 * (self._year - 1) + (self._year - 1) // 4 - (self._year - 1) // 100 + (self._year - 1) // 400
+                + (367 * self._month - 362) // 12
+                + ((-1 if GregorianCalendar.is_leap_year(self._year) else -2) if self._month > 2 else 0) + self._day)
