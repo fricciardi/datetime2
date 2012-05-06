@@ -1,7 +1,7 @@
 # datetime2 package test
 # Gregorian calendar
 
-# Copyright (c) 2011 Francesco Ricciardi
+# Copyright (c) 2011-2012 Francesco Ricciardi
 #
 # All rights reserved.
 #

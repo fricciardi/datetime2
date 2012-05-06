@@ -1,7 +1,8 @@
 # datetime2 package - osinterface.py
+
 # This module contains all methods that are OS dependent
 
-# Copyright (c) 2011 Francesco Ricciardi
+# Copyright (c) 2011-2012 Francesco Ricciardi
 #
 # All rights reserved.
 #
