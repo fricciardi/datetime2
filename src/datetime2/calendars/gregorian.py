@@ -110,3 +110,6 @@ class GregorianCalendar:
 
     def weekday(self):
         return self.to_rata_die() % 7
+
+    def day_of_year(self):
+        return self.to_rata_die() - (365 * (self._year - 1) + (self._year - 1) // 4 - (self._year - 1) // 100 + (self._year - 1) // 400)

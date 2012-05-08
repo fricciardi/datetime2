@@ -298,3 +298,12 @@ class TestGregorian(unittest.TestCase):
             weekday = test_row[1]
             self.assertEqual(GregorianCalendar(year, month, day).weekday(), weekday,
                              msg = 'weekday, date = {}-{}-{}'.format(year, month, day))
+
+    def test_210_day_of_year(self):
+        for test_row in gregorian_test_data:
+            year = test_row[2][0]
+            month = test_row[2][1]
+            day = test_row[2][2]
+            doy = test_row[3]
+            self.assertEqual(GregorianCalendar(year, month, day).day_of_year(), doy,
+                msg = 'day_of_year, date = {}-{}-{}'.format(year, month, day))

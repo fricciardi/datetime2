@@ -73,7 +73,7 @@ There are two static methods:
 The Gregorian representation of a :class:`Date` object has the following
 methods:
 
-.. method:: date.gregorian.weekday()
+.. method:: gregorian.weekday()
 
    Return the day of the week as an integer, where Sunday is 0 and Saturday is
    6. For example, ``GregorianCalendar(2002, 12, 4).weekday() == 3``, a Wednesday.
@@ -81,13 +81,10 @@ methods:
    Monday is 0 and Sunday is 6.
 
 
-.. method:: date.gregorian.day_of_year()
+.. method:: gregorian.day_of_year()
 
    Return the day of the year as an integer, from 1 to 365 or 366 (in leap years).
-   For example, ``Date.gregorian(2008, 3, 1).day_of_year() == 61``.
-
-   .. versionadded:: 0.3.2
-      :meth:`day_of_year` will be added in version 0.3.2.
+   For example, ``GregorianCalendar(2008, 3, 1).day_of_year() == 61``.
 
 
 .. method:: date.gregorian.replace(year, month, day)
