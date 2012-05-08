@@ -76,12 +76,9 @@ methods:
 .. method:: date.gregorian.weekday()
 
    Return the day of the week as an integer, where Sunday is 0 and Saturday is
-   6. For example, ``Date.gregorian(2002, 12, 4).weekday() == 3``, a Wednesday.
+   6. For example, ``GregorianCalendar(2002, 12, 4).weekday() == 3``, a Wednesday.
    Note that this is *not* the convention used by :meth:`date.weekday`, where
    Monday is 0 and Sunday is 6.
-
-   .. versionadded:: 0.3.2
-      :meth:`days_in_year` will be added in version 0.3.2.
 
 
 .. method:: date.gregorian.day_of_year()

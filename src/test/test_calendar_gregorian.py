@@ -35,7 +35,7 @@ import fractions
 import unittest
 
 #from datetime2 import Date, TimeDelta
-from calendars.gregorian import GregorianCalendar
+from datetime2.calendars.gregorian import GregorianCalendar
 
 
 gregorian_test_data = [
@@ -78,7 +78,7 @@ gregorian_test_data = [
     # Boundary conditions on RD
     [-1000001,      5, (-2737,    2,   2),  33],
     [-1000000,      6, (-2737,    2,   3),  34],
-    [ -999999,      7, (-2737,    2,   4),  35],
+    [ -999999,      0, (-2737,    2,   4),  35],
     [ -100001,      1, (-273,     3,  17),  76],
     [ -100000,      2, (-273,     3,  18),  77],
     [  -99999,      3, (-273,     3,  19),  78],
@@ -105,7 +105,7 @@ gregorian_test_data = [
     [     101,      3, (   1,     4,  11), 101],
     [     999,      5, (   3,     9,  26), 269],
     [    1000,      6, (   3,     9,  27), 270],
-    [    1001,      7, (   3,     9,  28), 271],
+    [    1001,      0, (   3,     9,  28), 271],
     [    9999,      3, (  28,     5,  17), 138],
     [   10000,      4, (  28,     5,  18), 139],
     [   10001,      5, (  28,     5,  19), 140],
@@ -124,8 +124,8 @@ gregorian_test_data = [
     [    -307,      1, (   0,     2,  28),  59],
     [    -306,      2, (   0,     2,  29),  60],
     [    -305,      3, (   0,     3,   1),  61],
-    [      59,      1, (   1,     2,  28),  59],
-    [      60,      2, (   1,     3,   1),  60],
+    [      59,      3, (   1,     2,  28),  59],
+    [      60,      4, (   1,     3,   1),  60],
     [   72742,      5, ( 200,     2,  28),  59],
     [   72743,      6, ( 200,     3,   1),  60],
     [  145790,      1, ( 400,     2,  28),  59],
@@ -138,29 +138,29 @@ gregorian_test_data = [
     [  766704,      1, (2100,     3,   1),  60],
     # Boundary conditions on years
     [-3652425,      0, (-10000,  12,  31), 366],
-    [-3652424,      0, (-9999,    1,   1),   1],
+    [-3652424,      1, (-9999,    1,   1),   1],
     [ -730485,      0, (-2000,   12,  31), 366],
     [ -730484,      1, (-1999,    1,   1),   1],
     [ -365243,      3, (-1000,   12,  31), 365],
     [ -365242,      4, (-999,     1,   1),   1],
-    [  -36525,      3, (-100,    12,  31), 365],
-    [  -36524,      4, ( -99,     1,   1),   1],
+    [  -36525,      1, (-100,    12,  31), 365],
+    [  -36524,      2, ( -99,     1,   1),   1],
     [   -3653,      1, ( -10,    12,  31), 365],
     [   -3652,      2, (  -9,     1,   1),   1],
     [    -366,      5, (  -1,    12,  31), 365],
     [    -365,      6, (   0,     1,   1),   1],
-    [     365,      0, (   1,    12,  31), 365],
-    [     366,      1, (   2,     1,   1),   1],
+    [     365,      1, (   1,    12,  31), 365],
+    [     366,      2, (   2,     1,   1),   1],
     [    3287,      4, (   9,    12,  31), 365],
     [    3288,      5, (  10,     1,   1),   1],
     [   36159,      4, (  99,    12,  31), 365],
     [   36160,      5, ( 100,     1,   1),   1],
-    [  364877,      4, ( 999,    12,  31), 365],
-    [  364878,      5, (1000,     1,   1),   1],
+    [  364877,      2, ( 999,    12,  31), 365],
+    [  364878,      3, (1000,     1,   1),   1],
     [  730119,      5, (1999,    12,  31), 365],
     [  730120,      6, (2000,     1,   1),   1],
     [ 3652059,      5, (9999,    12,  31), 365],
-    [ 3652060,      5, (10000,    1,   1),   1]
+    [ 3652060,      6, (10000,    1,   1),   1]
 ]
 
 gregorian_invalid_data = [
@@ -194,9 +194,9 @@ class TestGregorian(unittest.TestCase):
             month = test_row[2][1]
             day = test_row[2][2]
             greg = GregorianCalendar(year, month, day)
-            self.assertEqual(greg.year, year)
-            self.assertEqual(greg.month, month)
-            self.assertEqual(greg.day, day)
+            self.assertEqual(greg.year, year, msg = 'year attribute, date = {}-{}-{}'.format(year, month, day))
+            self.assertEqual(greg.month, month, msg = 'month attribute, date = {}-{}-{}'.format(year, month, day))
+            self.assertEqual(greg.day, day, msg = 'day attribute, date = {}-{}-{}'.format(year, month, day))
 
     def test_003_constructor_year_day(self):
         for test_row in gregorian_test_data:
@@ -205,9 +205,9 @@ class TestGregorian(unittest.TestCase):
             day = test_row[2][2]
             doy = test_row[3]
             greg_yd = GregorianCalendar.year_day(year, doy)
-            self.assertEqual(greg_yd.year, year)
-            self.assertEqual(greg_yd.month, month)
-            self.assertEqual(greg_yd.day, day)
+            self.assertEqual(greg_yd.year, year, msg = 'year attribute, date = {}-{}-{}'.format(year, month, day))
+            self.assertEqual(greg_yd.month, month, msg = 'month attribute, date = {}-{}-{}'.format(year, month, day))
+            self.assertEqual(greg_yd.day, day, msg = 'day attribute, date = {}-{}-{}'.format(year, month, day))
 
     def test_006_constructor_rata_die(self):
         for test_row in gregorian_test_data:
@@ -216,9 +216,9 @@ class TestGregorian(unittest.TestCase):
             month = test_row[2][1]
             day = test_row[2][2]
             greg_rd = GregorianCalendar.from_rata_die(rd)
-            self.assertEqual(greg_rd.year, year)
-            self.assertEqual(greg_rd.month, month)
-            self.assertEqual(greg_rd.day, day)
+            self.assertEqual(greg_rd.year, year, msg = 'year attribute, date = {}-{}-{}'.format(year, month, day))
+            self.assertEqual(greg_rd.month, month, msg = 'month attribute, date = {}-{}-{}'.format(year, month, day))
+            self.assertEqual(greg_rd.day, day, msg = 'day attribute, date = {}-{}-{}'.format(year, month, day))
 
     def test_010_invalid_parameter_types(self):
         # exception with none, two or four parameters
@@ -289,3 +289,12 @@ class TestGregorian(unittest.TestCase):
                      2001,  1900,  1000,  999,  100,  99,  10,  1):
             self.assertFalse(GregorianCalendar.is_leap_year(year), msg = 'is_leap_year, year = {}'.format(year))
             self.assertEqual(GregorianCalendar.days_in_year(year), 365, msg = 'days_in_year, year = {}'.format(year))
+
+    def test_200_weekday(self):
+        for test_row in gregorian_test_data:
+            year = test_row[2][0]
+            month = test_row[2][1]
+            day = test_row[2][2]
+            weekday = test_row[1]
+            self.assertEqual(GregorianCalendar(year, month, day).weekday(), weekday,
+                             msg = 'weekday, date = {}-{}-{}'.format(year, month, day))

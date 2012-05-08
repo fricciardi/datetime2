@@ -102,6 +102,11 @@ class GregorianCalendar:
         return 365 if not GregorianCalendar.is_leap_year(year) else 366
 
     def to_rata_die(self):
-        return (365 * (self._year - 1) + (self._year - 1) // 4 - (self._year - 1) // 100 + (self._year - 1) // 400
+        if self._rata_die is None:
+            self._rata_die = (365 * (self._year - 1) + (self._year - 1) // 4 - (self._year - 1) // 100 + (self._year - 1) // 400
                 + (367 * self._month - 362) // 12
                 + ((-1 if GregorianCalendar.is_leap_year(self._year) else -2) if self._month > 2 else 0) + self._day)
+        return self._rata_die
+
+    def weekday(self):
+        return self.to_rata_die() % 7
