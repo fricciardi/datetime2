@@ -87,16 +87,14 @@ methods:
    For example, ``GregorianCalendar(2008, 3, 1).day_of_year() == 61``.
 
 
-.. method:: date.gregorian.replace(year, month, day)
+.. method:: gregorian.replace(year, month, day)
 
-   Returns a new :class:`Date` object with the same value, except for those members
-   given new values by whichever keyword arguments are specified. All values are optional; if used, they must be
-   integers. If any argument is outside its validity range, a :exc:`ValueError`
-   exception is raised. For example, if ``d == Date.gregorian(2002, 12, 31)``, then
-   ``d.replace(day=26) == Date.gregorian(2002, 12, 26)``.
-
-   .. versionadded:: 0.3.2
-      :meth:`replace` will be added in version 0.3.2.
+   Returns a new :class:`GregorianCalendar` object with the same value, except
+   for those members given new values by whichever keyword arguments are
+   specified. All values are optional; if used, they must be integers. If any
+   argument is outside its validity range, a :exc:`ValueError` exception is
+   raised. For example, if ``greg == GregorianCalendar(2002, 12, 31)``, then
+   ``greg.replace(day=26) == GregorianCalendar(2002, 12, 26)``.
 
 
 .. method:: date.gregorian.week_and_day(week_start = 0)

@@ -113,3 +113,12 @@ class GregorianCalendar:
 
     def day_of_year(self):
         return self.to_rata_die() - (365 * (self._year - 1) + (self._year - 1) // 4 - (self._year - 1) // 100 + (self._year - 1) // 400)
+
+    def replace(self, *, year = None, month = None, day = None):
+        if year is None:
+            year = self.year
+        if month is None:
+            month = self.month
+        if day is None:
+            day = self.day
+        return GregorianCalendar(year, month, day)

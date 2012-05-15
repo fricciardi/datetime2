@@ -186,8 +186,10 @@ gregorian_invalid_data = [
     (   1, 12,  32)
 ]
 
-class TestGregorian(unittest.TestCase):
+def eq_gregorian(one, two):
+    return (one.year == two.year) and (one.month == two.month) and (one.day == two.day)
 
+class TestGregorian(unittest.TestCase):
     def test_000_constructor(self):
         for test_row in gregorian_test_data:
             year = test_row[2][0]
@@ -307,3 +309,60 @@ class TestGregorian(unittest.TestCase):
             doy = test_row[3]
             self.assertEqual(GregorianCalendar(year, month, day).day_of_year(), doy,
                 msg = 'day_of_year, date = {}-{}-{}'.format(year, month, day))
+
+    def test_220_replace(self):
+        for test_row in gregorian_test_data[:33]:   # take Calendrical Calculations test data only (other may make replace fail, as in the next test method)
+            year = test_row[2][0]
+            month = test_row[2][1]
+            day = test_row[2][2]
+            greg = GregorianCalendar(year, month, day)
+            self.assertTrue(eq_gregorian(greg.replace(), GregorianCalendar(year, month, day)),
+                msg = 'replace, no change, date = {}-{}-{}'.format(year, month, day))
+            self.assertTrue(eq_gregorian(greg.replace(year = 11), GregorianCalendar(11, month, day)),
+                msg = 'replace, year changed, date = {}-{}-{}'.format(year, month, day))
+            self.assertTrue(eq_gregorian(greg.replace(month = 10), GregorianCalendar(year, 10, day)),
+                msg = 'replace, month changed, date = {}-{}-{}'.format(year, month, day))
+            self.assertTrue(eq_gregorian(greg.replace(day = 9), GregorianCalendar(year, month, 9)),
+                msg = 'replace, day changed, date = {}-{}-{}'.format(year, month, day))
+            self.assertTrue(eq_gregorian(greg.replace(month = 10, year = 11), GregorianCalendar(11, 10, day)),
+                msg = 'replace, year & month changed, date = {}-{}-{}'.format(year, month, day))
+            self.assertTrue(eq_gregorian(greg.replace(day = 9, year = 11), GregorianCalendar(11, month, 9)),
+                msg = 'replace, year & day changed, date = {}-{}-{}'.format(year, month, day))
+            self.assertTrue(eq_gregorian(greg.replace(day = 9, month = 10), GregorianCalendar(year, 10, 9)),
+                msg = 'replace, month & day changed, date = {}-{}-{}'.format(year, month, day))
+            self.assertTrue(eq_gregorian(greg.replace(day = 9, month = 10, year = 11), GregorianCalendar(11, 10, 9)),
+                msg = 'replace, all changed, date = {}-{}-{}'.format(year, month, day))
+
+    def test_223_replace_invalid_types(self):
+        greg = GregorianCalendar(11, 10, 9)
+        # exception for positional parameters
+        self.assertRaises(TypeError, greg.replace, 1)
+        # exception with non-numeric types
+        for par in ("1", (1,), [1], {1:1}, (), [], {}):
+            self.assertRaises(TypeError, greg.replace, year = par)
+            self.assertRaises(TypeError, greg.replace, month = par)
+            self.assertRaises(TypeError, greg.replace, day = par)
+        # exception with invalid numeric types
+        for par in (1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j):
+            self.assertRaises(TypeError, greg.replace, year = par)
+            self.assertRaises(TypeError, greg.replace, month = par)
+            self.assertRaises(TypeError, greg.replace, day = par)
+
+    def test_226_replace_invalid_values(self):
+        greg = GregorianCalendar(11, 10, 9)
+        self.assertRaises(ValueError, greg.replace, month = 0)
+        self.assertRaises(ValueError, greg.replace, day = 0)
+        self.assertRaises(ValueError, greg.replace, month = -1)
+        self.assertRaises(ValueError, greg.replace, day = -1)
+        self.assertRaises(ValueError, greg.replace, month = 13)
+        self.assertRaises(ValueError, greg.replace, day = 32)
+        for month in (4, 6, 9, 11):
+            greg = GregorianCalendar(11, month, 9)
+            self.assertRaises(ValueError, greg.replace, day = 31)
+        greg = GregorianCalendar(1, 2, 9)   # non-leap year
+        self.assertRaises(ValueError, greg.replace, day = 29)
+        greg = GregorianCalendar(100, 2, 9) # non-leap year
+        self.assertRaises(ValueError, greg.replace, day = 29)
+        greg = GregorianCalendar(4, 2, 9)   # leap year
+        self.assertRaises(ValueError, greg.replace, day = 30)
+
