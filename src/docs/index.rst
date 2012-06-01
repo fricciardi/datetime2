@@ -17,7 +17,7 @@ like the :mod:`datetime` module does, with these objectives in mind:
 * implementation of the part of the Unicode Locale Database concerned with
   dates and times;
 * interface with other Python modules or inclusion of their
-  functionalities in its submodules.
+  functionalities in submodules.
 
 These objectives are very long term ones, which I am setting because it is
 important to establish a direction for the project. Do not expect to see them
@@ -38,7 +38,8 @@ four classes implemented in the original :mod:`datetime` module. These are
 :class:`TimeDelta`. These  class names use the CapitalizedWords
 convention, required by :pep:`8`, not used in the old module. The classes
 provide generic service, not bound to any particular calendar or time
-representation.
+representation. The :class:`Date` and :class:`Time` classes will be implemented
+in a future version. The :class:`TimeDelta` class is currently a stub.
 
 .. class:: Date
    :noindex:
@@ -49,30 +50,6 @@ representation.
    :attr:`day_count`.
 
 
-.. class:: Time
-   :noindex:
-
-   An indication of time, independent of any particular day. There might be a
-   time correction, e.g. due to time zone or daylight saving time. Time is
-   stored as a fraction of a day, using a Python :class:`fractions.Fraction`.
-   Attributes of this class are: :attr:`day_frac`, :attr:`correction`.
-
-   .. versionadded:: 1.0
-      :class:`Time` will be added at latest in version 1.0.
-
-
-.. class:: DateTime
-   :noindex:
-
-   A combination of a date and a time. As with :class:`Time`, there might be a
-   correction of time. Date and time are stored together in a single Python
-   :class:`fractions.Fraction`. Attributes of this class are: :attr:`days`,
-   :attr:`correction`.
-
-   .. versionadded:: 1.0
-      :class:`DateTime` will be added at latest in version 1.0.
-
-
 .. class:: TimeDelta
    :noindex:
 
@@ -81,11 +58,8 @@ representation.
    in a single Python    :class:`fractions.Fraction`. The only attribute of
    this class is: :attr:`days`.
 
-   .. versionadded:: 1.0
-      :class:`TimeDelta` will be completed at latest in version 1.0. It
-      currently is a stub.
 
-These four core class are of little use as defined above. Indeed,
+These core classes are of little use as defined above. Indeed,
 :mod:`datetime2` is able to interface with different calendars and time
 representations. The syntax to access these calendars and representations is
 through the attribute paradigm. E.g.: the core classes and their instances will
@@ -95,7 +69,7 @@ calendar as class or instance attributes. Example::
   >>> d = Date.gregorian(2012, 2, 8)
   >>> d
   'R.D. 734541'
-  >>> d.iso
+  >>> d.iso()
   '2012, week 6, Wed'
 
 It is also possible to add calendars or time representations at runtime,
