@@ -46,11 +46,6 @@ assert len(pickle_choices) == pickle.HIGHEST_PROTOCOL + 1
 
 
 #############################################################################
-# datetime2 tests
-#
-#TODO: add test for register_calendar
-
-#############################################################################
 # Date tests
 #
 class TestDate(unittest.TestCase):
@@ -209,7 +204,6 @@ class TestDate(unittest.TestCase):
 
     def test_150_roundtrip(self):
         for count in (0, -1, 1, -1000, 1000, 99999999, 99999999):
-
             # Verify date -> string -> date identity.
             d1 = Date(count)
             s = repr(d1)

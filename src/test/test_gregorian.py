@@ -35,7 +35,6 @@ import decimal
 import fractions
 import unittest
 
-#from datetime2 import Date, TimeDelta
 from datetime2.gregorian import GregorianCalendar
 
 
