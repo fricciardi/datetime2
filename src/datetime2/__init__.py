@@ -34,9 +34,7 @@ from math import floor
 from functools import total_ordering
 
 from . import osinterface
-
-
-__all__ = ['Date', 'TimeDelta']
+from .calendars import gregorian
 
 
 ##############################################################################
@@ -44,7 +42,7 @@ __all__ = ['Date', 'TimeDelta']
 #
 
 class TimeDelta:
-    # This is a stub in version 0.2
+    #==>> STUB <<==
     def __init__(self, days):
         self._days = days
         
@@ -109,3 +107,81 @@ class Date:
         
     def __hash__(self):
         return hash(self._day_count)
+
+
+##############################################################################
+# Support functions and classes
+#
+def _create_calendar_to_date(class_to_convert, instance_modifiers):
+    new_class_name = '{}ToDate'.format(class_to_convert.__name__)
+    new_constructors = {}
+    for name in instance_modifiers:
+        current_method = getattr(class_to_convert, name)
+        def new_method(self, *args, **kwargs):
+            calendar_obj = current_method(self, *args, **kwargs)
+            return Date(calendar_obj.to_rata_die())
+        new_method_name = '{}_to_date'.format(name)
+        new_constructors[new_method_name] = new_method
+    return type(new_class_name, (class_to_convert,), new_constructors)
+
+GregorianCalendarToDate = _create_calendar_to_date(gregorian.GregorianCalendar, ('replace',))
+
+class GregorianDateCheat:
+    def __new__(self, year, month, day):
+        greg_obj = GregorianCalendarToDate(year, month, day)
+        date_obj = Date(greg_obj.to_rata_die())
+        date_obj.gregorian = greg_obj
+        return date_obj
+
+    @classmethod
+    def year_day(cls, year, day):
+        greg_obj = GregorianCalendarToDate.year_day(year, day)
+        date_obj = Date(greg_obj.to_rata_die())
+        date_obj.gregorian = greg_obj
+        return date_obj
+
+    @staticmethod
+    def is_leap_year(year):
+        return gregorian.GregorianCalendar.is_leap_year(year)
+
+    # Since this is a sort of stub, I do not implement the other static methods (days_in_year)
+
+
+class GregorianInDateAttribute:
+    def __get__(self, obj, objtype):
+        if obj is None:
+            return GregorianDateCheat
+        else:
+            try:
+                return self.__dict__[gregorian]
+            except KeyError:
+                greg_obj = GregorianCalendarToDate.from_rata_die(obj.day_count)
+                obj.gregorian = greg_obj
+                return greg_obj
+
+class CalendarInDateAttribute:
+    # This class will implement a context dependent attribute
+    def __init__(self, attribute_name, interface_class):
+        self.attribute_name = attribute_name
+        self.interface_class = interface_class
+
+    def __get__(self, instance, owner):
+        if instance is None:
+            calendar_obj = self.interface_class.from_rata_die(owner.day_count)
+            return self.interface_class
+        else:
+            try:
+                return owner.calendars[self.attribute_name]
+            except KeyError:
+                calendar_obj = self.interface_class.from_rata_die(owner.day_count)
+                owner.calendars[self.attribute_name] = calendar_obj
+                return calendar_obj
+
+
+##############################################################################
+# Calendar registration
+#
+Date.gregorian = GregorianInDateAttribute()
+# stub to verify test code
+Date.iso = GregorianInDateAttribute()
+
