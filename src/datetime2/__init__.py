@@ -126,31 +126,32 @@ def _create_calendar_to_date(class_to_convert, instance_modifiers):
 
 GregorianCalendarToDate = _create_calendar_to_date(gregorian.GregorianCalendar, ('replace',))
 
-class GregorianDateCheat:
-    def __new__(self, year, month, day):
-        greg_obj = GregorianCalendarToDate(year, month, day)
-        date_obj = Date(greg_obj.to_rata_die())
-        date_obj.gregorian = greg_obj
+def _create_date_cheat(calendar_class, attribute_name, class_methods, static_methods):
+    new_class_name = '{}DateCheat'.format(calendar_class.__name__)
+    def new_method(self, *args, **kwargs):
+        cal_obj = calendar_class(*args, **kwargs)
+        date_obj = Date(cal_obj.to_rata_die())
+        setattr(date_obj, attribute_name, cal_obj)
         return date_obj
+    new_methods = {'__new__': new_method}
+    for name in static_methods:
+        current_method = getattr(calendar_class, name)
+        new_methods[name] = staticmethod(current_method)
+    for name in class_methods:
+        def new_class_method(cls, *args, **kwargs):
+            cal_obj = getattr(calendar_class, name)(*args, **kwargs)
+            date_obj = Date(cal_obj.to_rata_die())
+            setattr(date_obj, attribute_name, cal_obj)
+            return date_obj
+        new_methods[name] = classmethod(new_class_method)
+    return type(new_class_name, (), new_methods)
 
-    @classmethod
-    def year_day(cls, year, day):
-        greg_obj = GregorianCalendarToDate.year_day(year, day)
-        date_obj = Date(greg_obj.to_rata_die())
-        date_obj.gregorian = greg_obj
-        return date_obj
-
-    @staticmethod
-    def is_leap_year(year):
-        return gregorian.GregorianCalendar.is_leap_year(year)
-
-    # Since this is a sort of stub, I do not implement the other static methods (days_in_year)
-
+GregorianCalendarToDateDateCheat = _create_date_cheat(GregorianCalendarToDate, 'gregorian', ('year_day',), ('days_in_year', 'is_leap_year'))
 
 class GregorianInDateAttribute:
     def __get__(self, obj, objtype):
         if obj is None:
-            return GregorianDateCheat
+            return GregorianCalendarToDateDateCheat
         else:
             try:
                 return self.__dict__[gregorian]
@@ -158,6 +159,7 @@ class GregorianInDateAttribute:
                 greg_obj = GregorianCalendarToDate.from_rata_die(obj.day_count)
                 obj.gregorian = greg_obj
                 return greg_obj
+
 
 class CalendarInDateAttribute:
     # This class will implement a context dependent attribute
