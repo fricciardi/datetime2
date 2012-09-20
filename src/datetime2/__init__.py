@@ -126,8 +126,8 @@ def _create_calendar_to_date(class_to_convert, instance_modifiers):
 
 GregorianCalendarToDate = _create_calendar_to_date(gregorian.GregorianCalendar, ('replace',))
 
-def _create_date_cheat(calendar_class, attribute_name, class_methods, static_methods):
-    new_class_name = '{}DateCheat'.format(calendar_class.__name__)
+def _create_date_factory(calendar_class, attribute_name, class_methods, static_methods):
+    new_class_name = '{}Factory'.format(calendar_class.__name__)
     def new_method(self, *args, **kwargs):
         cal_obj = calendar_class(*args, **kwargs)
         date_obj = Date(cal_obj.to_rata_die())
@@ -146,12 +146,12 @@ def _create_date_cheat(calendar_class, attribute_name, class_methods, static_met
         new_methods[name] = classmethod(new_class_method)
     return type(new_class_name, (), new_methods)
 
-GregorianCalendarToDateDateCheat = _create_date_cheat(GregorianCalendarToDate, 'gregorian', ('year_day',), ('days_in_year', 'is_leap_year'))
+GregorianCalendarToDateFactory = _create_date_factory(GregorianCalendarToDate, 'gregorian', ('year_day',), ('days_in_year', 'is_leap_year'))
 
 class GregorianInDateAttribute:
     def __get__(self, obj, objtype):
         if obj is None:
-            return GregorianCalendarToDateDateCheat
+            return GregorianCalendarToDateFactory
         else:
             try:
                 return self.__dict__[gregorian]
