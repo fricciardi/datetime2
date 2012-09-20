@@ -62,7 +62,14 @@ class Date:
         if isinstance(day_count, int):
             self._day_count = day_count
         else:
-            raise TypeError("an integer is required")
+            try:
+                rata_die = day_count.to_rata_die()
+            except AttributeError:
+                raise TypeError("an integer or an object with the to_rata_die method is required")
+            if isinstance(rata_die, int):
+                self._day_count = rata_die
+            else:
+                raise TypeError("the to_rata_die method of {} does not return an integer.".format(str(day_count)))
 
     @classmethod
     def today(cls):

@@ -110,7 +110,9 @@ There are two ways of creating a :class:`Date` instance:
 
    Return an object that represent a date which is ``day_count - 1`` days
    after January 1 of year 1 in the current Gregorian calendar. The argument
-   is requiried and must be an integer. There is no restriction on its value.
+   is requiried and must be an integer or an object that has the
+   ``to_rata_die method``, and this method returns an integer. There is no
+   restriction on its value.
 
 
 .. classmethod:: Date.today()

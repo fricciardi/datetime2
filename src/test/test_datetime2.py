@@ -53,6 +53,8 @@ class TestDate(unittest.TestCase):
     def test_000_valid_parameter_types(self):
         for par in (-2, -1, 0, 1, 2, -1000, 1000, -123456789, 123456789, -999999999, 999999999, -1000000000, 1000000000):
             self.assertEqual(Date(par).day_count, par, msg = 'par = {}'.format(par))
+        cal_obj = GregorianCalendar(1, 1, 1)
+        self.assertEqual(Date(cal_obj).day_count, 1, "Object with to_rata_die")
 
     def test_010_invalid_parameter_types(self):
         # exception with no or two parameters
@@ -61,9 +63,14 @@ class TestDate(unittest.TestCase):
         # exception with non-numeric types
         for par in ("1", (1,), [1], {1:1}, (), [], {}, None):
             self.assertRaises(TypeError, Date, par)
-        # exception with invalid numeric types
+            # exception with invalid numeric types
         for par in (1.0, Fraction(1, 1), decimal.Decimal(1), 1j):
             self.assertRaises(TypeError, Date, par)
+            # exception when to_rata_die method does not return an integer
+        class Test:
+            def to_rata_die(self):
+                return 1.1
+        self.assertRaises(TypeError, Date, Test())
 
     def test_020_today(self):
         # for the time being, let's use the good old datetime module :-)
