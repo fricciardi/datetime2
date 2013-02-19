@@ -138,7 +138,7 @@ class TestDate(unittest.TestCase):
             self.assertRaises(TypeError, lambda: obj + a)
             self.assertRaises(TypeError, lambda: obj - a)
 
-        # These opertations make no sense for Date objects
+        # These operations make no sense for Date objects
         self.assertRaises(TypeError, lambda: TimeDelta(2) + a)  # reverse is valid
         self.assertRaises(TypeError, lambda: TimeDelta(2) - a)  # reverse is valid
         
@@ -243,10 +243,20 @@ class TestDateCalendarInterface(unittest.TestCase):
     # TODO: understand if interface tests can have calendars as parameters
     def test_000_constructors(self):
         # constructors return a Date
-        self.assertIsInstance(Date.gregorian(1, 1, 1), Date, msg="Date.gregorian creates a Date")
+        self.assertIsInstance(Date.gregorian(2, 1, 1), Date, msg="Date.gregorian creates a Date")
         self.assertIsInstance(Date.gregorian.year_day(1, 1), Date, msg="Date.gregorian.year_day creates a Date")
+        # constructed calendar is always the same
+        d1 = Date(2)
+        d1_id = id(d1.gregorian)
+        self.assertEqual(id(d1.gregorian), d1_id, msg = 'constructed caledar instance is always the same')
 
-    def test_050_calendar_type_is_correct(self):
+    def test_050_calendar_attributes(self):
+        # a Date instance does not have a calendar in __dict__, but the class definition has it
+        d = Date(4)
+        self.assertRaises(AttributeError, getattr, d.__dict__, 'gregorian')
+        self.assertTrue(hasattr(d, 'gregorian'))
+
+    def test_100_calendar_type_is_correct(self):
         # instance created with Date
         d1 = Date(2)
         self.assertIsInstance(d1.gregorian, GregorianCalendar, msg="Calendar type is correct with instance created with Date")
@@ -254,8 +264,9 @@ class TestDateCalendarInterface(unittest.TestCase):
         d2 = Date.gregorian(2, 2, 2)
         self.assertIsInstance(d2.gregorian, GregorianCalendar, msg="Calendar type is correct with instance created with GregorianCalendar")
         # instance created with IsoCalendar
-        d3 = Date.iso(2, 2, 2)
-        self.assertIsInstance(d3.gregorian, GregorianCalendar, msg="Calendar type is correct with instance created with IsoCalendar")
+        # TODO: uncomment when iso calendar has been done
+#        d3 = Date.iso(2, 2, 2)
+#        self.assertIsInstance(d3.gregorian, GregorianCalendar, msg="Calendar type is correct with instance created with IsoCalendar")
 
     def test_200_static_method_always_accessible(self):
         self.assertTrue(Date.gregorian.is_leap_year(2000), msg="Static method through class")
@@ -266,40 +277,12 @@ class TestDateCalendarInterface(unittest.TestCase):
         d2 = Date.gregorian(2, 2, 2)
         self.assertTrue(d2.gregorian.is_leap_year(2000), msg="Static method through instance created with GregorianCalendar")
         # instance created with IsoCalendar
-        d3 = Date.iso(2, 2, 2)
-        self.assertTrue(d3.gregorian.is_leap_year(2000), msg="Static method through instance created with IsoCalendar")
-
-    def test_300_instance_modifiers_return_a_Date(self):
-        # instance created with Date
-        d1 = Date(1)
-        self.assertIsInstance(d1.gregorian.replace_to_date(), Date, msg="Modifier on date created with Date")
-        self.assertIsInstance(d1.gregorian.replace_to_date(year=2), Date, msg="Modifier on date created with Date, with arguments")
-        # normal replace keeps old meaning
-        self.assertIsInstance(d1.gregorian.replace(), GregorianCalendar, msg="Old call of modifier on date created with Date")
-        self.assertIsInstance(d1.gregorian.replace(year=2), GregorianCalendar, msg="Old call of modifier on date created with Date, with arguments")
-        # instance created with GregorianCalendar
-        d2 = Date.gregorian(1, 1, 1)
-        self.assertIsInstance(d2.gregorian.replace_to_date(), Date, msg="Modifier on date created with GregorianCalendar")
-        self.assertIsInstance(d2.gregorian.replace_to_date(year=2), Date, msg="Modifier on date created with GregorianCalendar, with arguments")
-        # normal replace keeps old meaning
-        self.assertIsInstance(d2.gregorian.replace(), GregorianCalendar, msg="Old call of modifier on date created with GregorianCalendar")
-        self.assertIsInstance(d2.gregorian.replace(year=2), GregorianCalendar, msg="Old call of modifier on date created with GregorianCalendar, with arguments")
-        # instance created with IsoCalendar
-        d3 = Date.iso(1, 1, 1)
-        self.assertIsInstance(d3.gregorian.replace_to_date(), Date, msg="Modifier on date created with IsoCalendar")
-        self.assertIsInstance(d3.gregorian.replace_to_date(year=2), Date, msg="Modifier on date created with IsoCalendar, with arguments")
-        # normal replace keeps old meaning
-        self.assertIsInstance(d3.gregorian.replace(), GregorianCalendar, msg="Old call of modifier on date created with IsoCalendar")
-        self.assertIsInstance(d3.gregorian.replace(year=2), GregorianCalendar, msg="Old call of modifier on date created with IsoCalendar, with arguments")
-
-    def test_200_static_method_accessible(self):
-        self.assertTrue(Date.gregorian.is_leap_year(2000), msg="Static method through class")
-        self.assertFalse(Date.gregorian.is_leap_year(2001), msg="Static method through class")
-        d1 = Date(2)
-        self.assertTrue(d1.gregorian.is_leap_year(2000), msg="Static method through object")
-        self.assertFalse(d1.gregorian.is_leap_year(2001), msg="Static method through object")
+        # TODO: uncomment when iso calendar has been done
+#        d3 = Date.iso(2, 2, 2)
+#        self.assertTrue(d3.gregorian.is_leap_year(2000), msg="Static method through instance created with IsoCalendar")
 
     def test_900_avoid_date_override(self):
         d = Date.gregorian(1, 1, 1)
         # I do not want an instance of Date created through a Gregorian to have its static methods
+        # One of the implementation I used had this error and I want to avoid it
         self.assertRaises(AttributeError, getattr, d, 'is_leap_year')

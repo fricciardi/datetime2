@@ -119,25 +119,14 @@ class Date:
 ##############################################################################
 # Support functions and classes
 #
-def _create_calendar_to_date(class_to_convert, instance_modifiers):
-    new_class_name = '{}ToDate'.format(class_to_convert.__name__)
-    new_constructors = {}
-    for name in instance_modifiers:
-        current_method = getattr(class_to_convert, name)
-        def new_method(self, *args, **kwargs):
-            calendar_obj = current_method(self, *args, **kwargs)
-            return Date(calendar_obj.to_rata_die())
-        new_method_name = '{}_to_date'.format(name)
-        new_constructors[new_method_name] = new_method
-    return type(new_class_name, (class_to_convert,), new_constructors)
-
-GregorianCalendarToDate = _create_calendar_to_date(gregorian.GregorianCalendar, ('replace',))
-
 def _create_date_factory(calendar_class, attribute_name, class_methods, static_methods):
     new_class_name = '{}Factory'.format(calendar_class.__name__)
     def new_method(self, *args, **kwargs):
         cal_obj = calendar_class(*args, **kwargs)
         date_obj = Date(cal_obj.to_rata_die())
+        dummy1 = date_obj.__dict__
+        dummy3 = Date.gregorian
+        dummy2 = date_obj.gregorian
         setattr(date_obj, attribute_name, cal_obj)
         return date_obj
     new_methods = {'__new__': new_method}
@@ -153,7 +142,7 @@ def _create_date_factory(calendar_class, attribute_name, class_methods, static_m
         new_methods[name] = classmethod(new_class_method)
     return type(new_class_name, (), new_methods)
 
-GregorianCalendarToDateFactory = _create_date_factory(GregorianCalendarToDate, 'gregorian', ('year_day',), ('days_in_year', 'is_leap_year'))
+GregorianCalendarToDateFactory = _create_date_factory(gregorian.GregorianCalendar, 'gregorian', ('year_day',), ('days_in_year', 'is_leap_year'))
 
 class GregorianInDateAttribute:
     def __get__(self, obj, objtype):
@@ -161,9 +150,10 @@ class GregorianInDateAttribute:
             return GregorianCalendarToDateFactory
         else:
             try:
-                return self.__dict__[gregorian]
+                dummy = self.__dict__[gregorian]
+                return dummy
             except KeyError:
-                greg_obj = GregorianCalendarToDate.from_rata_die(obj.day_count)
+                greg_obj = gregorian.GregorianCalendar.from_rata_die(obj.day_count)
                 obj.gregorian = greg_obj
                 return greg_obj
 
@@ -186,11 +176,22 @@ class CalendarInDateAttribute:
                 owner.calendars[self.attribute_name] = calendar_obj
                 return calendar_obj
 
+def register_calendar(atribute_name, calendar_class):
+    def new_get(self, obj, objtype):
+        if obj is None:
+            return GregorianCalendarToDateFactory   #######
+        else:
+            try:
+                return self.__dict__[gregorian]
+            except KeyError:
+                greg_obj = gregorian.GregorianCalendar.from_rata_die(obj.day_count)
+                obj.gregorian = greg_obj
+                return greg_obj
 
 ##############################################################################
-# Calendar registration
+# Calendar registrations
 #
 Date.gregorian = GregorianInDateAttribute()
 # stub to verify test code
-Date.iso = GregorianInDateAttribute()
+# Date.iso = GregorianInDateAttribute()
 
