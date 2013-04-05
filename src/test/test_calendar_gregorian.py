@@ -274,13 +274,13 @@ class TestGregorian(unittest.TestCase):
         for year, day_count in ((1, 0), (1, -1), (1, 366), (4, 367)):
             self.assertRaises(ValueError, GregorianCalendar.year_day, year, day_count)
 
-    def test_040_write_attribute(self):
+    def test_100_write_attribute(self):
         greg = GregorianCalendar(1, 1, 1)
         self.assertRaises(AttributeError, setattr, greg, 'year', 3)
         self.assertRaises(AttributeError, setattr, greg, 'month', 3)
         self.assertRaises(AttributeError, setattr, greg, 'day', 3)
 
-    def test_100_leap_years(self):
+    def test_200_leap_years(self):
         # leap years
         for year in (-10000, -2000, -1996, -804, -800, -104, -4, 0,
                      10000,  2000,  1996,  804,  800,  104,  4):
@@ -292,7 +292,7 @@ class TestGregorian(unittest.TestCase):
             self.assertFalse(GregorianCalendar.is_leap_year(year), msg = 'is_leap_year, year = {}'.format(year))
             self.assertEqual(GregorianCalendar.days_in_year(year), 365, msg = 'days_in_year, year = {}'.format(year))
 
-    def test_200_weekday(self):
+    def test_400_weekday(self):
         for test_row in gregorian_test_data:
             year = test_row[2][0]
             month = test_row[2][1]
@@ -301,7 +301,7 @@ class TestGregorian(unittest.TestCase):
             self.assertEqual(GregorianCalendar(year, month, day).weekday(), weekday,
                              msg = 'weekday, date = {}-{}-{}'.format(year, month, day))
 
-    def test_210_day_of_year(self):
+    def test_410_day_of_year(self):
         for test_row in gregorian_test_data:
             year = test_row[2][0]
             month = test_row[2][1]
@@ -310,7 +310,7 @@ class TestGregorian(unittest.TestCase):
             self.assertEqual(GregorianCalendar(year, month, day).day_of_year(), doy,
                 msg = 'day_of_year, date = {}-{}-{}'.format(year, month, day))
 
-    def test_220_replace(self):
+    def test_420_replace(self):
         for test_row in gregorian_test_data[:33]:   # take Calendrical Calculations test data only (other may make replace fail, as in the next test method)
             year = test_row[2][0]
             month = test_row[2][1]
@@ -333,7 +333,7 @@ class TestGregorian(unittest.TestCase):
             self.assertTrue(eq_gregorian(greg.replace(day = 9, month = 10, year = 11), GregorianCalendar(11, 10, 9)),
                 msg = 'replace, all changed, date = {}-{}-{}'.format(year, month, day))
 
-    def test_223_replace_invalid_types(self):
+    def test_423_replace_invalid_types(self):
         greg = GregorianCalendar(11, 10, 9)
         # exception for positional parameters
         self.assertRaises(TypeError, greg.replace, 1)
@@ -348,7 +348,7 @@ class TestGregorian(unittest.TestCase):
             self.assertRaises(TypeError, greg.replace, month = par)
             self.assertRaises(TypeError, greg.replace, day = par)
 
-    def test_226_replace_invalid_values(self):
+    def test_426_replace_invalid_values(self):
         greg = GregorianCalendar(11, 10, 9)
         self.assertRaises(ValueError, greg.replace, month = 0)
         self.assertRaises(ValueError, greg.replace, day = 0)
