@@ -218,6 +218,6 @@ man_pages = [
 
 # -- Options for intersphinx ---------------------------------------------------
 
-intersphinx_mapping = {'python': ('http://docs.python.org/3.2', None)}
+intersphinx_mapping = {'python': ('http://docs.python.org/3.3', None)}
 
 
