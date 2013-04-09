@@ -109,7 +109,7 @@ class GregorianCalendar:
         return self._rata_die
 
     def weekday(self):
-        return self.to_rata_die() % 7
+        return (self.to_rata_die() - 1) % 7 + 1
 
     def day_of_year(self):
         return self.to_rata_die() - (365 * (self._year - 1) + (self._year - 1) // 4 - (self._year - 1) // 100 + (self._year - 1) // 400)
@@ -122,3 +122,47 @@ class GregorianCalendar:
         if day is None:
             day = self.day
         return GregorianCalendar(year, month, day)
+
+    # Comparison operators
+    def __eq__(self, other):
+        return isinstance(other, GregorianCalendar) and self.year == other.year and self.month == other.month and self.day == other.day
+
+    def __ne__(self, other):
+        return not (self == other)
+
+    def __gt__(self, other):
+        if isinstance(other, GregorianCalendar):
+            return (self.year, self.month, self.day) > (other.year, other.month, other.day)
+        else:
+            return NotImplemented
+
+    def __ge__(self, other):
+        if isinstance(other, GregorianCalendar):
+            return (self.year, self.month, self.day) >= (other.year, other.month, other.day)
+        else:
+            return NotImplemented
+
+    def __lt__(self, other):
+        if isinstance(other, GregorianCalendar):
+            return (self.year, self.month, self.day) < (other.year, other.month, other.day)
+        else:
+            return NotImplemented
+
+    def __le__(self, other):
+        if isinstance(other, GregorianCalendar):
+            return (self.year, self.month, self.day) <= (other.year, other.month, other.day)
+        else:
+            return NotImplemented
+
+    # hash value
+    def __hash__(self):
+        return hash((self.year, self.month, self.day))
+
+    def __repr__(self):
+        return 'datetime2.calendars.gregorian.{}({}, {}, {})'.format(self.__class__.__name__, self.year, self.month, self.day)
+
+    def __str__(self):
+        if self.year >= 0:
+            return '{:04d}-{:02d}-{:02d}'.format(self.year, self.month, self.day)
+        else:
+            return '{:05d}-{:02d}-{:02d}'.format(self.year, self.month, self.day)
