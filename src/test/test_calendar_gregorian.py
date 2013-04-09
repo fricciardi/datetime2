@@ -32,162 +32,164 @@ __author__ = 'Francesco Ricciardi <francescor2010 at yahoo.it>'
 
 import decimal
 import fractions
+import pickle
 import unittest
 
-#from datetime2 import Date, TimeDelta
 from datetime2.calendars.gregorian import GregorianCalendar
 
 
+INF = float('inf')
+NAN = float('nan')
+
 gregorian_test_data = [
     # data from Calendrical Calculations: The Millennium Edition, with addition
-    #     RD Weekday               Gregorian
-    #                  Year  Month  Day   Doy
-    [ -214193,      0, (-586,     7,  24), 205],
-    [  -61387,      3, (-168,    12,   5), 340],
-    [   25469,      3, (  70,     9,  24), 267],
-    [   49217,      0, ( 135,    10,   2), 275],
-    [  171307,      3, ( 470,     1,   8),   8],
-    [  210155,      1, ( 576,     5,  20), 141],
-    [  253427,      6, ( 694,    11,  10), 314],
-    [  369740,      0, (1013,     4,  25), 115],
-    [  400085,      0, (1096,     5,  24), 145],
-    [  434355,      5, (1190,     3,  23),  82],
-    [  452605,      6, (1240,     3,  10),  70],
-    [  470160,      5, (1288,     4,   2),  93],
-    [  473837,      0, (1298,     4,  27), 117],
-    [  507850,      0, (1391,     6,  12), 163],
-    [  524156,      3, (1436,     2,   3),  34],
-    [  544676,      6, (1492,     4,   9), 100],
-    [  567118,      6, (1553,     9,  19), 262],
-    [  569477,      6, (1560,     3,   5),  65],
-    [  601716,      3, (1648,     6,  10), 162],
-    [  613424,      0, (1680,     6,  30), 182],
-    [  626596,      5, (1716,     7,  24), 206],
-    [  645554,      0, (1768,     6,  19), 171],
-    [  664224,      1, (1819,     8,   2), 214],
-    [  671401,      3, (1839,     3,  27),  86],
-    [  694799,      0, (1903,     4,  19), 109],
-    [  704424,      0, (1929,     8,  25), 237],
-    [  708842,      1, (1941,     9,  29), 272],
-    [  709409,      1, (1943,     4,  19), 109],
-    [  709580,      4, (1943,    10,   7), 280],
-    [  727274,      2, (1992,     3,  17),  77],
-    [  728714,      0, (1996,     2,  25),  56],
-    [  744313,      3, (2038,    11,  10), 314],
-    [  764652,      0, (2094,     7,  18), 199],
+    #      RD Weekday               Gregorian
+    #                    Year Month  Day   Doy
+    [ -214193,      1, ( -586,    7,  24), 205],
+    [  -61387,      4, ( -168,   12,   5), 340],
+    [   25469,      4, (   70,    9,  24), 267],
+    [   49217,      1, (  135,   10,   2), 275],
+    [  171307,      4, (  470,    1,   8),   8],
+    [  210155,      2, (  576,    5,  20), 141],
+    [  253427,      7, (  694,   11,  10), 314],
+    [  369740,      1, ( 1013,    4,  25), 115],
+    [  400085,      1, ( 1096,    5,  24), 145],
+    [  434355,      6, ( 1190,    3,  23),  82],
+    [  452605,      7, ( 1240,    3,  10),  70],
+    [  470160,      6, ( 1288,    4,   2),  93],
+    [  473837,      1, ( 1298,    4,  27), 117],
+    [  507850,      1, ( 1391,    6,  12), 163],
+    [  524156,      4, ( 1436,    2,   3),  34],
+    [  544676,      7, ( 1492,    4,   9), 100],
+    [  567118,      7, ( 1553,    9,  19), 262],
+    [  569477,      7, ( 1560,    3,   5),  65],
+    [  601716,      4, ( 1648,    6,  10), 162],
+    [  613424,      1, ( 1680,    6,  30), 182],
+    [  626596,      6, ( 1716,    7,  24), 206],
+    [  645554,      1, ( 1768,    6,  19), 171],
+    [  664224,      2, ( 1819,    8,   2), 214],
+    [  671401,      4, ( 1839,    3,  27),  86],
+    [  694799,      1, ( 1903,    4,  19), 109],
+    [  704424,      1, ( 1929,    8,  25), 237],
+    [  708842,      2, ( 1941,    9,  29), 272],
+    [  709409,      2, ( 1943,    4,  19), 109],
+    [  709580,      5, ( 1943,   10,   7), 280],
+    [  727274,      3, ( 1992,    3,  17),  77],
+    [  728714,      1, ( 1996,    2,  25),  56],
+    [  744313,      4, ( 2038,   11,  10), 314],
+    [  764652,      1, ( 2094,    7,  18), 199],
     # Boundary conditions on RD
-    [-1000001,      5, (-2737,    2,   2),  33],
-    [-1000000,      6, (-2737,    2,   3),  34],
-    [ -999999,      0, (-2737,    2,   4),  35],
-    [ -100001,      1, (-273,     3,  17),  76],
-    [ -100000,      2, (-273,     3,  18),  77],
-    [  -99999,      3, (-273,     3,  19),  78],
-    [  -10001,      2, ( -27,     8,  14), 226],
-    [  -10000,      3, ( -27,     8,  15), 227],
-    [   -9999,      4, ( -27,     8,  16), 228],
-    [   -1001,      0, (  -2,     4,   5),  95],
-    [   -1000,      1, (  -2,     4,   6),  96],
-    [    -999,      2, (  -2,     4,   7),  97],
-    [    -101,      4, (   0,     9,  21), 265],
-    [    -100,      5, (   0,     9,  22), 266],
-    [     -99,      6, (   0,     9,  23), 267],
-    [     -11,      3, (   0,    12,  20), 355],
-    [     -10,      4, (   0,    12,  21), 356],
-    [      -9,      5, (   0,    12,  22), 357],
-    [      -1,      6, (   0,    12,  30), 365],
-    [       0,      0, (   0,    12,  31), 366],
-    [       1,      1, (   1,     1,   1),   1],
-    [       9,      2, (   1,     1,   9),   9],
-    [      10,      3, (   1,     1,  10),  10],
-    [      11,      4, (   1,     1,  11),  11],
-    [      99,      1, (   1,     4,   9),  99],
-    [     100,      2, (   1,     4,  10), 100],
-    [     101,      3, (   1,     4,  11), 101],
-    [     999,      5, (   3,     9,  26), 269],
-    [    1000,      6, (   3,     9,  27), 270],
-    [    1001,      0, (   3,     9,  28), 271],
-    [    9999,      3, (  28,     5,  17), 138],
-    [   10000,      4, (  28,     5,  18), 139],
-    [   10001,      5, (  28,     5,  19), 140],
-    [   99999,      4, ( 274,    10,  15), 288],
-    [  100000,      5, ( 274,    10,  16), 289],
-    [  100001,      6, ( 274,    10,  17), 290],
-    [  999999,      0, (2738,    11,  27), 331],
-    [ 1000000,      1, (2738,    11,  28), 332],
-    [ 1000001,      2, (2738,    11,  29), 333],
+    [-1000001,      6, (-2737,    2,   2),  33],
+    [-1000000,      7, (-2737,    2,   3),  34],
+    [ -999999,      1, (-2737,    2,   4),  35],
+    [ -100001,      2, ( -273,    3,  17),  76],
+    [ -100000,      3, ( -273,    3,  18),  77],
+    [  -99999,      4, ( -273,    3,  19),  78],
+    [  -10001,      3, (  -27,    8,  14), 226],
+    [  -10000,      4, (  -27,    8,  15), 227],
+    [   -9999,      5, (  -27,    8,  16), 228],
+    [   -1001,      1, (   -2,    4,   5),  95],
+    [   -1000,      2, (   -2,    4,   6),  96],
+    [    -999,      3, (   -2,    4,   7),  97],
+    [    -101,      5, (    0,    9,  21), 265],
+    [    -100,      6, (    0,    9,  22), 266],
+    [     -99,      7, (    0,    9,  23), 267],
+    [     -11,      4, (    0,   12,  20), 355],
+    [     -10,      5, (    0,   12,  21), 356],
+    [      -9,      6, (    0,   12,  22), 357],
+    [      -1,      7, (    0,   12,  30), 365],
+    [       0,      1, (    0,   12,  31), 366],
+    [       1,      2, (    1,    1,   1),   1],
+    [       9,      3, (    1,    1,   9),   9],
+    [      10,      4, (    1,    1,  10),  10],
+    [      11,      5, (    1,    1,  11),  11],
+    [      99,      2, (    1,    4,   9),  99],
+    [     100,      3, (    1,    4,  10), 100],
+    [     101,      4, (    1,    4,  11), 101],
+    [     999,      6, (    3,    9,  26), 269],
+    [    1000,      7, (    3,    9,  27), 270],
+    [    1001,      1, (    3,    9,  28), 271],
+    [    9999,      4, (   28,    5,  17), 138],
+    [   10000,      5, (   28,    5,  18), 139],
+    [   10001,      6, (   28,    5,  19), 140],
+    [   99999,      5, (  274,   10,  15), 288],
+    [  100000,      6, (  274,   10,  16), 289],
+    [  100001,      7, (  274,   10,  17), 290],
+    [  999999,      1, ( 2738,   11,  27), 331],
+    [ 1000000,      2, ( 2738,   11,  28), 332],
+    [ 1000001,      3, ( 2738,   11,  29), 333],
     # A few leap days
-    [ -146404,      1, (-400,     2,  28),  59],
-    [ -146403,      2, (-400,     2,  29),  60],
-    [ -146402,      3, (-400,     3,   1),  61],
-    [  -73355,      5, (-200,     2,  28),  59],
-    [  -73354,      6, (-200,     3,   1),  60],
-    [    -307,      1, (   0,     2,  28),  59],
-    [    -306,      2, (   0,     2,  29),  60],
-    [    -305,      3, (   0,     3,   1),  61],
-    [      59,      3, (   1,     2,  28),  59],
-    [      60,      4, (   1,     3,   1),  60],
-    [   72742,      5, ( 200,     2,  28),  59],
-    [   72743,      6, ( 200,     3,   1),  60],
-    [  145790,      1, ( 400,     2,  28),  59],
-    [  145791,      2, ( 400,     2,  29),  60],
-    [  145792,      3, ( 400,     3,   1),  61],
-    [  730178,      1, (2000,     2,  28),  59],
-    [  730179,      2, (2000,     2,  29),  60],
-    [  730180,      3, (2000,     3,   1),  61],
-    [  766703,      0, (2100,     2,  28),  59],
-    [  766704,      1, (2100,     3,   1),  60],
+    [ -146404,      2, ( -400,    2,  28),  59],
+    [ -146403,      3, ( -400,    2,  29),  60],
+    [ -146402,      4, ( -400,    3,   1),  61],
+    [  -73355,      6, ( -200,    2,  28),  59],
+    [  -73354,      7, ( -200,    3,   1),  60],
+    [    -307,      2, (    0,    2,  28),  59],
+    [    -306,      3, (    0,    2,  29),  60],
+    [    -305,      4, (    0,    3,   1),  61],
+    [      59,      4, (    1,    2,  28),  59],
+    [      60,      5, (    1,    3,   1),  60],
+    [   72742,      6, (  200,    2,  28),  59],
+    [   72743,      7, (  200,    3,   1),  60],
+    [  145790,      2, (  400,    2,  28),  59],
+    [  145791,      3, (  400,    2,  29),  60],
+    [  145792,      4, (  400,    3,   1),  61],
+    [  730178,      2, ( 2000,    2,  28),  59],
+    [  730179,      3, ( 2000,    2,  29),  60],
+    [  730180,      4, ( 2000,    3,   1),  61],
+    [  766703,      1, ( 2100,    2,  28),  59],
+    [  766704,      2, ( 2100,    3,   1),  60],
     # Boundary conditions on years
-    [-3652425,      0, (-10000,  12,  31), 366],
-    [-3652424,      1, (-9999,    1,   1),   1],
-    [ -730485,      0, (-2000,   12,  31), 366],
-    [ -730484,      1, (-1999,    1,   1),   1],
-    [ -365243,      3, (-1000,   12,  31), 365],
-    [ -365242,      4, (-999,     1,   1),   1],
-    [  -36525,      1, (-100,    12,  31), 365],
-    [  -36524,      2, ( -99,     1,   1),   1],
-    [   -3653,      1, ( -10,    12,  31), 365],
-    [   -3652,      2, (  -9,     1,   1),   1],
-    [    -366,      5, (  -1,    12,  31), 365],
-    [    -365,      6, (   0,     1,   1),   1],
-    [     365,      1, (   1,    12,  31), 365],
-    [     366,      2, (   2,     1,   1),   1],
-    [    3287,      4, (   9,    12,  31), 365],
-    [    3288,      5, (  10,     1,   1),   1],
-    [   36159,      4, (  99,    12,  31), 365],
-    [   36160,      5, ( 100,     1,   1),   1],
-    [  364877,      2, ( 999,    12,  31), 365],
-    [  364878,      3, (1000,     1,   1),   1],
-    [  730119,      5, (1999,    12,  31), 365],
-    [  730120,      6, (2000,     1,   1),   1],
-    [ 3652059,      5, (9999,    12,  31), 365],
-    [ 3652060,      6, (10000,    1,   1),   1]
+    [-3652425,      1, (-10000,  12,  31), 366],
+    [-3652424,      2, (-9999,    1,   1),   1],
+    [ -730485,      1, (-2000,   12,  31), 366],
+    [ -730484,      2, (-1999,    1,   1),   1],
+    [ -365243,      4, (-1000,   12,  31), 365],
+    [ -365242,      5, ( -999,    1,   1),   1],
+    [  -36525,      2, ( -100,   12,  31), 365],
+    [  -36524,      3, (  -99,    1,   1),   1],
+    [   -3653,      2, (  -10,   12,  31), 365],
+    [   -3652,      3, (   -9,    1,   1),   1],
+    [    -366,      6, (   -1,   12,  31), 365],
+    [    -365,      7, (    0,    1,   1),   1],
+    [     365,      2, (    1,   12,  31), 365],
+    [     366,      3, (    2,    1,   1),   1],
+    [    3287,      5, (    9,   12,  31), 365],
+    [    3288,      6, (   10,    1,   1),   1],
+    [   36159,      5, (   99,   12,  31), 365],
+    [   36160,      6, (  100,    1,   1),   1],
+    [  364877,      3, (  999,   12,  31), 365],
+    [  364878,      4, ( 1000,    1,   1),   1],
+    [  730119,      6, ( 1999,   12,  31), 365],
+    [  730120,      7, ( 2000,    1,   1),   1],
+    [ 3652059,      6, ( 9999,   12,  31), 365],
+    [ 3652060,      7, (10000,    1,   1),   1]
 ]
 
 gregorian_invalid_data = [
-    # zero ore negative day or month
-    (   1,  0,  1),
-    (   1,  1,  0),
-    (   1, -1,  1),
-    (   1,  1, -1),
+    # zero or negative day or month
+    ( 111,  0,  1),
+    ( 111,  1,  0),
+    ( 111, -1,  1),
+    ( 111,  1, -1),
     # day greater than days in month
-    (   1,  1,  32),
-    (   1,  2,  29),  # non-leap year
-    ( 100,  2,  29),  # non-leap year
-    (   4,  2,  30),  # leap year
-    (   1,  3,  32),
-    (   1,  4,  31),
-    (   1,  5,  32),
-    (   1,  6,  31),
-    (   1,  7,  32),
-    (   1,  8,  32),
-    (   1,  9,  31),
-    (   1, 10,  32),
-    (   1, 11,  31),
-    (   1, 12,  32)
+    ( 111,  1, 32),
+    ( 111,  2, 29),  # non-leap year
+    ( 100,  2, 29),  # non-leap year
+    ( 104,  2, 30),  # leap year
+    ( 111,  3, 32),
+    ( 111,  4, 31),
+    ( 111,  5, 32),
+    ( 111,  6, 31),
+    ( 111,  7, 32),
+    ( 111,  8, 32),
+    ( 111,  9, 31),
+    ( 111, 10, 32),
+    ( 111, 11, 31),
+    ( 111, 12, 32),
+    # invalid month
+    ( 111, 13,  1)
 ]
-
-def eq_gregorian(one, two):
-    return (one.year == two.year) and (one.month == two.month) and (one.day == two.day)
 
 class TestGregorian(unittest.TestCase):
     def test_000_constructor(self):
@@ -233,7 +235,7 @@ class TestGregorian(unittest.TestCase):
             self.assertRaises(TypeError, GregorianCalendar, 1, par, 1)
             self.assertRaises(TypeError, GregorianCalendar, 1, 1, par)
         # exception with invalid numeric types
-        for par in (1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j):
+        for par in (1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j, 1 + 1j, INF, NAN):
             self.assertRaises(TypeError, GregorianCalendar, par, 1, 1)
             self.assertRaises(TypeError, GregorianCalendar, 1, par, 1)
             self.assertRaises(TypeError, GregorianCalendar, 1, 1, par)
@@ -248,7 +250,7 @@ class TestGregorian(unittest.TestCase):
             self.assertRaises(TypeError, GregorianCalendar.year_day, par, 1)
             self.assertRaises(TypeError, GregorianCalendar.year_day, 1, par)
         # exception with invalid numeric types
-        for par in (1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j):
+        for par in (1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j, 1 + 1j, INF, NAN):
             self.assertRaises(TypeError, GregorianCalendar.year_day, par, 1)
             self.assertRaises(TypeError, GregorianCalendar.year_day, 1, par)
 
@@ -260,7 +262,7 @@ class TestGregorian(unittest.TestCase):
         for par in ("1", (1,), [1], {1:1}, (), [], {}, None):
             self.assertRaises(TypeError, GregorianCalendar.from_rata_die, par)
         # exception with invalid numeric types
-        for par in (1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j):
+        for par in (1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j, 1 + 1j, INF, NAN):
             self.assertRaises(TypeError, GregorianCalendar.from_rata_die, par)
 
     def test_020_invalid_values(self):
@@ -280,6 +282,15 @@ class TestGregorian(unittest.TestCase):
         self.assertRaises(AttributeError, setattr, greg, 'month', 3)
         self.assertRaises(AttributeError, setattr, greg, 'day', 3)
 
+    def test_120_create_from_attr(self):
+        for test_row in gregorian_test_data:
+            year = test_row[2][0]
+            month = test_row[2][1]
+            day = test_row[2][2]
+            greg = GregorianCalendar(year, month, day)
+            self.assertEqual(greg, GregorianCalendar(greg.year, greg.month, greg.day),
+                             msg = 'create from attributes, date = {}-{}-{}'.format(year, month, day))
+
     def test_200_leap_years(self):
         # leap years
         for year in (-10000, -2000, -1996, -804, -800, -104, -4, 0,
@@ -291,6 +302,79 @@ class TestGregorian(unittest.TestCase):
                      2001,  1900,  1000,  999,  100,  99,  10,  1):
             self.assertFalse(GregorianCalendar.is_leap_year(year), msg = 'is_leap_year, year = {}'.format(year))
             self.assertEqual(GregorianCalendar.days_in_year(year), 365, msg = 'days_in_year, year = {}'.format(year))
+
+    def test_300_compare(self):
+        greg1 = GregorianCalendar(2, 3, 4)
+        greg2 = GregorianCalendar(2, 3, 4)
+        self.assertEqual(greg1, greg2)
+        self.assertTrue(greg1 <= greg2)
+        self.assertTrue(greg1 >= greg2)
+        self.assertFalse(greg1 != greg2)
+        self.assertFalse(not greg1 < greg2)
+        self.assertFalse(not greg1 > greg2)
+
+        for year, month, day in (3, 3, 3), (2, 4, 4), (2, 3, 5):
+            greg2 = GregorianCalendar(year, month, day)   # this is larger than greg1
+            self.assertTrue(greg1 < greg2)
+            self.assertTrue(greg2 > greg1)
+            self.assertTrue(greg1 <= greg2)
+            self.assertTrue(greg2 >= greg1)
+            self.assertTrue(greg1 != greg2)
+            self.assertTrue(greg2 != greg1)
+            self.assertFalse(greg1 == greg2)
+            self.assertFalse(greg2 == greg1)
+            self.assertFalse(greg1 > greg2)
+            self.assertFalse(greg2 < greg1)
+            self.assertFalse(greg1 >= greg2)
+            self.assertFalse(greg2 <= greg1)
+
+    def test_310_compare_invalid_types(self):
+        import operator
+
+        class SomeClass:
+            pass
+
+        greg = GregorianCalendar(2, 3, 4)
+
+        # exception with non-numeric types
+        for par in ("1", (1,), [1], {1:1}, (), [], {}, None):
+            self.assertFalse(greg == par)
+            self.assertTrue(greg != par)
+            self.assertRaises(TypeError, operator.lt, greg, par)
+            self.assertRaises(TypeError, operator.gt, greg, par)
+            self.assertRaises(TypeError, operator.le, greg, par)
+            self.assertRaises(TypeError, operator.ge, greg, par)
+        # exception with numeric types (all invalid) and other objects
+        for par in (1, 1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j, 1 + 1j, INF, NAN, SomeClass()):
+            self.assertFalse(greg == par)
+            self.assertTrue(greg != par)
+            self.assertRaises(TypeError, operator.lt, greg, par)
+            self.assertRaises(TypeError, operator.gt, greg, par)
+            self.assertRaises(TypeError, operator.le, greg, par)
+            self.assertRaises(TypeError, operator.ge, greg, par)
+
+    def test_320_hash_equality(self):
+        greg1 = GregorianCalendar(2000, 12, 31)
+        # same thing
+        greg2 = GregorianCalendar(2000, 12, 31)
+        self.assertEqual(hash(greg1), hash(greg2))
+
+        dic = {greg1: 1}
+        dic[greg2] = 2
+        self.assertEqual(len(dic), 1)
+        self.assertEqual(dic[greg1], 2)
+        self.assertEqual(dic[greg2], 2)
+
+        greg1 = GregorianCalendar(2001, 1, 1)
+        # same thing
+        greg2 = GregorianCalendar(2001, 1, 1)
+        self.assertEqual(hash(greg1), hash(greg2))
+
+        dic = {greg1: 1}
+        dic[greg2] = 2
+        self.assertEqual(len(dic), 1)
+        self.assertEqual(dic[greg1], 2)
+        self.assertEqual(dic[greg2], 2)
 
     def test_400_weekday(self):
         for test_row in gregorian_test_data:
@@ -316,21 +400,21 @@ class TestGregorian(unittest.TestCase):
             month = test_row[2][1]
             day = test_row[2][2]
             greg = GregorianCalendar(year, month, day)
-            self.assertTrue(eq_gregorian(greg.replace(), GregorianCalendar(year, month, day)),
+            self.assertEqual(greg.replace(), GregorianCalendar(year, month, day),
                 msg = 'replace, no change, date = {}-{}-{}'.format(year, month, day))
-            self.assertTrue(eq_gregorian(greg.replace(year = 11), GregorianCalendar(11, month, day)),
+            self.assertEqual(greg.replace(year = 11), GregorianCalendar(11, month, day),
                 msg = 'replace, year changed, date = {}-{}-{}'.format(year, month, day))
-            self.assertTrue(eq_gregorian(greg.replace(month = 10), GregorianCalendar(year, 10, day)),
+            self.assertEqual(greg.replace(month = 10), GregorianCalendar(year, 10, day),
                 msg = 'replace, month changed, date = {}-{}-{}'.format(year, month, day))
-            self.assertTrue(eq_gregorian(greg.replace(day = 9), GregorianCalendar(year, month, 9)),
+            self.assertEqual(greg.replace(day = 9), GregorianCalendar(year, month, 9),
                 msg = 'replace, day changed, date = {}-{}-{}'.format(year, month, day))
-            self.assertTrue(eq_gregorian(greg.replace(month = 10, year = 11), GregorianCalendar(11, 10, day)),
+            self.assertEqual(greg.replace(month = 10, year = 11), GregorianCalendar(11, 10, day),
                 msg = 'replace, year & month changed, date = {}-{}-{}'.format(year, month, day))
-            self.assertTrue(eq_gregorian(greg.replace(day = 9, year = 11), GregorianCalendar(11, month, 9)),
+            self.assertEqual(greg.replace(day = 9, year = 11), GregorianCalendar(11, month, 9),
                 msg = 'replace, year & day changed, date = {}-{}-{}'.format(year, month, day))
-            self.assertTrue(eq_gregorian(greg.replace(day = 9, month = 10), GregorianCalendar(year, 10, 9)),
+            self.assertEqual(greg.replace(day = 9, month = 10), GregorianCalendar(year, 10, 9),
                 msg = 'replace, month & day changed, date = {}-{}-{}'.format(year, month, day))
-            self.assertTrue(eq_gregorian(greg.replace(day = 9, month = 10, year = 11), GregorianCalendar(11, 10, 9)),
+            self.assertEqual(greg.replace(day = 9, month = 10, year = 11), GregorianCalendar(11, 10, 9),
                 msg = 'replace, all changed, date = {}-{}-{}'.format(year, month, day))
 
     def test_423_replace_invalid_types(self):
@@ -343,7 +427,7 @@ class TestGregorian(unittest.TestCase):
             self.assertRaises(TypeError, greg.replace, month = par)
             self.assertRaises(TypeError, greg.replace, day = par)
         # exception with invalid numeric types
-        for par in (1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j):
+        for par in (1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j, 1 + 1j, INF, NAN):
             self.assertRaises(TypeError, greg.replace, year = par)
             self.assertRaises(TypeError, greg.replace, month = par)
             self.assertRaises(TypeError, greg.replace, day = par)
@@ -359,10 +443,67 @@ class TestGregorian(unittest.TestCase):
         for month in (4, 6, 9, 11):
             greg = GregorianCalendar(11, month, 9)
             self.assertRaises(ValueError, greg.replace, day = 31)
+            greg = GregorianCalendar(11, 10, 31)
+            self.assertRaises(ValueError, greg.replace, month = month)
+        for day in (29, 30, 31):
+            greg = GregorianCalendar(11, 3, day)
+            self.assertRaises(ValueError, greg.replace, month = 2)
+        for day in (30, 31):
+            greg = GregorianCalendar(4, 3, day)    # leap year
+            self.assertRaises(ValueError, greg.replace, month = 2)
         greg = GregorianCalendar(1, 2, 9)   # non-leap year
         self.assertRaises(ValueError, greg.replace, day = 29)
         greg = GregorianCalendar(100, 2, 9) # non-leap year
         self.assertRaises(ValueError, greg.replace, day = 29)
         greg = GregorianCalendar(4, 2, 9)   # leap year
         self.assertRaises(ValueError, greg.replace, day = 30)
+
+    def test_500_repr(self):
+        for test_row in gregorian_test_data:
+            year = test_row[2][0]
+            month = test_row[2][1]
+            day = test_row[2][2]
+            greg = GregorianCalendar(year, month, day)
+            self.assertEqual(repr(greg), "datetime2.calendars.gregorian.{}({}, {}, {})".format(greg.__class__.__name__, greg.year, greg.month, greg.day))
+            self.assertEqual(greg, eval(repr(greg)))
+
+    def test_520_str(self):
+        for test_row in gregorian_test_data:
+            year = test_row[2][0]
+            month = test_row[2][1]
+            day = test_row[2][2]
+            greg = GregorianCalendar(year, month, day)
+            self.assertEqual(str(greg), "{:04d}-{:02d}-{:02d}".format(greg.year, greg.month, greg.day))
+
+    def test_900_pickling(self):
+        for test_row in gregorian_test_data:
+            year = test_row[2][0]
+            month = test_row[2][1]
+            day = test_row[2][2]
+            greg = GregorianCalendar(year, month, day)
+            for protocol in range(pickle.HIGHEST_PROTOCOL + 1):
+                pickled = pickle.dumps(greg, protocol)
+                derived = pickle.loads(pickled)
+                self.assertEqual(greg, derived)
+
+    def test_920_subclass(self):
+
+        class G(GregorianCalendar):
+            theAnswer = 42
+
+            def __init__(self, *args, **kws):
+                temp = kws.copy()
+                self.extra = temp.pop('extra')
+                GregorianCalendar.__init__(self, *args, **temp)
+
+            def newmeth(self, start):
+                return start + self.year + self.month
+
+        greg1 = GregorianCalendar(2003, 4, 14)
+        greg2 = G(2003, 4, 14, extra = 7)
+
+        self.assertEqual(greg2.theAnswer, 42)
+        self.assertEqual(greg2.extra, 7)
+        self.assertEqual(greg1.to_rata_die(), greg2.to_rata_die())
+        self.assertEqual(greg2.newmeth(-7), greg1.year + greg1.month - 7)
 
