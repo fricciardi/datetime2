@@ -108,28 +108,13 @@ methods:
    argument is outside its validity range or would create an invalid Gregorian
    date, a :exc:`ValueError` exception is raised. For example::
 
-      >>> greg == GregorianCalendar(2002, 12, 31)
+      >>> greg = GregorianCalendar(2002, 12, 31)
       >>> print(greg.replace(day=26))
       '2002-12-26'
       >>> greg.replace(month=11)         # November has 30 days
-
-.. TODO: fill the exact ValueError
-
-
-.. method:: gregorian.week_number(week_start=1)
-
-   Return the number of whole weeks in the year, plus one for the current week.
-   If given, ``week_start`` indicates which is the first week day (usually it
-   is either 1 for Monday or 7 for Sunday); it must be an integer in the range
-   1 to 7. Days in the year preceding ``week_start`` are considered to be in
-   week 0. For example::
-
-      >>> GregorianCalendar(2008, 3, 1).week_number()
-      8
-      >>> GregorianCalendar(2000, 4, 17).week_number(7)
-      16
-      >>> GregorianCalendar(1967, 1, 2).week_number()
-      0
+      Traceback (most recent call last):
+        |
+      ValueError: Day must be between 1 and number of days in month, while it is 31.
 
 .. method:: gregorian.__str__()
 
@@ -238,14 +223,14 @@ There are two constructors for a ISO calendar day. The default one is :
 .. class:: IsoCalendar(year, week, day)
 
    Return an object that represents the date given with ISO year, week number
-   and day. All arguments are required and must be integers. Values for ``week``
-   and ``day`` must lie in the following ranges:
+   and day. All arguments are required and must be integers. Values for
+   ``week`` and ``day`` must lie in the following ranges:
 
    * ``1 <= week <= number of weeks in the given year``
    * ``1 <= day <= 7``
 
    If an argument is outside those ranges, a :exc:`ValueError` exception is
-   raised. They day number goes from 1 for Monday to 7 for Sunday.
+   raised. They day number goes from 1 (Monday) to 7 (Sunday).
 
 The other constructor is:
 
@@ -297,12 +282,13 @@ An instance of the :class:`IsoCalendar` class has the following methods:
    argument is outside its validity range or would create an invalid Gregorian
    date, a :exc:`ValueError` exception is raised. For example::
 
-      >>> iso == IsoCalendar(2004, 53, 3)
+      >>> iso = IsoCalendar(2004, 53, 3)
       >>> print(iso.replace(week=26))
       '2004-W26-3'
       >>> iso.replace(year=2003)  # 2003 has 52 weeks
-
-.. TODO: fill the exact ValueErrorIf any
+      Traceback (most recent call last):
+        |
+      ValueError: Week must be between 1 and number of weeks in year, while it is 53.
 
 .. method:: iso.__str__()
 
