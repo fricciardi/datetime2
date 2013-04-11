@@ -376,7 +376,16 @@ class TestGregorian(unittest.TestCase):
         self.assertEqual(dic[greg1], 2)
         self.assertEqual(dic[greg2], 2)
 
-    def test_400_weekday(self):
+    def test_400_to_rata_die(self):
+        for test_row in gregorian_test_data:
+            year = test_row[2][0]
+            month = test_row[2][1]
+            day = test_row[2][2]
+            rd = test_row[0]
+            self.assertEqual(GregorianCalendar(year, month, day).to_rata_die(), rd,
+                             msg = 'to_rata_die, date = {}-{}-{}'.format(year, month, day))
+
+    def test_410_weekday(self):
         for test_row in gregorian_test_data:
             year = test_row[2][0]
             month = test_row[2][1]
@@ -385,7 +394,7 @@ class TestGregorian(unittest.TestCase):
             self.assertEqual(GregorianCalendar(year, month, day).weekday(), weekday,
                              msg = 'weekday, date = {}-{}-{}'.format(year, month, day))
 
-    def test_410_day_of_year(self):
+    def test_420_day_of_year(self):
         for test_row in gregorian_test_data:
             year = test_row[2][0]
             month = test_row[2][1]
@@ -394,7 +403,7 @@ class TestGregorian(unittest.TestCase):
             self.assertEqual(GregorianCalendar(year, month, day).day_of_year(), doy,
                 msg = 'day_of_year, date = {}-{}-{}'.format(year, month, day))
 
-    def test_420_replace(self):
+    def test_430_replace(self):
         for test_row in gregorian_test_data[:33]:   # take Calendrical Calculations test data only (other may make replace fail, as in the next test method)
             year = test_row[2][0]
             month = test_row[2][1]
@@ -417,7 +426,7 @@ class TestGregorian(unittest.TestCase):
             self.assertEqual(greg.replace(day = 9, month = 10, year = 11), GregorianCalendar(11, 10, 9),
                 msg = 'replace, all changed, date = {}-{}-{}'.format(year, month, day))
 
-    def test_423_replace_invalid_types(self):
+    def test_433_replace_invalid_types(self):
         greg = GregorianCalendar(11, 10, 9)
         # exception for positional parameters
         self.assertRaises(TypeError, greg.replace, 1)
@@ -432,7 +441,7 @@ class TestGregorian(unittest.TestCase):
             self.assertRaises(TypeError, greg.replace, month = par)
             self.assertRaises(TypeError, greg.replace, day = par)
 
-    def test_426_replace_invalid_values(self):
+    def test_436_replace_invalid_values(self):
         greg = GregorianCalendar(11, 10, 9)
         self.assertRaises(ValueError, greg.replace, month = 0)
         self.assertRaises(ValueError, greg.replace, day = 0)
