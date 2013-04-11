@@ -128,7 +128,7 @@ class GregorianCalendar:
         return isinstance(other, GregorianCalendar) and self.year == other.year and self.month == other.month and self.day == other.day
 
     def __ne__(self, other):
-        return not (self == other)
+        return not isinstance(other, GregorianCalendar) or self.day != other.day or self.month != other.month or self.year != other.year
 
     def __gt__(self, other):
         if isinstance(other, GregorianCalendar):
