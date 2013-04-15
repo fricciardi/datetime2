@@ -64,23 +64,22 @@ These core classes are of little use as defined above. Indeed,
 representations. The syntax to access these calendars and representations is
 through the attribute paradigm. E.g.: the core classes and their instances will
 be able to access class methods, constructors and instances of the specific
-calendar as class or instance attributes. Example::
+calendar as class or instance attributes. For example::
 
-  >>> d = Date.gregorian(2012, 2, 8)
-  >>> d
-  'R.D. 734541'
-  >>> d.iso()
-  '2012, week 6, Wed'
-
-It is also possible to add calendars or time representations at runtime,
-provided the added class has the interface methods. See more
-:ref:`here <register-classes>`.
+  >>> d = Date.gregorian(2012, 2, 14)
+  >>> print(d)
+  'R.D. 734560'
+  >>> print(d.gregorian)
+  '2012-02-08'
+  >>> d.iso.week
+  9
 
 Currently (version |release|) the following calendars are available:
 
 .. hlist::
 
   * :ref:`gregorian-calendar`
+  * :ref:`iso-calendar`
 
 .. seealso::
 
@@ -100,9 +99,9 @@ Currently (version |release|) the following calendars are available:
 ---------------------
 
 A :class:`Date` object represents a date in an idealized calendar, just
-counting the days elapsed from Dec 31\ :sup:`st` of year 0, i.e. January 1\
-:sup:`st` of year 1 is called day number 1, January 2\ :sup:`nd` of year 1 is
-called day number 2, and so on. This calendar ideally extends indefinitely.
+counting the days elapsed from Gregorian Dec 31\ :sup:`st` of year 0, i.e.
+January 1\ :sup:`st` of year 1 is day number 1, January 2\ :sup:`nd` of year 1
+is day number 2, and so on. This calendar ideally extends indefinitely.
 
 There are two ways of creating a :class:`Date` instance:
 
@@ -111,7 +110,7 @@ There are two ways of creating a :class:`Date` instance:
    Return an object that represent a date which is ``day_count - 1`` days
    after January 1 of year 1 in the current Gregorian calendar. The argument
    is required and must be an integer or an object that has the
-   ``to_rata_die method``, and this method returns an integer. There is no
+   ``to_rata_die`` method, and this method returns an integer. There is no
    restriction on its numeric value.
 
 
@@ -125,8 +124,8 @@ instances are considered to be true. :class:`Date` instances have one attribute:
 
 .. attribute:: Date.day_count
 
-   The number of days between the given date and January 1, year 1. This
-   attribute is read-only: an :exc:`AttributeException` is raised when
+   The number of days between the given date and January 1\ :sup:`st`, year 1.
+   This attribute is read-only: an :exc:`AttributeException` is raised when
    trying to change it.
 
 
@@ -173,15 +172,7 @@ Notes:
 
 There's one instance method:
 
-.. method:: Date.__str__()
+.. method:: date.__str__()
 
    Return ``R.D.`` followed by the day count. ``R.D.`` stands for Rata Die, the Latin
    for "fixed date".
-
-
-.. _register-classes :
-
-Adding calendars or time representations
-----------------------------------------
-
-To be written.
