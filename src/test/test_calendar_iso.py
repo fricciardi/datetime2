@@ -43,13 +43,13 @@ NAN = float('nan')
 
 iso_test_data = [
     # data from Calendrical Calculations: The Millennium Edition, with addition
-    #      RD         ISO
+    #      RD         ISO      doy
     #           Year Week Day
     [ -214193,  -586,  29,  7, 203],
     [  -61387,  -168,  49,  3, 339],
     [   25469,    70,  39,  3, 269],
     [   49217,   135,  39,  7, 273],
-    [  171307,    47,   2,  3,  10],
+    [  171307,   470,   2,  3,  10],
     [  210155,   576,  21,  1, 141],
     [  253427,   694,  45,  6, 314],
     [  369740,  1013,  16,  7, 112],
@@ -77,7 +77,8 @@ iso_test_data = [
     [  727274,  1992,  12,  2,  79],
     [  728714,  1996,   8,  7,  56],
     [  744313,  2038,  45,  3, 311],
-    [  764652,  2094,  28,  7, 196],    # Boundary conditions on RD
+    [  764652,  2094,  28,  7, 196],
+    # Boundary conditions on RD
     [-1000001,  -2737,  5,  5,  33],
     [-1000000,  -2737,  5,  6,  34],
     [ -999999,  -2737,  5,  7,  35],
@@ -116,11 +117,12 @@ iso_test_data = [
     [  100001,    274, 42,  6, 293],
     [  999999,   2738, 47,  7, 329],
     [ 1000000,   2738, 48,  1, 330],
-    [ 1000001,   2738, 48,  2, 331],    # A few long years
-    [ -589181,  -1613, 52,  7, 364],
-    [ -589180,  -1613, 53,  1, 365],
-    [ -589174,  -1613, 53,  7, 371],
-    [ -589173,  -1612,  1,  1,   1],
+    [ 1000001,   2738, 48,  2, 331],
+    # A few long years
+    [ -589141,  -1613, 52,  7, 364],
+    [ -589140,  -1613, 53,  1, 365],
+    [ -589134,  -1613, 53,  7, 371],
+    [ -589133,  -1612,  1,  1,   1],
     [ -578914,  -1585, 52,  7, 364],
     [ -578913,  -1585, 53,  1, 365],
     [ -578907,  -1585, 53,  7, 371],
@@ -129,10 +131,10 @@ iso_test_data = [
     [ -422589,  -1157, 53,  1, 365],
     [ -422583,  -1157, 53,  7, 371],
     [ -422582,  -1156,  1,  1,   1],
-    [ -266266,   -719, 52,  7, 364],
-    [ -266265,   -719, 53,  1, 365],
-    [ -266259,   -719, 53,  7, 371],
-    [ -266259,   -718,  1,  1,   1],
+    [ -266266,   -729, 52,  7, 364],
+    [ -266265,   -729, 53,  1, 365],
+    [ -266259,   -729, 53,  7, 371],
+    [ -266258,   -728,  1,  1,   1],
     [ -109942,   -301, 52,  7, 364],
     [ -109941,   -301, 53,  1, 365],
     [ -109935,   -301, 53,  7, 371],
@@ -172,7 +174,8 @@ iso_test_data = [
     [ 1149778,   3148, 52,  7, 364],
     [ 1149779,   3148, 53,  1, 365],
     [ 1149785,   3148, 53,  7, 371],
-    [ 1149786,   3149,  1,  1,   1],                         # Boundary conditions on ISO years
+    [ 1149786,   3149,  1,  1,   1],
+    # Boundary conditions on ISO years
     [-3652425, -10000, 52,  7, 364],
     [-3652424,  -9999,  1,  1,   1],
     [-1826216,  -5000, 52,  7, 364],
@@ -187,10 +190,10 @@ iso_test_data = [
     [    -363,      0,  1,  1,   1],
     [     364,      1, 52,  7, 364],
     [     365,      2,  1,  1,   1],
-    [    3283,      9, 52,  7, 364],
-    [    3284,     10,  1,  1,   1],
-    [   36155,     99, 52,  7, 364],
-    [   36156,    100,  1,  1,   1],
+    [    3290,      9, 53,  7, 371],
+    [    3291,     10,  1,  1,   1],
+    [   36162,     99, 53,  7, 371],
+    [   36163,    100,  1,  1,   1],
     [  364875,    999, 52,  7, 364],
     [  364876,   1000,  1,  1,   1],
     [ 1825845,   4999, 52,  7, 364],
@@ -281,7 +284,7 @@ class TestISO(unittest.TestCase):
             week = test_row[2]
             day = test_row[3]
             iso = IsoCalendar(year, week, day)
-            self.assertEqual(iso, IsoCalendar(iso.year, iso.month, iso.day),
+            self.assertEqual(iso, IsoCalendar(iso.year, iso.week, iso.day),
                              msg = 'create from attributes, date = {}-{}-{}'.format(year, week, day))
 
     def test_200_long_years(self):
@@ -289,12 +292,12 @@ class TestISO(unittest.TestCase):
         for year in (-2847, -2424, -2002, -1974, -1546, -1118, -689, -261,
                      167, 595, 1024, 1452, 1880, 2308, 2731):
             self.assertTrue(IsoCalendar.is_long_year(year), msg = 'is_long_year, year = {}'.format(year))
-            self.assertEqual(IsoCalendar.days_in_year(year), 366, msg = 'days_in_year, year = {}'.format(year))
+            self.assertEqual(IsoCalendar.weeks_in_year(year), 53, msg = 'weeks_in_year, year = {}'.format(year))
         # non-leap years
         for year in (-2845, -2422, -2000, -1972, -1544, -1116, -687, -259,
                      169, 597, 1026, 1454, 1882, 2310, 2733):
             self.assertFalse(IsoCalendar.is_long_year(year), msg = 'is_long_year, year = {}'.format(year))
-            self.assertEqual(IsoCalendar.days_in_year(year), 365, msg = 'days_in_year, year = {}'.format(year))
+            self.assertEqual(IsoCalendar.weeks_in_year(year), 52, msg = 'weeks_in_year, year = {}'.format(year))
 
     def test_300_compare(self):
         iso1 = IsoCalendar(2, 3, 4)
@@ -411,7 +414,7 @@ class TestISO(unittest.TestCase):
                 msg = 'replace, all changed, date = {}-{}-{}'.format(year, week, day))
 
     def test_423_replace_invalid_types(self):
-        iso = IsoCalendar(11, 10, 9)
+        iso = IsoCalendar(11, 10, 4)
         # exception for positional parameters
         self.assertRaises(TypeError, iso.replace, 1)
         # exception with non-numeric types
@@ -426,7 +429,7 @@ class TestISO(unittest.TestCase):
             self.assertRaises(TypeError, iso.replace, day = par)
 
     def test_426_replace_invalid_values(self):
-        iso = IsoCalendar(11, 10, 9)
+        iso = IsoCalendar(11, 10, 4)
         self.assertRaises(ValueError, iso.replace, week = 0)
         self.assertRaises(ValueError, iso.replace, day = 0)
         self.assertRaises(ValueError, iso.replace, week = -1)
