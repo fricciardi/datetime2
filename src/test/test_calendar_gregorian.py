@@ -376,6 +376,13 @@ class TestGregorian(unittest.TestCase):
         self.assertEqual(dic[greg1], 2)
         self.assertEqual(dic[greg2], 2)
 
+    def test_330_bool(self):
+        for test_row in gregorian_test_data:
+            year = test_row[2][0]
+            month = test_row[2][1]
+            day = test_row[2][2]
+            self.assertTrue(bool(GregorianCalendar(year, month, day)), msg = 'bool, date = {}-{}-{}'.format(year, month, day))
+
     def test_400_to_rata_die(self):
         for test_row in gregorian_test_data:
             year = test_row[2][0]

@@ -372,6 +372,14 @@ class TestISO(unittest.TestCase):
         self.assertEqual(dic[iso1], 2)
         self.assertEqual(dic[iso2], 2)
 
+    def test_330_bool(self):
+        for test_row in gregorian_test_data:
+        for test_row in iso_test_data:
+            year = test_row[1]
+            week = test_row[2]
+            day = test_row[3]
+            self.assertTrue(bool(IsoCalendar(year, week, day)), msg = 'bool, date = {}-{}-{}'.format(year, month, day))
+
     def test_400_to_rata_die(self):
         for test_row in iso_test_data:
             year = test_row[1]
