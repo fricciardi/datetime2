@@ -482,7 +482,7 @@ class TestGregorian(unittest.TestCase):
             month = test_row[2][1]
             day = test_row[2][2]
             greg = GregorianCalendar(year, month, day)
-            greg_repr = repr(GregorianCalendar(year, month, day))
+            greg_repr = repr(greg)
             names, args = greg_repr.split('(')
             self.assertEqual(names.split('.'), ['datetime2', 'calendars', 'gregorian', 'GregorianCalendar'], msg='Repr test 1 for {}-{}-{}'.format(year, month, day))
             args = args[:-1] # drop ')'
