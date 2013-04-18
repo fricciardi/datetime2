@@ -56,7 +56,6 @@ class TimeDelta:
     def __add__(self, other):
         raise TypeError   # required to let Date tests pass
 
-@total_ordering
 class Date:
     def __init__(self, day_count):
         if isinstance(day_count, int):
@@ -80,7 +79,7 @@ class Date:
         return self._day_count
     
     def __repr__(self):
-        return "Date({})".format(self.day_count)
+        return "datetime2.{}({})".format(self.__class__.__name__, self.day_count)
     
     def __str__(self):
         return "R.D. {}".format(self.day_count)
@@ -101,17 +100,39 @@ class Date:
             return Date(self.day_count - other.days)
         else:
             return NotImplemented
-        
-    # TODO: undestand if we want to use total ordering
+
+    # Comparison operators
     def __eq__(self, other):
         return isinstance(other, Date) and self.day_count == other.day_count
+
+    def __ne__(self, other):
+        return not isinstance(other, Date) or self.day_count != other.day_count
+
+    def __gt__(self, other):
+        if isinstance(other, Date):
+            return self.day_count > other.day_count
+        else:
+            return NotImplemented
+
+    def __ge__(self, other):
+        if isinstance(other, Date):
+            return self.day_count >= other.day_count
+        else:
+            return NotImplemented
 
     def __lt__(self, other):
         if isinstance(other, Date):
             return self.day_count < other.day_count
         else:
             return NotImplemented
-        
+
+    def __le__(self, other):
+        if isinstance(other, Date):
+            return self.day_count <= other.day_count
+        else:
+            return NotImplemented
+
+    # hash value
     def __hash__(self):
         return hash(self._day_count)
 
