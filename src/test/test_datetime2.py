@@ -31,6 +31,7 @@ __author__ = 'Francesco Ricciardi <francescor2010 at yahoo.it>'
 
 
 import decimal
+import fractions
 import pickle
 import unittest
 from datetime2 import Date, TimeDelta
@@ -40,10 +41,7 @@ from fractions import Fraction
 INF = float("inf")
 NAN = float("nan")
 
-# contains all pickle protocols
-pickle_choices = [(pickle, pickle, proto)
-                  for proto in range(pickle.HIGHEST_PROTOCOL + 1)]
-assert len(pickle_choices) == pickle.HIGHEST_PROTOCOL + 1
+date_test_data = (-2, -1, 0, 1, 2, -1000, 1000, -123456789, 123456789, -999999999, 999999999, -1000000000, 1000000000)
 
 
 #############################################################################
@@ -51,10 +49,8 @@ assert len(pickle_choices) == pickle.HIGHEST_PROTOCOL + 1
 #
 class TestDate(unittest.TestCase):
     def test_000_valid_parameter_types(self):
-        for par in (-2, -1, 0, 1, 2, -1000, 1000, -123456789, 123456789, -999999999, 999999999, -1000000000, 1000000000):
-            self.assertEqual(Date(par).day_count, par, msg = 'par = {}'.format(par))
-        cal_obj = GregorianCalendar(1, 1, 1)
-        self.assertEqual(Date(cal_obj).day_count, 1, "Object with to_rata_die")
+        for day_count in date_test_data:
+            self.assertEqual(Date(day_count).day_count, day_count, msg = 'day_count = {}'.format(day_count))
 
     def test_010_invalid_parameter_types(self):
         # exception with no or two parameters
@@ -66,11 +62,6 @@ class TestDate(unittest.TestCase):
             # exception with invalid numeric types
         for par in (1.0, Fraction(1, 1), decimal.Decimal(1), 1j):
             self.assertRaises(TypeError, Date, par)
-            # exception when to_rata_die method does not return an integer
-        class Test:
-            def to_rata_die(self):
-                return 1.1
-        self.assertRaises(TypeError, Date, Test())
 
     def test_020_today(self):
         # for the time being, let's use the good old datetime module :-)
@@ -78,25 +69,30 @@ class TestDate(unittest.TestCase):
         
         # we need to ensure that we are not testing across date change
         for dummy in range(3):
-            today = Date.today()
-            # let's use the good old date module
-            day_count = datetime.date.today().toordinal()
-            if day_count != today.day_count:
+            today_before = datetime.date.today()
+            date_today = Date.today()
+            today_after = datetime.date.today()
+            if today_before == today_after:
                 break
-        self.assertEqual(today.day_count, day_count)
+        self.assertEqual(date_today.day_count, today_before.toordinal())
 
-    def test_030_write_attribute(self):
+    def test_100_write_attribute(self):
         d = Date(1)
         self.assertRaises(AttributeError, setattr, d, 'day_count', 3)
 
-    def test_040_get_unknown_attribute(self):
+    def test_110_get_unknown_attribute(self):
+        # I want to do this, because Date will have attributes added at runtime
+        # let's test this both on class and instance
         self.assertRaises(AttributeError, getattr, Date, 'unknown')
         d = Date(1)
         self.assertRaises(AttributeError, getattr, d, 'unknown')
 
-    def test_100_computations(self):
-        eq = self.assertEqual
+    def test_120_create_from_attr(self):
+        for day_count in date_test_data:
+            d = Date(day_count)
+            self.assertEqual(d, Date(d.day_count), msg = 'Create from attribute, dya_count = {}'.format(day_count))
 
+    def test_300_operations(self):
         a = Date(0)
         b = Date(-3)
         c = Date(5)
@@ -105,50 +101,52 @@ class TestDate(unittest.TestCase):
         minusone = TimeDelta(-1)
         
         # Addition between Date and TimeDelta, reverse is not defined
-        eq(a + zero, Date(0), msg = 'a + zero')
-        eq(a + one, Date(1), msg = 'a + one')
-        eq(a + minusone, Date(-1), msg = 'a + minusone')
-        eq(b + zero, Date(-3), msg = 'b + zero')
-        eq(b + one, Date(-2), msg = 'b + one')
-        eq(b + minusone, Date(-4), msg = 'b + minusone')
-        eq(c + zero, Date(5), msg = 'c + zero')
-        eq(c + one, Date(6), msg = 'c + one')
-        eq(c + minusone, Date(4), msg = 'c + minusone')
+        self.assertEqual(a + zero, Date(0), msg = 'a + zero')
+        self.assertEqual(a + one, Date(1), msg = 'a + one')
+        self.assertEqual(a + minusone, Date(-1), msg = 'a + minusone')
+        self.assertEqual(b + zero, Date(-3), msg = 'b + zero')
+        self.assertEqual(b + one, Date(-2), msg = 'b + one')
+        self.assertEqual(b + minusone, Date(-4), msg = 'b + minusone')
+        self.assertEqual(c + zero, Date(5), msg = 'c + zero')
+        self.assertEqual(c + one, Date(6), msg = 'c + one')
+        self.assertEqual(c + minusone, Date(4), msg = 'c + minusone')
 
         # subtraction between Date and TimeDelta, reverse is not defined        
-        eq(a - zero, Date(0), msg = 'a - zero')
-        eq(a - one, Date(-1), msg = 'a - one')
-        eq(a - minusone, Date(1), msg = 'a - minusone')
-        eq(b - zero, Date(-3), msg = 'b - zero')
-        eq(b - one, Date(-4), msg = 'b - one')
-        eq(b - minusone, Date(-2), msg = 'b - minusone')
-        eq(c - zero, Date(5), msg = 'c - zero')
-        eq(c - one, Date(4), msg = 'c - one')
-        eq(c - minusone, Date(6), msg = 'c - minusone')
+        self.assertEqual(a - zero, Date(0), msg = 'a - zero')
+        self.assertEqual(a - one, Date(-1), msg = 'a - one')
+        self.assertEqual(a - minusone, Date(1), msg = 'a - minusone')
+        self.assertEqual(b - zero, Date(-3), msg = 'b - zero')
+        self.assertEqual(b - one, Date(-4), msg = 'b - one')
+        self.assertEqual(b - minusone, Date(-2), msg = 'b - minusone')
+        self.assertEqual(c - zero, Date(5), msg = 'c - zero')
+        self.assertEqual(c - one, Date(4), msg = 'c - one')
+        self.assertEqual(c - minusone, Date(6), msg = 'c - minusone')
         
         
-    def test_110_disallowed_computations(self):
+    def test_310_disallowed_operations(self):
+        import operator
+
         a = Date(42)
         b = Date(24)
 
         # Add/sub int, float, string, complex, specials and containers should be illegal
         for obj in (10, 34.5, "abc", 1 + 2j, INF, NAN, {}, [], ()):
-            self.assertRaises(TypeError, lambda: a + obj)
-            self.assertRaises(TypeError, lambda: a - obj)
-            self.assertRaises(TypeError, lambda: obj + a)
-            self.assertRaises(TypeError, lambda: obj - a)
+            self.assertRaises(TypeError, operator.add, a, obj)
+            self.assertRaises(TypeError, operator.sub, a, obj)
+            self.assertRaises(TypeError, operator.add, obj, a)
+            self.assertRaises(TypeError, operator.sub, obj, a)
 
         # These operations make no sense for Date objects
-        self.assertRaises(TypeError, lambda: TimeDelta(2) + a)  # reverse is valid
-        self.assertRaises(TypeError, lambda: TimeDelta(2) - a)  # reverse is valid
+        self.assertRaises(TypeError, operator.add, TimeDelta(2), a)  # reverse is valid
+        self.assertRaises(TypeError, operator.sub, TimeDelta(2), a)  # reverse is valid
         
-        self.assertRaises(TypeError, lambda: a * 1)
-        self.assertRaises(TypeError, lambda: 1 * a)
-        self.assertRaises(TypeError, lambda: 1.1 * a)
-        self.assertRaises(TypeError, lambda: a * 1.1)
-        self.assertRaises(TypeError, lambda: a / 1.1)
-        self.assertRaises(TypeError, lambda: a / 1)
-        self.assertRaises(TypeError, lambda: 1 / a)
+        self.assertRaises(TypeError, operator.mul, a, 1)
+        self.assertRaises(TypeError, operator.mul, 1, a)
+        self.assertRaises(TypeError, operator.mul, 1.1, a)
+        self.assertRaises(TypeError, operator.mul, a, 1.1)
+        self.assertRaises(TypeError, operator.div, a / 1.1)
+        self.assertRaises(TypeError, operator.div, a / 1)
+        self.assertRaises(TypeError, operator.div, 1 / a)
         self.assertRaises(TypeError, lambda: 1.1 / a)
         self.assertRaises(TypeError, lambda: a // 1.1)
         self.assertRaises(TypeError, lambda: a // 1)
@@ -173,68 +171,129 @@ class TestDate(unittest.TestCase):
         self.assertRaises(TypeError, lambda: a >> 1.1)
         # self.assertRaises(TypeError, lambda: 1.1 >> a) not applicable to float
         self.assertRaises(TypeError, lambda: a >> b)
-        
 
-    def test_120_compare(self):
+    def test_320_compare(self):
         d1 = Date(42)
-        d2 = Date(24)
-        d3 = Date(42)
-        self.assertEqual(d1, d3)
-        self.assertNotEqual(d2, d3)
-        self.assertGreaterEqual(d1, d3)
-        self.assertLessEqual(d1, d3)
-        self.assertGreater(d1, d2)
-        self.assertLess(d2, d1)
+        d2 = Date(42)
+        self.assertEqual(d1, d2)
+        self.assertTrue(d1 <= d2)
+        self.assertTrue(d1 >= d2)
+        self.assertFalse(d1 != d2)
+        self.assertFalse(d1 < d2)
+        self.assertFalse(d1 > d2)
 
-        for badarg in (10, 34.5, "abc", 1 + 2j, INF, NAN, {}, [], ()):
-            self.assertFalse(d1 == badarg)
-            self.assertTrue(d1 != badarg)
-            self.assertFalse(badarg == d1)
-            self.assertTrue(badarg != d1)
+        d2 = Date(4242)   # this is larger than d1
+        self.assertTrue(d1 < d2)
+        self.assertTrue(d2 > d1)
+        self.assertTrue(d1 <= d2)
+        self.assertTrue(d2 >= d1)
+        self.assertTrue(d1 != d2)
+        self.assertTrue(d2 != d1)
+        self.assertFalse(d1 == d2)
+        self.assertFalse(d2 == d1)
+        self.assertFalse(d1 > d2)
+        self.assertFalse(d2 < d1)
+        self.assertFalse(d1 >= d2)
+        self.assertFalse(d2 <= d1)
 
-            self.assertRaises(TypeError, lambda: d1 <= badarg)
-            self.assertRaises(TypeError, lambda: d1 < badarg)
-            self.assertRaises(TypeError, lambda: d1 > badarg)
-            self.assertRaises(TypeError, lambda: d1 >= badarg)
-            self.assertRaises(TypeError, lambda: badarg <= d1)
-            self.assertRaises(TypeError, lambda: badarg < d1)
-            self.assertRaises(TypeError, lambda: badarg > d1)
-            self.assertRaises(TypeError, lambda: badarg >= d1)
+    def test_330_compare_invalid_types(self):
+        import operator
 
-    def test_130_bool(self):
-        self.assertTrue(Date(3))
-        self.assertTrue(Date(0))
-        self.assertTrue(Date(-3))
+        class SomeClass:
+            pass
 
-    def test_140_str(self):
-        for count in (0, -1, 1, -1000, 1000, 99999999, 99999999):
-            self.assertEqual(str(Date(count)), 'R.D. {}'.format(count))
+        d = Date(1)
 
-    def test_150_roundtrip(self):
-        for count in (0, -1, 1, -1000, 1000, 99999999, 99999999):
-            # Verify date -> string -> date identity.
-            d1 = Date(count)
-            s = repr(d1)
-            d2 = eval(s)
-            self.assertEqual(d1, d2)
+        # exception with non-numeric types
+        for par in ("1", (1,), [1], {1:1}, (), [], {}, None):
+            self.assertFalse(d == par)
+            self.assertTrue(d != par)
+            self.assertRaises(TypeError, operator.lt, d, par)
+            self.assertRaises(TypeError, operator.gt, d, par)
+            self.assertRaises(TypeError, operator.le, d, par)
+            self.assertRaises(TypeError, operator.ge, d, par)
+        # exception with numeric types (all invalid) and other objects
+        for par in (1, 1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j, 1 + 1j, INF, NAN, SomeClass()):
+            self.assertFalse(d == par)
+            self.assertTrue(d != par)
+            self.assertRaises(TypeError, operator.lt, d, par)
+            self.assertRaises(TypeError, operator.gt, d, par)
+            self.assertRaises(TypeError, operator.le, d, par)
+            self.assertRaises(TypeError, operator.ge, d, par)
 
-    # TODO: add tests for subclassing Date
-
-    def test_210_hash_equality(self):
+    def test_340_hash_equality(self):
         d1 = Date(42)
-        d2 = Date(32) + TimeDelta(10)
+        # same thing
+        d2 = Date(42)
         self.assertEqual(hash(d1), hash(d2))
 
-        d = {d1: 1, d2: 2}
-        self.assertEqual(len(d), 1)
-        self.assertEqual(d[d1], 2)
+        dic = {d1: 1}
+        dic[d2] = 2
+        self.assertEqual(len(dic), 1)
+        self.assertEqual(dic[d1], 2)
+        self.assertEqual(dic[d2], 2)
 
-    def test_220_pickling(self):
-        orig = Date(3141592)
-        for pickler, unpickler, proto in pickle_choices:
-            green = pickler.dumps(orig, proto)
-            derived = unpickler.loads(green)
-            self.assertEqual(orig, derived)
+        d1 = Date(42)
+        # same thing
+        d2 = Date(42)
+        self.assertEqual(hash(d1), hash(d2))
+
+        dic = {d1: 1}
+        dic[d2] = 2
+        self.assertEqual(len(dic), 1)
+        self.assertEqual(dic[d1], 2)
+        self.assertEqual(dic[d2], 2)
+
+    def test_350_bool(self):
+        for day_count in date_test_data:
+            self.assertTrue(bool(Date(day_count)), msg = 'bool, day_count = {}'.format(day_count))
+
+    def test_500_repr(self):
+        import datetime2
+
+        for day_count in date_test_data:
+            d = Date(day_count)
+            date_repr = repr(d)
+            names, args = date_repr.split('(')
+            self.assertEqual(names.split('.'), ['datetime2', 'Date'], msg='Repr test 1 for day count {}'.format(day_count))
+            args = args[:-1] # drop ')'
+            self.assertEqual(int(args), day_count, msg='Repr test 2 for day count {}'.format(day_count))
+            self.assertEqual(d, eval(repr(d)), msg='Repr test 3 for day count {}'.format(day_count))
+
+    def test_520_str(self):
+        for day_count in date_test_data:
+            d = Date(day_count)
+            self.assertEqual(int(str(d)[5:]), day_count, msg='Str test for day count {}'.format(day_count))
+
+    def test_900_pickling(self):
+        for day_count in date_test_data:
+            d = Date(day_count)
+            for protocol in range(pickle.HIGHEST_PROTOCOL + 1):
+                pickled = pickle.dumps(d, protocol)
+                derived = pickle.loads(pickled)
+                self.assertEqual(d, derived)
+
+    def test_920_subclass(self):
+
+        class D(Date):
+            theAnswer = 42
+
+            def __init__(self, *args, **kws):
+                temp = kws.copy()
+                self.extra = temp.pop('extra')
+                Date.__init__(self, *args, **temp)
+
+            def newmeth(self, start):
+                return start + (self.day_count * 3) // 2
+
+        d1 = Date(2013)
+        d2 = D(2013, extra = 7)
+
+        self.assertEqual(d2.theAnswer, 42)
+        self.assertEqual(d2.extra, 7)
+        self.assertEqual(d1.day_count, d2.day_count)
+        self.assertEqual(d2.newmeth(-7), (d1.day_count * 3) // 2 - 7)
+
 
 
 class TestDateCalendarInterface(unittest.TestCase):
