@@ -35,7 +35,7 @@ import fractions
 import pickle
 import unittest
 
-from datetime2.calendars.gregorian import GregorianCalendar
+from calendars.gregorian import GregorianCalendar
 
 
 INF = float('inf')
@@ -475,7 +475,7 @@ class TestGregorian(unittest.TestCase):
         self.assertRaises(ValueError, greg.replace, day = 30)
 
     def test_500_repr(self):
-        import datetime2
+        import calendars
 
         for test_row in gregorian_test_data:
             year = test_row[2][0]
@@ -484,7 +484,7 @@ class TestGregorian(unittest.TestCase):
             greg = GregorianCalendar(year, month, day)
             greg_repr = repr(greg)
             names, args = greg_repr.split('(')
-            self.assertEqual(names.split('.'), ['datetime2', 'calendars', 'gregorian', 'GregorianCalendar'], msg='Repr test 1 for {}-{}-{}'.format(year, month, day))
+            self.assertEqual(names.split('.'), ['calendars', 'gregorian', 'GregorianCalendar'], msg='Repr test 1 for {}-{}-{}'.format(year, month, day))
             args = args[:-1] # drop ')'
             for found, expected in zip(args.split(','), (year, month, day)):
                 self.assertEqual(int(found), expected, msg='Repr test 2 for {}-{}-{}'.format(year, month, day))

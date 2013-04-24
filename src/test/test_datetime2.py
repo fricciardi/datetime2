@@ -34,9 +34,10 @@ import decimal
 import fractions
 import pickle
 import unittest
-from datetime2 import Date, TimeDelta
-from datetime2.calendars.gregorian import GregorianCalendar
 from fractions import Fraction
+from datetime2 import Date, TimeDelta
+from calendars.gregorian import GregorianCalendar
+
 
 INF = float("inf")
 NAN = float("nan")

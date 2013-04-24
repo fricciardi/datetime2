@@ -3,7 +3,8 @@ from distutils.core import setup
 setup(
     name='datetime2',
     version='0.3.2',
-    packages=['datetime2'],
+    py_modules = ['datetime2'],
+    packages=['calendars'],
     author='Francesco Ricciardi',
     author_email='francescor2010 at yahoo dot it',
     license='BSD License',

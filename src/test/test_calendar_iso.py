@@ -35,7 +35,7 @@ import fractions
 import pickle
 import unittest
 
-from datetime2.calendars.iso import IsoCalendar
+from calendars.iso import IsoCalendar
 
 
 INF = float('inf')
@@ -449,7 +449,7 @@ class TestISO(unittest.TestCase):
         self.assertRaises(ValueError, iso.replace, week = 54)
 
     def test_500_repr(self):
-        import datetime2
+        import calendars
 
         for test_row in iso_test_data:
             year = test_row[1]
@@ -458,7 +458,7 @@ class TestISO(unittest.TestCase):
             iso = IsoCalendar(year, week, day)
             iso_repr = repr(iso)
             names, args = iso_repr.split('(')
-            self.assertEqual(names.split('.'), ['datetime2', 'calendars', 'iso', 'IsoCalendar'], msg='Repr test 1 for {}-W{}-{}'.format(year, week, day))
+            self.assertEqual(names.split('.'), ['calendars', 'iso', 'IsoCalendar'], msg='Repr test 1 for {}-W{}-{}'.format(year, week, day))
             args = args[:-1] # drop ')'
             for found, expected in zip(args.split(','), (year, week, day)):
                 self.assertEqual(int(found), expected, msg='Repr test 2 for {}-W{}-{}'.format(year, week, day))
