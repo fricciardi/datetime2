@@ -5,6 +5,10 @@
    :synopsis: Date and time types with broader calendar coverage.
 .. moduleauthor:: Francesco Ricciardi <francescor2010@yahoo.it>
 
+.. testsetup:: *
+
+   from datetime2 import Date
+
 The :mod:`datetime2` module provides classes to manipulate date and time
 like the :mod:`datetime` module does, with these objectives in mind:
 
@@ -28,6 +32,7 @@ traces of them early.
    :hidden:
 
    calendars
+   adding
 
 Overview
 --------
@@ -64,15 +69,19 @@ These core classes are of little use as defined above. Indeed,
 representations. The syntax to access these calendars and representations is
 through the attribute paradigm. E.g.: the core classes and their instances will
 be able to access class methods, constructors and instances of the specific
-calendar as class or instance attributes. For example::
+calendar as class or instance attributes. For example:
 
-  >>> d = Date.gregorian(2012, 2, 14)
+.. doctest::
+
+  >>> d = Date.gregorian(2012, 2, 27)
   >>> print(d)
-  'R.D. 734560'
+  R.D. 734560
   >>> print(d.gregorian)
-  '2012-02-08'
+  2012-02-27
   >>> d.iso.week
   9
+
+.. _list-of-calendars :
 
 Currently (version |release|) the following calendars are available:
 
@@ -92,8 +101,6 @@ Currently (version |release|) the following calendars are available:
    Module :mod:`time`
       Time access and conversions.
 
-
-.. _datetime-date:
 
 :class:`Date` Objects
 ---------------------
@@ -122,7 +129,7 @@ There are two ways of creating a :class:`Date` instance:
 They can also be pickled and unpickled. In boolean contexts, all :class:`Date`
 instances are considered to be true. :class:`Date` instances have one attribute:
 
-.. attribute:: Date.day_count
+.. attribute:: date.day_count
 
    The number of days between the given date and January 1\ :sup:`st`, year 1.
    This attribute is read-only: an :exc:`AttributeException` is raised when
@@ -176,3 +183,85 @@ There's one instance method:
 
    Return ``R.D.`` followed by the day count. ``R.D.`` stands for Rata Die, the Latin
    for "fixed date".
+
+Calendar interface
+^^^^^^^^^^^^^^^^^^
+
+An instance of the :class:`Date` class, as described above, is of little use
+as it is: even if it stands out for its simplicity, rata die is not a common
+way of representing dates in the real world. Indeed, the :mod:`datetime2`
+module provides access to many calendars, through class and instance methods.
+For example, the ``gregorian`` attribute allows to see the date instance as an
+instance of the :class:`GregorianCalendar` class, as follows:
+
+.. doctest::
+
+   >>> d = Date.gregorian(2013, 4, 18)
+   >>> d
+   datetime2.Date(734976)
+
+Note that the ``Date.gregorian`` constructor returns a :class:`Date`
+instance, not a :class:`GregorianCalendar` one. Through the attribute, it is
+also possible to access other constructors, as seen below, always returning a
+date:
+
+.. doctest::
+
+   >>> d = Date.gregorian.year_day(2012, 366)
+   >>> d
+   datetime2.Date(734868)
+
+Similarly, we can access static methods:
+
+.. doctest::
+
+   >>> Date.gregorian.is_leap_year(2012)
+   True
+
+Through the same attribute, we can see date instances as calendar instances,
+thus accessing calendar methods. For example:
+
+.. doctest::
+
+   >>> d = Date(734977)
+   >>> str(d.gregorian)
+   '2013-04-19'
+   >>> d.gregorian.weekday()
+   5
+
+Special attention is given to methods that normally return a new calendar
+instance: these methods, when accessed through a :class:`Date` attribute,
+return an instance of :class:`Date` and not one of the calendar. E.g.:
+
+.. doctest::
+
+   >>> d1 = Date(734977)
+   >>> d2 = d1.gregorian.replace(month = 6)
+   >>> str(d.gregorian)
+   '2013-04-19'
+
+The real power of this paradigm is when different calendars are used. The
+methods can be easily mixed transparently to the user::
+
+   >>> d = Date.gregorian(2013, 4, 22)
+   >>> d.iso.week
+   17
+
+The calendars available in the datetime2 distribution are
+:ref:`listed here <list-of-calendars>`. The manual section
+:ref:`Adding a new calendar to the Date class <adding-a-new-calendar>` explains
+how a custom calendar can be added to :class:`Date`, together with an
+explanation of the inner working of this mechanism. To add a new calendar,
+just call this function:
+
+.. function:: register_new_calendar(calendar_attribute, CalendarClass)
+
+   Register the class ``CalendarClass`` to be used as a calendar in the
+   :mod:`datetime2` module, accessing it with the ``calendar_attribute``
+   attribute. If the ``calendar_attribute`` attribute is already defined, an
+   :exc:`AttributeError` exception is generated. If ``calendar_attribute`` is
+   not a valid identifier, a :exc:`ValueError` exception is generated.
+
+   The ``CalendarClass`` class must satisfy the requirements listed in
+   :ref:`Adding a new calendar to the Date class <adding-a-new-calendar>`. If
+   it does not, a :exc:`TypeError` exception is generated.

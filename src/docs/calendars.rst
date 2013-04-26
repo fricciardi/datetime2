@@ -1,21 +1,26 @@
 Calendars
 =========
 
+.. testsetup:: gregorian
+
+   from calendars.gregorian import GregorianCalendar
+
+.. testsetup:: iso
+
+   from calendars.iso import IsoCalendar
+
 This chapter lists the calendars defined in the :mod:`datetime2` package. The
-classes defining each calendar are not depending on the :class:`datetime2.Date`
-class.
+classes defining each calendar are not depending on the
+:class:`~datetime2.Date` class.
 
 .. TODO: if we will be keeping all calendars on a page, a ToC here will be useful
 
-Comparison operators
-^^^^^^^^^^^^^^^^^^^^
-
 All the calendars listed here define the six standard comparison operators:
-``<``, ``>``, ``==``, ``>=``, ``<=``, and ``!=``. All of them return a
-meaningful result when comparing calendar objects of the same type. When
-comparing a calendar object with an object of a different type, the ``==`` and
-``!=`` operators *always* consider them to be unequal, while the ``<``, ``>``,
-``>=`` and ``<=`` operators raise a :exc:`TypeError`.
+``<``, ``>``, ``==``, ``>=``, ``<=``, and ``!=``, which return a meaningful
+result when comparing calendar objects of the same type. When comparing a
+calendar object with an object of a different type, the ``==`` and ``!=``
+operators *always* consider them to be unequal, while the ``<``, ``>``, ``>=``
+and ``<=`` operators raise a :exc:`TypeError`.
 
 
 .. _gregorian-calendar:
@@ -106,11 +111,13 @@ methods:
    for those parameters given new values by whichever keyword arguments are
    specified. All values are optional; if used, they must be integers. If any
    argument is outside its validity range or would create an invalid Gregorian
-   date, a :exc:`ValueError` exception is raised. For example::
+   date, a :exc:`ValueError` exception is raised. For example:
+
+.. doctest:: gregorian
 
       >>> greg = GregorianCalendar(2002, 12, 31)
       >>> print(greg.replace(day=26))
-      '2002-12-26'
+      2002-12-26
       >>> greg.replace(month=11)         # November has 30 days
       Traceback (most recent call last):
         |
@@ -120,7 +127,9 @@ methods:
 
    Return a string representing the date with the 'YYYY-MM-DD' format. Years
    above 9999 are represented adding necessary figures. Negative years are
-   represented prepending the minus sign. For example::
+   represented prepending the minus sign. For example:
+
+.. doctest:: gregorian
 
       >>> str(GregorianCalendar(2002, 12, 4))
       '2002-12-04'
@@ -280,11 +289,13 @@ An instance of the :class:`IsoCalendar` class has the following methods:
    those parameters given new values by whichever keyword arguments are
    specified. All values are optional; if used, they must be integers. If any
    argument is outside its validity range or would create an invalid Gregorian
-   date, a :exc:`ValueError` exception is raised. For example::
+   date, a :exc:`ValueError` exception is raised. For example:
+
+.. doctest:: iso
 
       >>> iso = IsoCalendar(2004, 53, 3)
       >>> print(iso.replace(week=26))
-      '2004-W26-3'
+      2004-W26-3
       >>> iso.replace(year=2003)  # 2003 has 52 weeks
       Traceback (most recent call last):
         |
@@ -294,12 +305,14 @@ An instance of the :class:`IsoCalendar` class has the following methods:
 
    Return a string representing the date with the 'YYYY-**W**\ WW-DD' format.
    Years above 9999 are represented adding necessary figures. Negative years
-   are represented prepending the minus sign. For example::
+   are represented prepending the minus sign. For example:
+
+.. doctest:: iso
 
       >>> str(IsoCalendar(2002, 12, 4))
-      '2002-W12-04'
+      '2002-W12-4'
       >>> str(IsoCalendar(-1, 1, 1))
-      '-0001-W01-01'
+      '-0001-W01-1'
 
 
 .. method:: iso.cformat(format)
