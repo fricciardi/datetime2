@@ -293,7 +293,7 @@ class TestISO(unittest.TestCase):
                      167, 595, 1024, 1452, 1880, 2308, 2731):
             self.assertTrue(IsoCalendar.is_long_year(year), msg = 'is_long_year, year = {}'.format(year))
             self.assertEqual(IsoCalendar.weeks_in_year(year), 53, msg = 'weeks_in_year, year = {}'.format(year))
-        # non-leap years
+        # short years
         for year in (-2845, -2422, -2000, -1972, -1544, -1116, -687, -259,
                      169, 597, 1026, 1454, 1882, 2310, 2733):
             self.assertFalse(IsoCalendar.is_long_year(year), msg = 'is_long_year, year = {}'.format(year))
@@ -481,7 +481,7 @@ class TestISO(unittest.TestCase):
             else:
                 expected += ys
             expected += '-W' + ('0' + str(week))[-2:]
-            expected += '-' + ('0' + str(day))[-2:]
+            expected += '-' + str(day)
             self.assertEqual(str(iso), expected, msg='Str test for {}-W{}-{}'.format(iso.year, week, day))
 
     def test_900_pickling(self):

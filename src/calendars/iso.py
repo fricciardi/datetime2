@@ -162,6 +162,6 @@ class IsoCalendar:
 
     def __str__(self):
         if self.year >= 0:
-            return '{:04d}-W{:02d}-{:02d}'.format(self.year, self.week, self.day)
+            return '{:04d}-W{:02d}-{:1d}'.format(self.year, self.week, self.day)
         else:
-            return '{:05d}-W{:02d}-{:02d}'.format(self.year, self.week, self.day)
+            return '{:05d}-W{:02d}-{:1d}'.format(self.year, self.week, self.day)
