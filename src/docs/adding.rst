@@ -36,13 +36,18 @@ class variables, as listed in the following table:
 +==========================================+=================================+
 | All static methods.                      | ``_static_methods``             |
 +------------------------------------------+---------------------------------+
-| All classmethods that return an instance | ``_classmethods``               |
+| All classmethods that return an instance | ``_classmethods`` (1)           |
 | of the calendar class, including the     |                                 |
 | other non-default constructors.          |                                 |
 +------------------------------------------+---------------------------------+
 | All methods that return an instance of   | ``_special_methods``            |
 | the calendar class.                      |                                 |
 +------------------------------------------+---------------------------------+
+
+Notes:
+
+(1)
+   the ``from_rata_die`` constructor must not be included in this list.
 
 As a very simple example, let's define a new calendar that defines each day by
 indicating the week number and the week day, counting the week of January

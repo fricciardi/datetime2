@@ -37,6 +37,7 @@ import unittest
 from fractions import Fraction
 from datetime2 import Date, TimeDelta
 from calendars.gregorian import GregorianCalendar
+from calendars.iso import IsoCalendar
 
 
 INF = float("inf")
@@ -295,40 +296,145 @@ class TestDate(unittest.TestCase):
         self.assertEqual(d1.day_count, d2.day_count)
         self.assertEqual(d2.newmeth(-7), (d1.day_count * 3) // 2 - 7)
 
+class ExampleTestCalendar:  # probably one of the simplest form, it is also used in documentation as example
+    def __init__(self, week, day):
+        self.week = week
+        self.day = day
+    @classmethod
+    def from_rata_die(cls, rata_die):
+        return cls((rata_die - 1) // 7 + 1, (rata_die - 1) % 7 + 1)
+    def to_rata_die(self):
+        return 7 * (self.week - 1) + self.day
 
+# TODO: test interface also on subclass
+class TestCalendarInterface(unittest.TestCase):
+    def tearDown(self):
+        for name in Date.__dict__.keys():
+            if name.startswith('test_'):
+                del Date.__dict__[name]
 
-class TestDateCalendarInterface(unittest.TestCase):
     # these tests are using the Gregorian and ISO calendars, but could have
     # been done with other calendars
-    # TODO: understand if interface tests can have calendars as parameters
-    def test_000_constructors(self):
-        # constructors return a Date
+    def test_000_register_new_calendar(self):
+        Date.register_new_calendar('test_1', ExampleTestCalendar)
+        d1a = Date.test_1(1, 1)
+        self.assertEqual(d1a.day_count, 1)
+        d1b = Date(1000)
+        self.assertIsInstance(d1b.test_1, ExampleTestCalendar)
+
+        class ExampleTestCalendar2(ExampleTestCalendar):
+            @classmethod
+            def with_thousands(cls, thousands, week, day):
+                return cls(1000 * thousands + week, day)
+            _classmethods = [with_thousands]
+
+        Date.register_new_calendar('test_2', ExampleTestCalendar2)
+        d2a = Date.test_2.with_thousands(1, 1, 1)
+        self.assertEqual(d2a.day_count, 7001)
+        d2b = Date(1000)
+        self.assertIsInstance(d2b.test_2, ExampleTestCalendar2)
+
+        class ExampleTestCalendar3(ExampleTestCalendar):
+            @staticmethod
+            def is_odd(number):
+                return (number % 2) == 1
+            _static_methods = [is_odd]
+
+        Date.register_new_calendar('test_3', ExampleTestCalendar3)
+        d3a = Date.test_3(1, 1)
+        self.assertEqual(d3a.day_count, 1)
+        d3b = Date(1)
+        self.assertTrue(d3b.test_3.is_odd(3))
+        self.assertFalse(d3b.test_3.is_odd(4))
+
+        class ExampleTestCalendar4(ExampleTestCalendar):
+            def change_day(self, new_day):
+                return self.__class__(self.week, new_day)
+            _special_methods = [change_day]
+
+        Date.register_new_calendar('test_4', ExampleTestCalendar4)
+        d4a = Date.test_4(1, 1)
+        self.assertEqual(d4a.day_count, 1)
+        d4b = d4a.test_4.change_day(5)
+        self.assertEqual(d4b.day_count, 5)
+
+    def test_010_existing_calendar(self):
+        # name of existing calendar
+        self.assertRaises(AttributeError, Date.register_new_calendar('gregorian', ExampleTestCalendar))
+        # name of another calendar, this is also a property
+        self.assertRaises(AttributeError, Date.register_new_calendar('day_count', ExampleTestCalendar))
+
+    def test_020_invalid_attribute_name(self):
+        self.assertRaises(ValueError, Date.register_new_calendar('', ExampleTestCalendar))
+        self.assertRaises(ValueError, Date.register_new_calendar('123new', ExampleTestCalendar))
+        self.assertRaises(ValueError, Date.register_new_calendar(123, ExampleTestCalendar))
+
+    def test_030_invalid_calendar_class(self):
+        class NoFromCalendar:  # removed from_rata_die
+            def __init__(self, week, day):
+                self.week = week
+                self.day = day
+            def to_rata_die(self):
+                return 7 * (self.week - 1) + self.day
+
+        self.assertRaises(TypeError, Date.register_new_calendar('test_1', NoFromCalendar))
+
+        class NoToCalendar:  # removed to_rata_die
+            def __init__(self, week, day):
+                self.week = week
+                self.day = day
+            @classmethod
+            def from_rata_die(cls, rata_die):
+                return cls((rata_die - 1) // 7 + 1, (rata_die - 1) % 7 + 1)
+
+        self.assertRaises(TypeError, Date.register_new_calendar('test_2', NoToCalendar))
+
+    def test_040_created_type_built_in(self):
         self.assertIsInstance(Date.gregorian(2, 1, 1), Date, msg="Date.gregorian creates a Date")
         self.assertIsInstance(Date.gregorian.year_day(1, 1), Date, msg="Date.gregorian.year_day creates a Date")
+        self.assertIsInstance(Date.iso(2, 1, 1), Date, msg="Date.iso creates a Date")
+
+    def test_050_created_type_run_time(self):
+        Date.register_new_calendar('test_1', ExampleTestCalendar)
+        self.assertIsInstance(Date.test_1(1, 1), Date, msg="Date.test_1 creates a Date")
+
+    def test_060_generated_attribute_generates_date(self):
+        d1 = Date(8)
+        self.assertIsInstance(d1.gregorian.from_rata_die(1), Date, msg="gregorian.from_rata_die of Date instance creates a Date")
+        d2 = Date.iso(1, 2, 3)
+        self.assertIsInstance(d2.gregorian.from_rata_die(1), Date, msg="gregorian.from_rata_die of Date.iso instance creates a Date")
+
+    def test_100_calendars_are_always_the_same(self):
         # constructed calendar is always the same
         d1 = Date(2)
         d1_id = id(d1.gregorian)
-        self.assertEqual(id(d1.gregorian), d1_id, msg = 'constructed caledar instance is always the same')
+        self.assertEqual(id(d1.gregorian), d1_id, msg = 'constructed calendar instance is always the same')
 
-    def test_050_calendar_attributes(self):
-        # a Date instance does not have a calendar in __dict__, but the class definition has it
+    def test_110_calendar_attributes(self):
+        # a Date instance does not have a calendar in __dict__ by itself, but the class definition has it
+        # i.e. the attribute has not been monkey patched
         d = Date(4)
         self.assertRaises(AttributeError, getattr, d.__dict__, 'gregorian')
         self.assertTrue(hasattr(d, 'gregorian'))
 
-    def test_100_calendar_type_is_correct(self):
+    def test_120_calendar_attribute_type_is_correct(self):
         # instance created with Date
         d1 = Date(2)
-        self.assertIsInstance(d1.gregorian, GregorianCalendar, msg="Calendar type is correct with instance created with Date")
+        self.assertIsInstance(d1.gregorian, GregorianCalendar, msg="Calendar type is correct with instance created with Date (Gregirian)")
+        self.assertIsInstance(d1.iso, IsoCalendar, msg="Calendar type is correct with instance created with Date (ISO)")
         # instance created with GregorianCalendar
         d2 = Date.gregorian(2, 2, 2)
         self.assertIsInstance(d2.gregorian, GregorianCalendar, msg="Calendar type is correct with instance created with GregorianCalendar")
         # instance created with IsoCalendar
-        # TODO: uncomment when iso calendar has been done
-#        d3 = Date.iso(2, 2, 2)
-#        self.assertIsInstance(d3.gregorian, GregorianCalendar, msg="Calendar type is correct with instance created with IsoCalendar")
+        d3 = Date.iso(2, 2, 2)
+        self.assertIsInstance(d3.iso, IsoCalendar, msg="Calendar type is correct with instance created with IsoCalendar")
+        # Crossed calendar creation
+        d4 = Date.iso(2, 2, 2)
+        self.assertIsInstance(d4.gregorian, GregorianCalendar, msg="Calendar type is correct with crossed creation (ISO)")
+        d5 = Date.gregorian(2, 2, 2)
+        self.assertIsInstance(d5.iso, IsoCalendar, msg="Calendar type is correct with crossed creation (Gregorian)")
 
-    def test_200_static_method_always_accessible(self):
+    def test_400_static_method_always_accessible(self):
         self.assertTrue(Date.gregorian.is_leap_year(2000), msg="Static method through class")
         # instance created with Date
         d1 = Date(2)
@@ -337,9 +443,8 @@ class TestDateCalendarInterface(unittest.TestCase):
         d2 = Date.gregorian(2, 2, 2)
         self.assertTrue(d2.gregorian.is_leap_year(2000), msg="Static method through instance created with GregorianCalendar")
         # instance created with IsoCalendar
-        # TODO: uncomment when iso calendar has been done
-#        d3 = Date.iso(2, 2, 2)
-#        self.assertTrue(d3.gregorian.is_leap_year(2000), msg="Static method through instance created with IsoCalendar")
+        d3 = Date.iso(2, 2, 2)
+        self.assertTrue(d3.gregorian.is_leap_year(2000), msg="Static method through instance created with IsoCalendar")
 
     def test_900_avoid_date_override(self):
         d = Date.gregorian(1, 1, 1)
