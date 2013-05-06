@@ -32,7 +32,6 @@ traces of them early.
    :hidden:
 
    calendars
-   adding
 
 Overview
 --------
@@ -184,42 +183,40 @@ There's one instance method:
    Return ``R.D.`` followed by the day count. ``R.D.`` stands for Rata Die, the Latin
    for "fixed date".
 
+.. _calendar-interface:
+
 Calendar interface
 ^^^^^^^^^^^^^^^^^^
 
 An instance of the :class:`Date` class, as described above, is of little use
 as it is: even if it stands out for its simplicity, rata die is not a common
 way of representing dates in the real world. Indeed, the :mod:`datetime2`
-module provides access to many calendars, through class and instance methods.
+module provides access to many calendars, via the attribute paradigm.
+
+
 For example, the ``gregorian`` attribute allows to see the date instance as an
 instance of the :class:`GregorianCalendar` class, as follows:
 
 .. doctest::
 
-   >>> d = Date.gregorian(2013, 4, 18)
-   >>> d
+   >>> d1 = Date.gregorian(2013, 4, 18)
+   >>> d1
    datetime2.Date(734976)
+   >>> d2 = Date(1)
+   >>> d2.gregorian
+   calendars.GregorianCalendar(1, 1, 1)
+   >>> d2.gregorian.month
+   1
 
-Note that the ``Date.gregorian`` constructor returns a :class:`Date`
-instance, not a :class:`GregorianCalendar` one. Through the attribute, it is
-also possible to access other constructors, as seen below, always returning a
-date:
+Above there are examples of two kinds of accesses: first of all, we can
+construct a :class:`Date` instance using the default constructor of a calendar
+(below there are examples of using non-default constructors). Note that the
+``Date.gregorian`` constructor returns a :class:`Date` instance, not a
+:class:`GregorianCalendar` one.
 
-.. doctest::
-
-   >>> d = Date.gregorian.year_day(2012, 366)
-   >>> d
-   datetime2.Date(734868)
-
-Similarly, we can access static methods:
-
-.. doctest::
-
-   >>> Date.gregorian.is_leap_year(2012)
-   True
-
-Through the same attribute, we can see date instances as calendar instances,
-thus accessing calendar methods. For example:
+Additionally, we can see a :class:`Date` instance, whichever way it was
+constructed, as an instance of a Gregorian calendar. As such, it is possible
+to access all attributes and methods of the calendar:
 
 .. doctest::
 
@@ -229,32 +226,67 @@ thus accessing calendar methods. For example:
    >>> d.gregorian.weekday()
    5
 
-Special attention is given to methods that normally return a new calendar
-instance: these methods, when accessed through a :class:`Date` attribute,
-return an instance of :class:`Date` and not one of the calendar. E.g.:
+Special attention is given to calendar methods that normally return a new
+calendar instance: these methods, when accessed through a :class:`Date`
+attribute, return an instance of :class:`Date` and not one of the calendar.
+E.g.:
 
 .. doctest::
 
    >>> d1 = Date(734977)
    >>> d2 = d1.gregorian.replace(month = 6)
-   >>> str(d.gregorian)
-   '2013-04-19'
+   >>> d2
+   datetime2.Date(735038)
+   >>> str(d2.gregorian)
+   '2013-06-19'
 
-The real power of this paradigm is when different calendars are used. The
-methods can be easily mixed transparently to the user::
+When accessed through the attribute, also other calendar constructors, return
+a date:
+
+.. doctest::
+
+   >>> d = Date.gregorian.year_day(2012, 366)
+   >>> d
+   datetime2.Date(734868)
+   >>> d.gregorian
+   calendars.GregorianCalendar(2012, 12, 31)
+
+As expected, calendar static methods are unchanged:
+
+.. doctest::
+
+   >>> Date.gregorian.is_leap_year(2012)
+   True
+
+The real power of this paradigm is when different calendars are used. Indeed a
+:class:`Date` instance is not limited to handling a single calendar: using the
+corresponding attributes, all calendars are reachable:
+
+.. doctest::
 
    >>> d = Date.gregorian(2013, 4, 22)
    >>> d.iso.week
    17
 
-The calendars available in the datetime2 distribution are
-:ref:`listed here <list-of-calendars>`. The manual section
-:ref:`Adding a new calendar to the Date class <adding-a-new-calendar>` explains
-how a custom calendar can be added to :class:`Date`, together with an
-explanation of the inner working of this mechanism. To add a new calendar,
-just call this function:
+The following table lists the available calendars:
 
-.. function:: register_new_calendar(calendar_attribute, CalendarClass)
++--------------+----------------------------------------------------------+------------------+
+| Calendar     | Calendar class                                           | Attribute        |
++==============+==========================================================+==================+
+| Gregorian    | :ref:`GregorianCalendar <gregorian-calendar>`            | ``gregorian``    |
++--------------+----------------------------------------------------------+------------------+
+| ISO          | :ref:`IsoCalendar <iso-calendar>`                        | ``iso``          |
++--------------+----------------------------------------------------------+------------------+
+
+
+Custom calendars
+""""""""""""""""
+
+Not only the :mod:`datetime2` module has a variety of calendars, but it is also
+possible to add custom calendars to class :class:`Date`, by calling the
+following function:
+
+.. function:: register_new_calendar(calendar_attribute, CalendarClass, constructors=(), special_methods=())
 
    Register the class ``CalendarClass`` to be used as a calendar in the
    :mod:`datetime2` module, accessing it with the ``calendar_attribute``
@@ -262,6 +294,82 @@ just call this function:
    :exc:`AttributeError` exception is generated. If ``calendar_attribute`` is
    not a valid identifier, a :exc:`ValueError` exception is generated.
 
-   The ``CalendarClass`` class must satisfy the requirements listed in
-   :ref:`Adding a new calendar to the Date class <adding-a-new-calendar>`. If
-   it does not, a :exc:`TypeError` exception is generated.
+   The ``CalendarClass`` must have the non-default constructor
+   ``from_rata_die`` and the method ``to_rata_die`` that convert the calendar
+   to and from the rata die count. If it does not, a :exc:`TypeError` exception
+   is generated.
+
+   The ``constructors`` list of strings, if defined, must contain the list of
+   non-default constructors, as list of strings; the ``from_rata_die``
+   constructor must not be included in the list. The ``special_methods`` list
+   of strings, if defined, must contain the list of methods in the calendar
+   class that return a new calendar instance.
+
+As a very simple example, let's define a new calendar that defines each day by
+indicating the week number and the week day, counting the week of January
+1\ :sup:`st` of year 1 as week 1 and so on. In addition, this new calendar has
+a constructor using also thousands of weeks:
+
+.. doctest::
+
+   >>> class SimpleWeekCalendar():
+   ...     def __init__(self, week, day):
+   ...         self.week = week
+   ...         self.day = day
+   ...     @classmethod
+   ...     def from_rata_die(cls, rata_die):
+   ...         return cls((rata_die - 1) // 7 + 1, (rata_die - 1) % 7 + 1)
+   ...     def to_rata_die(self):
+   ...         return 7 * (self.week - 1) + self.day
+   ...     def __repr__(self):
+   ...         return 'SimpleWeekCalendar({}, {})'.format(self.week, self.day)
+   ...     @classmethod
+   ...     def with_thousands(cls, thousands, week, day):
+   ...         return cls(1000 * thousands + week, day)
+   ...
+   >>> datetime2.register_new_calendar('week_count', SimpleWeekCalendar, constructors = ['with_thousands'])
+   >>> d1 = Date.week_count(1, 1)
+   >>> d1.gregorian
+   GregorianCalendarInDate(1, 1, 1)
+   >>> d2 = Date.gregorian(2013, 4, 26)
+   >>> d2.week_count
+   SimpleWeekCalendarinDate(104998, 5)
+
+To avoid computing all calendars at initialization time, calendas attributes
+in a :class:`Date` instance are evaluated when retrieved for the first time;
+they are then stored as attributes of the instance.
+
+To obtain this, the standard attribute lookup mechanisms is exploited:
+
+* if the instance has the attribute, this is retrieved normally; however, this
+  is not an instance of the original calendar, but a subclass of it such that
+  methods that originally return a calendar instance now return a :class:`Date`
+  instance (e.g. the :meth:`~calendars.gregorian.GregorianCalendar.replace`
+  method of the :class:`~calendars.gregorian.GregorianCalendar` class);
+* if the instance does not have the attribute, the attribute lookup mechanism
+  looks for it in the corresponding :class:`Date` class definition, where it is
+  found; the code thus called creates the attribute in the instance (by monkey
+  patching), so the next time it is returned as indicated above;
+* if the attribute is retrieved directly from the class, as in
+  ``Date.week_count(1, 1)`` above, a hybrid date/calendar constructor is
+  returned: this constructor returns a :class:`Date` instance, initializing it
+  with the ``day_count`` corresponding to the invoked calendar, and adds the
+  corresponding calendar attribute (it has already been computed, so this does
+  not require more computations).
+
+The last two points seems conflicting: depending on the context (i.e. whether
+the attribute is retrieved from the class or from the instance) a different
+content is returned. This is obtained implementing a context-dependent
+attribute retrieval, well described in `Descriptor HowTo Guide
+<http://docs.python.org/3.3/howto/descriptor.html>`_).
+
+This quite complex implementation has a few advantages:
+
+* :class:`Date` instances do not store calendars unless they are retrieved;
+* hybrid calendar constructors are built at run-time, when registering the
+  calendar at the :class:`Date` class:
+
+  * this happens only once per program invocation;
+  * the registration mechanism works unchanged for custom calendars;
+* the calendar classes are completely independent from each other and from
+  their use in the :class:`Date` class.
