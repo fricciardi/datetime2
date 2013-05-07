@@ -326,9 +326,8 @@ class TestCalendarInterface(unittest.TestCase):
             @classmethod
             def with_thousands(cls, thousands, week, day):
                 return cls(1000 * thousands + week, day)
-            _classmethods = [with_thousands]
 
-        Date.register_new_calendar('test_2', ExampleTestCalendar2)
+        Date.register_new_calendar('test_2', ExampleTestCalendar2, constructors=['with_thousands'])
         d2a = Date.test_2.with_thousands(1, 1, 1)
         self.assertEqual(d2a.day_count, 7001)
         d2b = Date(1000)
@@ -338,25 +337,13 @@ class TestCalendarInterface(unittest.TestCase):
             @staticmethod
             def is_odd(number):
                 return (number % 2) == 1
-            _static_methods = [is_odd]
 
-        Date.register_new_calendar('test_3', ExampleTestCalendar3)
+        Date.register_new_calendar('test_3', ExampleTestCalendar3, special_methods=['is_odd'])
         d3a = Date.test_3(1, 1)
         self.assertEqual(d3a.day_count, 1)
         d3b = Date(1)
         self.assertTrue(d3b.test_3.is_odd(3))
         self.assertFalse(d3b.test_3.is_odd(4))
-
-        class ExampleTestCalendar4(ExampleTestCalendar):
-            def change_day(self, new_day):
-                return self.__class__(self.week, new_day)
-            _special_methods = [change_day]
-
-        Date.register_new_calendar('test_4', ExampleTestCalendar4)
-        d4a = Date.test_4(1, 1)
-        self.assertEqual(d4a.day_count, 1)
-        d4b = d4a.test_4.change_day(5)
-        self.assertEqual(d4b.day_count, 5)
 
     def test_010_existing_calendar(self):
         # name of existing calendar
@@ -413,9 +400,12 @@ class TestCalendarInterface(unittest.TestCase):
     def test_110_calendar_attributes(self):
         # a Date instance does not have a calendar in __dict__ by itself, but the class definition has it
         # i.e. the attribute has not been monkey patched
-        d = Date(4)
-        self.assertRaises(AttributeError, getattr, d.__dict__, 'gregorian')
-        self.assertTrue(hasattr(d, 'gregorian'))
+        d1 = Date(4)
+        self.assertRaises(AttributeError, getattr, d1.__dict__, 'gregorian')
+        self.assertTrue(hasattr(d1, 'gregorian'), msg='Date class has attribute')
+        # If instead the Date instance has been created via an attribute, the corresponding attribute exists
+        d2 = Date.gregorian(1, 2, 3)
+        self.assertTrue('gregorian' in d2.__dict__, msg='Date instance has attribute when created via attribute.')
 
     def test_120_calendar_attribute_type_is_correct(self):
         # instance created with Date

@@ -151,7 +151,48 @@ class Date:
 
 ##############################################################################
 # Support functions and classes
+# This probably will be moved to a class which will be mixed in Date
+    def register_new_calendar(self, calendar_attribute, calendar_class, constructors=(), special_methods=()):
+        class CalendarAttribute:
+            # This class will implement a context dependent attribute
+            def __init__(self, attribute_name, calendar_class):
+                self.attribute_name = attribute_name
+                self.calendar_class = calendar_class
+
+            def __get__(self, instance, owner):
+                if instance is None:
+                    return self.calendar_class
+                else:
+                    try:
+                        calendar_obj = instance.__dict__[self.attribute_name]
+                        return calendar_obj
+                    except KeyError:
+                        try:
+
+                        calendar_obj = self.interface_class.from_rata_die(owner.day_count)
+                        owner.calendars[self.attribute_name] = calendar_obj
+                        return calendar_obj
+
+
+        def new_get(self, obj, objtype):
+            if obj is None:
+                return GregorianCalendarToDateFactory   #######
+            else:
+                try:
+                    return self.__dict__[gregorian]
+                except KeyError:
+                    greg_obj = gregorian.GregorianCalendar.from_rata_die(obj.day_count)
+                    obj.gregorian = greg_obj
+                    return greg_obj
+
+##############################################################################
+# Calendar registrations
 #
+Date.gregorian = GregorianInDateAttribute()
+# stub to verify test code
+# Date.iso = GregorianInDateAttribute()
+
+
 def _create_date_factory(calendar_class, attribute_name, class_methods, static_methods):
     new_class_name = '{}Factory'.format(calendar_class.__name__)
     def new_method(self, *args, **kwargs):
@@ -191,40 +232,4 @@ class GregorianInDateAttribute:
                 return greg_obj
 
 
-class CalendarInDateAttribute:
-    # This class will implement a context dependent attribute
-    def __init__(self, attribute_name, interface_class):
-        self.attribute_name = attribute_name
-        self.interface_class = interface_class
-
-    def __get__(self, instance, owner):
-        if instance is None:
-            calendar_obj = self.interface_class.from_rata_die(owner.day_count)
-            return self.interface_class
-        else:
-            try:
-                return owner.calendars[self.attribute_name]
-            except KeyError:
-                calendar_obj = self.interface_class.from_rata_die(owner.day_count)
-                owner.calendars[self.attribute_name] = calendar_obj
-                return calendar_obj
-
-def register_calendar(atribute_name, calendar_class):
-    def new_get(self, obj, objtype):
-        if obj is None:
-            return GregorianCalendarToDateFactory   #######
-        else:
-            try:
-                return self.__dict__[gregorian]
-            except KeyError:
-                greg_obj = gregorian.GregorianCalendar.from_rata_die(obj.day_count)
-                obj.gregorian = greg_obj
-                return greg_obj
-
-##############################################################################
-# Calendar registrations
-#
-Date.gregorian = GregorianInDateAttribute()
-# stub to verify test code
-# Date.iso = GregorianInDateAttribute()
 
