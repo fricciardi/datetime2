@@ -183,7 +183,6 @@ There's one instance method:
    Return ``R.D.`` followed by the day count. ``R.D.`` stands for Rata Die, the Latin
    for "fixed date".
 
-.. _calendar-interface:
 
 Calendar interface
 ^^^^^^^^^^^^^^^^^^
@@ -204,7 +203,7 @@ instance of the :class:`GregorianCalendar` class, as follows:
    datetime2.Date(734976)
    >>> d2 = Date(1)
    >>> d2.gregorian
-   calendars.GregorianCalendar(1, 1, 1)
+   calendars.gregorian.GregorianCalendarInDate(1, 1, 1)
    >>> d2.gregorian.month
    1
 
@@ -249,7 +248,7 @@ a date:
    >>> d
    datetime2.Date(734868)
    >>> d.gregorian
-   calendars.GregorianCalendar(2012, 12, 31)
+   calendars.gregorian.GregorianCalendarInDate(2012, 12, 31)
 
 As expected, calendar static methods are unchanged:
 
@@ -278,6 +277,7 @@ The following table lists the available calendars:
 | ISO          | :ref:`IsoCalendar <iso-calendar>`                        | ``iso``          |
 +--------------+----------------------------------------------------------+------------------+
 
+.. _custom-calendars:
 
 Custom calendars
 """"""""""""""""
@@ -286,7 +286,7 @@ Not only the :mod:`datetime2` module has a variety of calendars, but it is also
 possible to add custom calendars to class :class:`Date`, by calling the
 following function:
 
-.. function:: register_new_calendar(calendar_attribute, CalendarClass, constructors=(), special_methods=())
+.. function:: register_new_calendar(calendar_attribute, CalendarClass)
 
    Register the class ``CalendarClass`` to be used as a calendar in the
    :mod:`datetime2` module, accessing it with the ``calendar_attribute``
@@ -297,13 +297,11 @@ following function:
    The ``CalendarClass`` must have the non-default constructor
    ``from_rata_die`` and the method ``to_rata_die`` that convert the calendar
    to and from the rata die count. If it does not, a :exc:`TypeError` exception
-   is generated.
-
-   The ``constructors`` list of strings, if defined, must contain the list of
-   non-default constructors, as list of strings; the ``from_rata_die``
-   constructor must not be included in the list. The ``special_methods`` list
-   of strings, if defined, must contain the list of methods in the calendar
-   class that return a new calendar instance.
+   is generated. Additionally, for the import mechanism to work, other class
+   constructors and the methods that return a calendar instance (e.g.
+   :ref:`gregorian.replace <gregorian-replace>`) should construct objects of
+   the calendar class just calling the calendar class (like in
+   ``GregorianCalendar(1, 2, 3)``).
 
 As a very simple example, let's define a new calendar that defines each day by
 indicating the week number and the week day, counting the week of January
@@ -327,15 +325,15 @@ a constructor using also thousands of weeks:
    ...     def with_thousands(cls, thousands, week, day):
    ...         return cls(1000 * thousands + week, day)
    ...
-   >>> datetime2.register_new_calendar('week_count', SimpleWeekCalendar, constructors = ['with_thousands'])
+   >>> Date.register_new_calendar('week_count', SimpleWeekCalendar)
    >>> d1 = Date.week_count(1, 1)
    >>> d1.gregorian
-   GregorianCalendarInDate(1, 1, 1)
+   calendars.gregorian.GregorianCalendarInDate(1, 1, 1)
    >>> d2 = Date.gregorian(2013, 4, 26)
    >>> d2.week_count
-   SimpleWeekCalendarinDate(104998, 5)
+   SimpleWeekCalendarInDate(104998, 5)
 
-To avoid computing all calendars at initialization time, calendas attributes
+To avoid computing all calendars at initialization time, calendar attributes
 in a :class:`Date` instance are evaluated when retrieved for the first time;
 they are then stored as attributes of the instance.
 
@@ -366,8 +364,7 @@ attribute retrieval, well described in `Descriptor HowTo Guide
 This quite complex implementation has a few advantages:
 
 * :class:`Date` instances do not store calendars unless they are retrieved;
-* hybrid calendar constructors are built at run-time, when registering the
-  calendar at the :class:`Date` class:
+* hybrid calendar constructors are built at registration time:
 
   * this happens only once per program invocation;
   * the registration mechanism works unchanged for custom calendars;

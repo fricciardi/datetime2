@@ -22,6 +22,8 @@ calendar object with an object of a different type, the ``==`` and ``!=``
 operators *always* consider them to be unequal, while the ``<``, ``>``, ``>=``
 and ``<=`` operators raise a :exc:`TypeError`.
 
+Also, all calendars listed here conform to the rules listed in
+:ref:`custom-calendars`.
 
 .. _gregorian-calendar:
 
@@ -104,6 +106,7 @@ methods:
    Return the day of the year as an integer, from 1 to 365 or 366 (in leap years).
    For example, ``GregorianCalendar(2008, 3, 1).day_of_year() == 61``.
 
+.. _gregorian-replace:
 
 .. method:: gregorian.replace(year, month, day)
 
