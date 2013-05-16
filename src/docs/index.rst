@@ -296,12 +296,12 @@ following function:
 
    The ``CalendarClass`` must have the non-default constructor
    ``from_rata_die`` and the method ``to_rata_die`` that convert the calendar
-   to and from the rata die count. If it does not, a :exc:`TypeError` exception
-   is generated. Additionally, for the import mechanism to work, other class
-   constructors and the methods that return a calendar instance (e.g.
-   :ref:`gregorian.replace <gregorian-replace>`) should construct objects of
-   the calendar class just calling the calendar class (like in
-   ``GregorianCalendar(1, 2, 3)``).
+   to and from the rata die count. A :exc:`TypeError` exception is generated if
+   either method does not exist. Additionally, for the import mechanism to
+   work, other class constructors and the methods that return a calendar
+   instance (e.g. :ref:`gregorian.replace <gregorian-replace>`) should
+   construct objects of the calendar class just calling the calendar class
+   (like in ``GregorianCalendar(1, 2, 3)``).
 
 As a very simple example, let's define a new calendar that defines each day by
 indicating the week number and the week day, counting the week of January
