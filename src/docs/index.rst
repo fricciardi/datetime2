@@ -364,9 +364,8 @@ attribute retrieval, well described in `Descriptor HowTo Guide
 This quite complex implementation has a few advantages:
 
 * :class:`Date` instances do not store calendars unless they are retrieved;
-* hybrid calendar constructors are built at registration time:
-
-  * this happens only once per program invocation;
-  * the registration mechanism works unchanged for custom calendars;
+* hybrid calendar classes are built at registration time, which happens only
+  once per program invocation;
+* the registration mechanism works unchanged for built-in and custom calendars;
 * the calendar classes are completely independent from each other and from
   their use in the :class:`Date` class.
