@@ -306,67 +306,36 @@ class ExampleTestCalendar:  # probably one of the simplest form, it is also used
     def to_rata_die(self):
         return 7 * (self.week - 1) + self.day
 
-# TODO: test interface also on subclass
 class TestCalendarInterface(unittest.TestCase):
     def tearDown(self):
-        for name in Date.__dict__.keys():
-            if name.startswith('test_'):
-                del Date.__dict__[name]
+        for name in [name for name in Date.__dict__.keys() if name.startswith('test_')]:
+            delattr(Date, name)
 
-    # these tests are using the Gregorian and ISO calendars, but could have
-    # been done with other calendars
     def test_000_register_new_calendar(self):
+        assert not hasattr(Date, 'test_1')
         Date.register_new_calendar('test_1', ExampleTestCalendar)
-        d1a = Date.test_1(1, 1)
-        self.assertEqual(d1a.day_count, 1)
-        d1b = Date(1000)
-        self.assertIsInstance(d1b.test_1, ExampleTestCalendar)
+        self.assertTrue(hasattr(Date, 'test_1'))
 
-        class ExampleTestCalendar2(ExampleTestCalendar):
-            @classmethod
-            def with_thousands(cls, thousands, week, day):
-                return cls(1000 * thousands + week, day)
+    def test_010_register_new_calendar_existing_calendar_or_attribute(self):
+        self.assertRaises(AttributeError, Date.register_new_calendar, 'gregorian', ExampleTestCalendar)
+        self.assertRaises(AttributeError, Date.register_new_calendar, 'day_count', ExampleTestCalendar)
 
-        Date.register_new_calendar('test_2', ExampleTestCalendar2, constructors=['with_thousands'])
-        d2a = Date.test_2.with_thousands(1, 1, 1)
-        self.assertEqual(d2a.day_count, 7001)
-        d2b = Date(1000)
-        self.assertIsInstance(d2b.test_2, ExampleTestCalendar2)
+    def test_020_register_new_calendar_invalid_attribute_name(self):
+        self.assertRaises(ValueError, Date.register_new_calendar, '', ExampleTestCalendar)
+        self.assertRaises(ValueError, Date.register_new_calendar, '123new', ExampleTestCalendar)
+        self.assertRaises(ValueError, Date.register_new_calendar, 123, ExampleTestCalendar)
 
-        class ExampleTestCalendar3(ExampleTestCalendar):
-            @staticmethod
-            def is_odd(number):
-                return (number % 2) == 1
-
-        Date.register_new_calendar('test_3', ExampleTestCalendar3, special_methods=['is_odd'])
-        d3a = Date.test_3(1, 1)
-        self.assertEqual(d3a.day_count, 1)
-        d3b = Date(1)
-        self.assertTrue(d3b.test_3.is_odd(3))
-        self.assertFalse(d3b.test_3.is_odd(4))
-
-    def test_010_existing_calendar(self):
-        # name of existing calendar
-        self.assertRaises(AttributeError, Date.register_new_calendar('gregorian', ExampleTestCalendar))
-        # name of another calendar, this is also a property
-        self.assertRaises(AttributeError, Date.register_new_calendar('day_count', ExampleTestCalendar))
-
-    def test_020_invalid_attribute_name(self):
-        self.assertRaises(ValueError, Date.register_new_calendar('', ExampleTestCalendar))
-        self.assertRaises(ValueError, Date.register_new_calendar('123new', ExampleTestCalendar))
-        self.assertRaises(ValueError, Date.register_new_calendar(123, ExampleTestCalendar))
-
-    def test_030_invalid_calendar_class(self):
-        class NoFromCalendar:  # removed from_rata_die
+    def test_030_register_new_calendar_invalid_calendar_class(self):
+        class NoFromCalendar:  # without from_rata_die
             def __init__(self, week, day):
                 self.week = week
                 self.day = day
             def to_rata_die(self):
                 return 7 * (self.week - 1) + self.day
 
-        self.assertRaises(TypeError, Date.register_new_calendar('test_1', NoFromCalendar))
+        self.assertRaises(TypeError, Date.register_new_calendar, 'test_1', NoFromCalendar)
 
-        class NoToCalendar:  # removed to_rata_die
+        class NoToCalendar:  # without to_rata_die
             def __init__(self, week, day):
                 self.week = week
                 self.day = day
@@ -374,67 +343,133 @@ class TestCalendarInterface(unittest.TestCase):
             def from_rata_die(cls, rata_die):
                 return cls((rata_die - 1) // 7 + 1, (rata_die - 1) % 7 + 1)
 
-        self.assertRaises(TypeError, Date.register_new_calendar('test_2', NoToCalendar))
+        self.assertRaises(TypeError, Date.register_new_calendar, 'test_2', NoToCalendar)
 
-    def test_040_created_type_built_in(self):
-        self.assertIsInstance(Date.gregorian(2, 1, 1), Date, msg="Date.gregorian creates a Date")
-        self.assertIsInstance(Date.gregorian.year_day(1, 1), Date, msg="Date.gregorian.year_day creates a Date")
-        self.assertIsInstance(Date.iso(2, 1, 1), Date, msg="Date.iso creates a Date")
-
-    def test_050_created_type_run_time(self):
+    def test_040_registered_attribute_simple_class(self):
         Date.register_new_calendar('test_1', ExampleTestCalendar)
-        self.assertIsInstance(Date.test_1(1, 1), Date, msg="Date.test_1 creates a Date")
 
-    def test_060_generated_attribute_generates_date(self):
-        d1 = Date(8)
-        self.assertIsInstance(d1.gregorian.from_rata_die(1), Date, msg="gregorian.from_rata_die of Date instance creates a Date")
-        d2 = Date.iso(1, 2, 3)
-        self.assertIsInstance(d2.gregorian.from_rata_die(1), Date, msg="gregorian.from_rata_die of Date.iso instance creates a Date")
+        # Date attribute type and metaclass are correct
+        self.assertEqual(Date.test_1.__name__, 'ExampleTestCalendarInDate', msg='Name of first test calendar (found {}).'.format(Date.test_1.__name__))
+        self.assertEqual(type(Date.test_1).__name__, 'ModifiedClass', msg='Metaclass name of first test calendar (found {}).'.format(type(Date.test_1).__name__))
+        self.assertTrue(issubclass(Date.test_1, ExampleTestCalendar), msg='Type of first test calendar.')
 
-    def test_100_calendars_are_always_the_same(self):
-        # constructed calendar is always the same
-        d1 = Date(2)
-        d1_id = id(d1.gregorian)
-        self.assertEqual(id(d1.gregorian), d1_id, msg = 'constructed calendar instance is always the same')
+        # constructed date type and value are is correct
+        d1a = Date.test_1(100, 4)
+        self.assertEqual(type(d1a), Date, msg='Type of created instance with first test calendar.')
+        self.assertEqual(d1a.day_count, 697, msg='Value of first test date is correct and recoverable.')
 
-    def test_110_calendar_attributes(self):
-        # a Date instance does not have a calendar in __dict__ by itself, but the class definition has it
-        # i.e. the attribute has not been monkey patched
+        # new attribute on date instance, type and value are correct
+        d1b = Date(1000)
+        self.assertIsInstance(d1b.test_1, ExampleTestCalendar, msg='Type of first test calendar (2).')
+        self.assertEqual(type(d1b.test_1).__name__, 'ExampleTestCalendarInDate', msg='Metaclass name of first test calendar (2)(found {}).'.format(type(d1b.test_1).__name__))
+        self.assertEqual(type(d1b.test_1.__class__).__name__, 'ModifiedClass', msg='Name of first test calendar (2) (found {}).'.format(type(d1b.test_1.__class__).__name__))
+        self.assertEqual(d1b.test_1.week, 143, msg='Value of first test date attribute (1) is correct and recoverable.')
+        self.assertEqual(d1b.test_1.day, 6, msg='Value of first test date attribute (2) is correct and recoverable.')
+
+        # new attribute on date instance build by another calendar, type and value are correct
+        d1c = Date.gregorian(100, 2, 3)
+        self.assertIsInstance(d1c.test_1, ExampleTestCalendar, msg='Type of first test calendar (3).')
+        self.assertEqual(type(d1c.test_1).__name__, 'ExampleTestCalendarInDate', msg='Metaclass name of first test calendar (3)(found {}).'.format(type(d1c.test_1).__name__))
+        self.assertEqual(type(d1c.test_1.__class__).__name__, 'ModifiedClass', msg='Name of first test calendar (3) (found {}).'.format(type(d1b.test_1.__class__).__name__))
+        self.assertEqual(d1c.test_1.week, 5171, msg='Value of first test date attribute (1) via gregorian is correct and recoverable.')
+        self.assertEqual(d1c.test_1.day, 3, msg='Value of first test date attribute (2) via gregorian is correct and recoverable.')
+
+
+    def test_043_registered_attribute_class_with_other_constructors(self):
+        class ExampleTestCalendar2(ExampleTestCalendar):
+            @classmethod
+            def with_thousands(cls, thousands, week, day):
+                return cls(1000 * thousands + week, day)
+
+        Date.register_new_calendar('test_2', ExampleTestCalendar2)
+        
+        # Date attribute type and metaclass are correct
+        self.assertEqual(Date.test_2.__name__, 'ExampleTestCalendar2InDate', msg='Name of second test calendar (found {}).'.format(Date.test_2.__name__))
+        self.assertEqual(type(Date.test_2).__name__, 'ModifiedClass', msg='Metaclass name of second test calendar (found {}).'.format(type(Date.test_2).__name__))
+        self.assertTrue(issubclass(Date.test_2, ExampleTestCalendar2), msg='Type of second test calendar.')
+
+        # constructed date type and value are is correct
+        d2a = Date.test_2(100, 4)
+        self.assertEqual(type(d2a), Date, msg='Type of created instance with second test calendar.')
+        self.assertEqual(d2a.day_count, 697, msg='Value of second test date is correct and recoverable.')
+        d2d = Date.test_2.with_thousands(2, 3, 4)
+        self.assertEqual(type(d2d), Date, msg='Type of created instance via non-default constructor with second test calendar.')
+        self.assertEqual(d2d.day_count, 14018, msg='Value of second test date (non-default constructor) is correct and recoverable.')
+
+        # new attribute on date instance, type and value are correct
+        d2b = Date(1000)
+        self.assertIsInstance(d2b.test_2, ExampleTestCalendar2, msg='Type of second test calendar (2).')
+        self.assertEqual(type(d2b.test_2).__name__, 'ExampleTestCalendar2InDate', msg='Metaclass name of second test calendar (2)(found {}).'.format(type(d2b.test_2).__name__))
+        self.assertEqual(type(d2b.test_2.__class__).__name__, 'ModifiedClass', msg='Name of second test calendar (2) (found {}).'.format(type(d2b.test_2.__class__).__name__))
+        self.assertEqual(d2b.test_2.week, 143, msg='Value of second test date attribute (1) is correct and recoverable.')
+        self.assertEqual(d2b.test_2.day, 6, msg='Value of second test date attribute (2) is correct and recoverable.')
+
+        # new attribute on date instance build by another calendar, type and value are correct
+        d2c = Date.gregorian(100, 2, 3)
+        self.assertIsInstance(d2c.test_2, ExampleTestCalendar2, msg='Type of second test calendar (3).')
+        self.assertEqual(type(d2c.test_2).__name__, 'ExampleTestCalendar2InDate', msg='Metaclass name of second test calendar (3)(found {}).'.format(type(d2c.test_2).__name__))
+        self.assertEqual(type(d2c.test_2.__class__).__name__, 'ModifiedClass', msg='Name of second test calendar (3) (found {}).'.format(type(d2b.test_2.__class__).__name__))
+        self.assertEqual(d2c.test_2.week, 5171, msg='Value of second test date attribute (1) via gregorian is correct and recoverable.')
+        self.assertEqual(d2c.test_2.day, 3, msg='Value of second test date attribute (2) via gregorian is correct and recoverable.')
+
+    def test_046_registered_attribute_class_with_static_methods(self):
+        class ExampleTestCalendar3(ExampleTestCalendar):
+            @staticmethod
+            def is_odd(number):
+                return (number % 2) == 1
+
+        Date.register_new_calendar('test_3', ExampleTestCalendar3)
+
+        # Date attribute type and metaclass are correct
+        self.assertEqual(Date.test_3.__name__, 'ExampleTestCalendar3InDate', msg='Name of first test calendar (found {}).'.format(Date.test_3.__name__))
+        self.assertEqual(type(Date.test_3).__name__, 'ModifiedClass', msg='Metaclass name of first test calendar (found {}).'.format(type(Date.test_3).__name__))
+        self.assertTrue(issubclass(Date.test_3, ExampleTestCalendar3), msg='Type of first test calendar.')
+
+        # constructed date type and value are is correct
+        d3a = Date.test_3(100, 4)
+        self.assertEqual(type(d3a), Date, msg='Type of created instance with first test calendar.')
+        self.assertEqual(d3a.day_count, 697, msg='Value of first test date is correct and recoverable.')
+
+        # new attribute on date instance, type and value are correct
+        d3b = Date(1000)
+        self.assertIsInstance(d3b.test_3, ExampleTestCalendar3, msg='Type of first test calendar (2).')
+        self.assertEqual(type(d3b.test_3).__name__, 'ExampleTestCalendar3InDate', msg='Metaclass name of first test calendar (2)(found {}).'.format(type(d3b.test_3).__name__))
+        self.assertEqual(type(d3b.test_3.__class__).__name__, 'ModifiedClass', msg='Name of first test calendar (2) (found {}).'.format(type(d3b.test_3.__class__).__name__))
+        self.assertEqual(d3b.test_3.week, 143, msg='Value of first test date attribute (1) is correct and recoverable.')
+        self.assertEqual(d3b.test_3.day, 6, msg='Value of first test date attribute (2) is correct and recoverable.')
+
+        # new attribute on date instance build by another calendar, type and value are correct
+        d3c = Date.gregorian(100, 2, 3)
+        self.assertIsInstance(d3c.test_3, ExampleTestCalendar3, msg='Type of first test calendar (3).')
+        self.assertEqual(type(d3c.test_3).__name__, 'ExampleTestCalendar3InDate', msg='Metaclass name of first test calendar (3)(found {}).'.format(type(d3c.test_3).__name__))
+        self.assertEqual(type(d3c.test_3.__class__).__name__, 'ModifiedClass', msg='Name of first test calendar (3) (found {}).'.format(type(d3b.test_3.__class__).__name__))
+        self.assertEqual(d3c.test_3.week, 5171, msg='Value of first test date attribute (1) via gregorian is correct and recoverable.')
+        self.assertEqual(d3c.test_3.day, 3, msg='Value of first test date attribute (2) via gregorian is correct and recoverable.')
+
+        # static method can be reached on the class and on all types of instance 
+        self.assertTrue(Date.test_3.is_odd(3))
+        self.assertFalse(Date.test_3.is_odd(4))
+        self.assertTrue(d3a.test_3.is_odd(3))
+        self.assertFalse(d3a.test_3.is_odd(4))
+        self.assertTrue(d3b.test_3.is_odd(3))
+        self.assertFalse(d3b.test_3.is_odd(4))
+        self.assertTrue(d3c.test_3.is_odd(3))
+        self.assertFalse(d3c.test_3.is_odd(4))
+
+    def test_100_date_has_attributes_instance_not(self):
+        # the date class aways has a registered attribute
+        self.assertTrue(hasattr(Date, 'gregorian'), msg='Date class has attribute')
+        # an instance created with another calendar or by Date does not have
+        #   the attribute; it is instead is reachable via the Date class
         d1 = Date(4)
         self.assertRaises(AttributeError, getattr, d1.__dict__, 'gregorian')
-        self.assertTrue(hasattr(d1, 'gregorian'), msg='Date class has attribute')
-        # If instead the Date instance has been created via an attribute, the corresponding attribute exists
-        d2 = Date.gregorian(1, 2, 3)
-        self.assertTrue('gregorian' in d2.__dict__, msg='Date instance has attribute when created via attribute.')
-
-    def test_120_calendar_attribute_type_is_correct(self):
-        # instance created with Date
-        d1 = Date(2)
-        self.assertIsInstance(d1.gregorian, GregorianCalendar, msg="Calendar type is correct with instance created with Date (Gregirian)")
-        self.assertIsInstance(d1.iso, IsoCalendar, msg="Calendar type is correct with instance created with Date (ISO)")
-        # instance created with GregorianCalendar
-        d2 = Date.gregorian(2, 2, 2)
-        self.assertIsInstance(d2.gregorian, GregorianCalendar, msg="Calendar type is correct with instance created with GregorianCalendar")
-        # instance created with IsoCalendar
-        d3 = Date.iso(2, 2, 2)
-        self.assertIsInstance(d3.iso, IsoCalendar, msg="Calendar type is correct with instance created with IsoCalendar")
-        # Crossed calendar creation
-        d4 = Date.iso(2, 2, 2)
-        self.assertIsInstance(d4.gregorian, GregorianCalendar, msg="Calendar type is correct with crossed creation (ISO)")
-        d5 = Date.gregorian(2, 2, 2)
-        self.assertIsInstance(d5.iso, IsoCalendar, msg="Calendar type is correct with crossed creation (Gregorian)")
-
-    def test_400_static_method_always_accessible(self):
-        self.assertTrue(Date.gregorian.is_leap_year(2000), msg="Static method through class")
-        # instance created with Date
-        d1 = Date(2)
-        self.assertTrue(d1.gregorian.is_leap_year(2000), msg="Static method through instance created with Date")
-        # instance created with GregorianCalendar
-        d2 = Date.gregorian(2, 2, 2)
-        self.assertTrue(d2.gregorian.is_leap_year(2000), msg="Static method through instance created with GregorianCalendar")
-        # instance created with IsoCalendar
-        d3 = Date.iso(2, 2, 2)
-        self.assertTrue(d3.gregorian.is_leap_year(2000), msg="Static method through instance created with IsoCalendar")
+        self.assertTrue(hasattr(d1, 'gregorian'), msg='Date instance has attribute via the class (1)')
+        d2 = Date.iso(3, 4, 5)
+        self.assertRaises(AttributeError, getattr, d2.__dict__, 'gregorian')
+        self.assertTrue(hasattr(d2, 'gregorian'), msg='Date instance has attribute via the class (2)')
+        # a Date instance created via the calendar does have the attribute
+        d3 = Date.gregorian(3, 4, 5)
+        self.assertTrue(hasattr(d3, 'gregorian'), msg='Date instance has attribute via the class (3)')
 
     def test_900_avoid_date_override(self):
         d = Date.gregorian(1, 1, 1)
