@@ -35,13 +35,14 @@ import time
 from fractions import Fraction
 from math import floor
 from calendars import gregorian
+from calendars import iso
 
 
 ##############################################################################
 # OS dependent functions
 #
 def get_moment():
-    "Return date and time as day_count and day fraction."
+    """Return date and time as day_count and day fraction."""
     moment = time.localtime()
     year = moment.tm_year
     days_before_year = (year - 1) * 365 + (year - 1) // 4 - (year - 1) // 100 + (year - 1) // 400
@@ -152,84 +153,49 @@ class Date:
 ##############################################################################
 # Support functions and classes
 # This probably will be moved to a class which will be mixed in Date
-    def register_new_calendar(self, calendar_attribute, calendar_class, constructors=(), special_methods=()):
+    @classmethod
+    def register_new_calendar(cls, attribute_name, calendar_class):
+        if not isinstance(attribute_name, str) or not attribute_name.isidentifier():
+            raise ValueError('Invalid calendar attribute name: {}.'.format(attribute_name))
+        if hasattr(cls, attribute_name):
+            raise AttributeError('Calendar attribute already existing: {}.'.format(attribute_name))
+        if not hasattr(calendar_class, 'from_rata_die'):
+            raise TypeError('Calendar class does not have method from_rata_die.')
+        if not hasattr(calendar_class, 'to_rata_die'):
+            raise TypeError('Calendar class does not have method to_rata_die.')
+
+        class ModifiedClass(type):
+            def __call__(klass, *args, **kwargs):
+                calendar_obj = super().__call__(*args, **kwargs)
+                date_obj = cls(calendar_obj.to_rata_die())
+                setattr(date_obj, attribute_name, calendar_obj)
+                return date_obj
+
+        # Create the modified calendar class
+        new_class_name = '{}In{}'.format(calendar_class.__name__, cls.__name__)
+        modified_calendar_class = ModifiedClass(new_class_name, (calendar_class,), {})
+
         class CalendarAttribute:
-            # This class will implement a context dependent attribute
-            def __init__(self, attribute_name, calendar_class):
+            # This class implements a context dependent attribute
+            def __init__(self, attribute_name, modified_calendar_class):
                 self.attribute_name = attribute_name
-                self.calendar_class = calendar_class
+                self.modified_calendar_class = modified_calendar_class
 
             def __get__(self, instance, owner):
                 if instance is None:
-                    return self.calendar_class
+                    return self.modified_calendar_class
                 else:
-                    try:
-                        calendar_obj = instance.__dict__[self.attribute_name]
-                        return calendar_obj
-                    except KeyError:
-                        try:
+                    assert self.attribute_name not in instance.__dict__
+                    date_obj = self.modified_calendar_class.from_rata_die(instance.day_count)
+                    calendar_obj = getattr(date_obj, self.attribute_name)
+                    setattr(instance, self.attribute_name, calendar_obj)
+                    return calendar_obj
 
-                        calendar_obj = self.interface_class.from_rata_die(owner.day_count)
-                        owner.calendars[self.attribute_name] = calendar_obj
-                        return calendar_obj
+        setattr(cls, attribute_name, CalendarAttribute(attribute_name, modified_calendar_class))
 
-
-        def new_get(self, obj, objtype):
-            if obj is None:
-                return GregorianCalendarToDateFactory   #######
-            else:
-                try:
-                    return self.__dict__[gregorian]
-                except KeyError:
-                    greg_obj = gregorian.GregorianCalendar.from_rata_die(obj.day_count)
-                    obj.gregorian = greg_obj
-                    return greg_obj
 
 ##############################################################################
-# Calendar registrations
+# Register current calendars
 #
-Date.gregorian = GregorianInDateAttribute()
-# stub to verify test code
-# Date.iso = GregorianInDateAttribute()
-
-
-def _create_date_factory(calendar_class, attribute_name, class_methods, static_methods):
-    new_class_name = '{}Factory'.format(calendar_class.__name__)
-    def new_method(self, *args, **kwargs):
-        cal_obj = calendar_class(*args, **kwargs)
-        date_obj = Date(cal_obj.to_rata_die())
-        dummy1 = date_obj.__dict__
-        dummy3 = Date.gregorian
-        dummy2 = date_obj.gregorian
-        setattr(date_obj, attribute_name, cal_obj)
-        return date_obj
-    new_methods = {'__new__': new_method}
-    for name in static_methods:
-        current_method = getattr(calendar_class, name)
-        new_methods[name] = staticmethod(current_method)
-    for name in class_methods:
-        def new_class_method(cls, *args, **kwargs):
-            cal_obj = getattr(calendar_class, name)(*args, **kwargs)
-            date_obj = Date(cal_obj.to_rata_die())
-            setattr(date_obj, attribute_name, cal_obj)
-            return date_obj
-        new_methods[name] = classmethod(new_class_method)
-    return type(new_class_name, (), new_methods)
-
-GregorianCalendarToDateFactory = _create_date_factory(gregorian.GregorianCalendar, 'gregorian', ('year_day',), ('days_in_year', 'is_leap_year'))
-
-class GregorianInDateAttribute:
-    def __get__(self, obj, objtype):
-        if obj is None:
-            return GregorianCalendarToDateFactory
-        else:
-            try:
-                dummy = self.__dict__[gregorian]
-                return dummy
-            except KeyError:
-                greg_obj = gregorian.GregorianCalendar.from_rata_die(obj.day_count)
-                obj.gregorian = greg_obj
-                return greg_obj
-
-
-
+Date.register_new_calendar('gregorian', gregorian.GregorianCalendar)
+Date.register_new_calendar('iso', iso.IsoCalendar)
