@@ -91,7 +91,6 @@ class IsoCalendar:
         year = year_in_400 + four_hundred_years * 400
         week = no_of_weeks_in_400 - _weeks_in_previous_years[year_in_400 - 1] + 1
         day = day_less_1 + 1
-        #print(day_count, week_no_less_1, day_less_1, four_hundred_years, no_of_weeks_in_400, year_in_400, year, week, day)
         iso_day = cls(year, week, day)
         iso_day._rata_die = day_count
         return iso_day
@@ -120,7 +119,7 @@ class IsoCalendar:
             week = self.week
         if day is None:
             day = self.day
-        return IsoCalendar(year, week, day)
+        return self.__class__(year, week, day)
 
     # Comparison operators
     def __eq__(self, other):

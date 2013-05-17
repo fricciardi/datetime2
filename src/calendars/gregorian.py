@@ -121,7 +121,7 @@ class GregorianCalendar:
             month = self.month
         if day is None:
             day = self.day
-        return GregorianCalendar(year, month, day)
+        return self.__class__(year, month, day)
 
     # Comparison operators
     def __eq__(self, other):
