@@ -211,8 +211,8 @@ Notes:
 (3)
    Negative years will have a trailing ``'-'``.
 
-   .. versionadded:: 0.3.3
-      :meth:`cformat` will be added in version 0.3.3.
+   .. versionadded:: 0.4
+      :meth:`cformat` will be added in version 0.4.
 
 
 .. _iso-calendar:
@@ -366,7 +366,7 @@ Notes:
 (3)
    Negative years will have a trailing ``'-'``.
 
-   .. versionadded:: 0.3.3
-      :meth:`cformat` will be added in version 0.3.3.
+   .. versionadded:: 0.4
+      :meth:`cformat` will be added in version 0.4.
 
 
