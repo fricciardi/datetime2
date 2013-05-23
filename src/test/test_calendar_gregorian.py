@@ -510,6 +510,67 @@ class TestGregorian(unittest.TestCase):
             expected += '-' + ('0' + str(day))[-2:]
             self.assertEqual(str(greg), expected, msg='Str test for {}-{}-{}'.format(greg.year, month, day))
 
+    def test_530_cformat_numbers(self):
+        for test_row in gregorian_test_data:
+            wday = test_row[1]
+            year = test_row[2][0]
+            month = test_row[2][1]
+            day = test_row[2][2]
+            doy = test_row[3]
+            greg = GregorianCalendar(year, month, day)
+            self.assertEqual(greg.cformat('%d'), '{:02d}'.format(day), msg='cformat, day of month')
+            self.assertEqual(greg.cformat('%j'), '{:03d}'.format(doy), msg='cformat, day of year')
+            self.assertEqual(greg.cformat('%m'), '{:02d}'.format(month), msg='cformat, month as number')
+            self.assertEqual(greg.cformat('%w'), '{:02d}'.format(wday), msg='cformat, weekday as number')
+            self.assertEqual(greg.cformat('%y'), '{:02d}'.format(year % 100), msg='cformat, year without century')
+            if year >= 0:
+                self.assertEqual(greg.cformat('%Y'), '{:04d}'.format(year), msg="cformat, year '{}' with century".format(year))
+            else:
+                self.assertEqual(greg.cformat('%Y'), '-{:04d}'.format(-year), msg="cformat, year '{}' with century".format(year))
+
+    def test_540_cformat_names(self):
+        weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        abbr_weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        months = ['January', 'February', 'March', 'April', 'May', 'June',
+                  'July', 'August', 'September', 'October', 'November', 'December']
+        abbr_months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        for test_row in gregorian_test_data:
+            wday = test_row[1]
+            year = test_row[2][0]
+            month = test_row[2][1]
+            day = test_row[2][2]
+            greg = GregorianCalendar(year, month, day)
+            self.assertEqual(greg.cformat('%a'), abbr_weekdays[wday - 1], msg='cformat, abbreviated weekday name')
+            self.assertEqual(greg.cformat('%A'), weekdays[wday - 1], msg='cformat, full weekday name')
+            self.assertEqual(greg.cformat('%b'), abbr_months[month - 1], msg='cformat, abbreviated month name')
+            self.assertEqual(greg.cformat('%B'), months[month - 1], msg='cformat, full month name')
+
+    def test_550_cformat_week_number(self):
+        for test_row in gregorian_test_data:
+            wday = test_row[1]
+            year = test_row[2][0]
+            month = test_row[2][1]
+            day = test_row[2][2]
+            doy = test_row[3]
+            greg = GregorianCalendar(year, month, day)
+            self.assertEqual(greg.cformat('%U'), '{:02d}'.format((doy - wday % 7) // 7 + 1), msg='cformat, week number, starts on Sunday')
+            self.assertEqual(greg.cformat('%W'), '{:02d}'.format((doy - wday) // 7 + 1), msg='cformat, week number, starts on Monday')
+
+    def test_560_cformat_percent(self):
+        greg = GregorianCalendar(1, 2, 3)
+        self.assertEqual(greg.cformat('%'), '%')
+        self.assertEqual(greg.cformat('%%'), '%')
+        self.assertEqual(greg.cformat('%%%'), '%%')
+        self.assertEqual(greg.cformat('abcd%'), 'abcd%')
+        self.assertEqual(greg.cformat('%k'), '%k')
+        self.assertEqual(greg.cformat('a%k'), 'a%k')
+        self.assertEqual(greg.cformat('%k%'), '%k%')
+
+    def test_570_cformat_invalid_type(self):
+        greg = GregorianCalendar(1, 2, 3)
+        for par in (1, (1,), [1], {1:1}, None):
+            self.assertRaises(TypeError, greg.cformat, par)
+
     def test_900_pickling(self):
         for test_row in gregorian_test_data:
             year = test_row[2][0]

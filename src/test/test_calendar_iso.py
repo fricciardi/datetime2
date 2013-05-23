@@ -484,6 +484,55 @@ class TestISO(unittest.TestCase):
             expected += '-' + str(day)
             self.assertEqual(str(iso), expected, msg='Str test for {}-W{}-{}'.format(iso.year, week, day))
 
+    def test_530_cformat_numbers(self):
+        for test_row in iso_test_data:
+            year = test_row[1]
+            week = test_row[2]
+            day = test_row[3]
+            doy = test_row[4]
+            iso = IsoCalendar(year, week, day)
+            self.assertEqual(iso.cformat('%j'), '{:03d}'.format(doy), msg='cformat, day of year')
+            self.assertEqual(iso.cformat('%w'), '{:02d}'.format(day), msg='cformat, weekday as number')
+            self.assertEqual(iso.cformat('%y'), '{:02d}'.format(year % 100), msg='cformat, year without century')
+            if year >= 0:
+                self.assertEqual(iso.cformat('%Y'), '{:04d}'.format(year), msg="cformat, year '{}' with century".format(year))
+            else:
+                self.assertEqual(iso.cformat('%Y'), '-{:04d}'.format(-year), msg="cformat, year '{}' with century".format(year))
+
+    def test_540_cformat_names(self):
+        weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        abbr_weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        for test_row in iso_test_data:
+            year = test_row[1]
+            week = test_row[2]
+            day = test_row[3]
+            iso = IsoCalendar(year, week, day)
+            self.assertEqual(iso.cformat('%a'), abbr_weekdays[day - 1], msg='cformat, abbreviated weekday name')
+            self.assertEqual(iso.cformat('%A'), weekdays[day - 1], msg='cformat, full weekday name')
+
+    def test_550_cformat_week_number(self):
+        for test_row in iso_test_data:
+            year = test_row[1]
+            week = test_row[2]
+            day = test_row[3]
+            iso = IsoCalendar(year, week, day)
+            self.assertEqual(iso.cformat('%W'), ':{02d}'.format(week), msg='cformat, week number')
+
+    def test_560_cformat_percent(self):
+        iso = IsoCalendar(1, 2, 3)
+        self.assertEqual(iso.cformat('%'), '%')
+        self.assertEqual(iso.cformat('%%'), '%')
+        self.assertEqual(iso.cformat('%%%'), '%%')
+        self.assertEqual(iso.cformat('abcd%'), 'abcd%')
+        self.assertEqual(iso.cformat('%k'), '%k')
+        self.assertEqual(iso.cformat('a%k'), 'a%k')
+        self.assertEqual(iso.cformat('%k%'), '%k%')
+
+    def test_570_cformat_invalid_type(self):
+        iso = IsoCalendar(1, 2, 3)
+        for par in (1, (1,), [1], {1:1}, None):
+            self.assertRaises(TypeError, iso.cformat, par)
+
     def test_900_pickling(self):
         for test_row in iso_test_data:
             year = test_row[1]
