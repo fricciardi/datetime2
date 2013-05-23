@@ -320,7 +320,7 @@ a constructor using also thousands of weeks:
    ...     def to_rata_die(self):
    ...         return 7 * (self.week - 1) + self.day
    ...     def __repr__(self):
-   ...         return 'SimpleWeekCalendar({}, {})'.format(self.week, self.day)
+   ...         return '{}({}, {})'.format(self.__class__.__name__,self.week, self.day)
    ...     @classmethod
    ...     def with_thousands(cls, thousands, week, day):
    ...         return cls(1000 * thousands + week, day)

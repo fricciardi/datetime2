@@ -161,18 +161,18 @@ methods:
    | ``%B``    | Full month name.               | \(1)  |
    +-----------+--------------------------------+-------+
    | ``%d``    | Day of the month as a decimal  |       |
-   |           | number [01,31].                |       |
+   |           | number [01, 31].               |       |
    +-----------+--------------------------------+-------+
    | ``%j``    | Day of the year as a decimal   |       |
-   |           | number [001,366].              |       |
+   |           | number [001, 366].             |       |
    +-----------+--------------------------------+-------+
    | ``%m``    | Month as a decimal number      |       |
-   |           | [01,12].                       |       |
+   |           | [01, 12].                      |       |
    +-----------+--------------------------------+-------+
    | ``%U``    | Week number of the year        |       |
    |           | (Sunday as the first day of    |       |
    |           | the week) as a decimal number  |       |
-   |           | [00,53].  All days in a new    |       |
+   |           | [00, 53].  All days in a new   |       |
    |           | year preceding the first       |       |
    |           | Sunday are considered to be in |       |
    |           | week 0.                        |       |
@@ -183,13 +183,13 @@ methods:
    | ``%W``    | Week number of the year        |       |
    |           | (Monday as the first day of    |       |
    |           | the week) as a decimal number  |       |
-   |           | [00,53].  All days in a new    |       |
+   |           | [00, 53].  All days in a new   |       |
    |           | year preceding the first       |       |
    |           | Monday are considered to be in |       |
    |           | week 0.                        |       |
    +-----------+--------------------------------+-------+
    | ``%y``    | Year without century as a      | \(2)  |
-   |           | decimal number [00,99].        |       |
+   |           | decimal number [00, 99].       |       |
    +-----------+--------------------------------+-------+
    | ``%Y``    | Year with century as a decimal | \(3)  |
    |           | number. At least four figures  |       |
@@ -212,7 +212,7 @@ Notes:
    Negative years will have a trailing ``'-'``.
 
    .. versionadded:: 0.4
-      :meth:`cformat` will be added in version 0.4.
+      :meth:`cformat` was added in version 0.4.
 
 
 .. _iso-calendar:
@@ -341,10 +341,10 @@ An instance of the :class:`IsoCalendar` class has the following methods:
    |           | [1 (Monday), 7 (Sunday)].      |       |
    +-----------+--------------------------------+-------+
    | ``%W``    | Week number in the ISO year    |       |
-   |           | as a decimal number [01,53].   |       |
+   |           | as a decimal number [01, 53].  |       |
    +-----------+--------------------------------+-------+
    | ``%y``    | ISO year without century as a  | \(2)  |
-   |           | decimal number [00,99].        |       |
+   |           | decimal number [00, 99].       |       |
    +-----------+--------------------------------+-------+
    | ``%Y``    | ISO year with century as a     | \(3)  |
    |           | decimal number. At least four  |       |
@@ -367,6 +367,6 @@ Notes:
    Negative years will have a trailing ``'-'``.
 
    .. versionadded:: 0.4
-      :meth:`cformat` will be added in version 0.4.
+      :meth:`cformat` was added in version 0.4.
 
 
