@@ -166,3 +166,41 @@ class GregorianCalendar:
             return '{:04d}-{:02d}-{:02d}'.format(self.year, self.month, self.day)
         else:
             return '{:05d}-{:02d}-{:02d}'.format(self.year, self.month, self.day)
+
+    name_weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    name_months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
+    format_functions = {
+        'a': lambda self: GregorianCalendar.name_weekdays[self.weekday() - 1][:3],
+        'A': lambda self: GregorianCalendar.name_weekdays[self.weekday() - 1],
+        'b': lambda self: GregorianCalendar.name_months[self.month - 1][:3],
+        'B': lambda self: GregorianCalendar.name_months[self.month - 1],
+        'd': lambda self: '{:02d}'.format(self.day),
+        'm': lambda self: '{:02d}'.format(self.month),
+        'j': lambda self: '{:03d}'.format(self.day_of_year()),
+        'U': lambda self: '{:02d}'.format((self.day_of_year() + (13 - self.weekday()) % 7) // 7),
+        'w': lambda self: '{:1d}'.format(self.weekday()),
+        'W': lambda self: '{:02d}'.format((self.day_of_year() + 7 - self.weekday()) // 7),
+        'y': lambda self: '{:03d}'.format(self.year)[-2:],
+        'Y': lambda self: '{:04d}'.format(self.year) if self.year >= 0 else '-{:04d}'.format(-self.year)
+    }
+
+    def cformat(self, format_string):
+        if not isinstance(format_string, str):
+            raise TypeError("Format must be specified with string.")
+        output_pieces = []
+        for format_chunk in format_string.split('%%'):
+            format_parts = format_chunk.split('%')
+            chunk_pieces = [format_parts[0]]
+            for part in format_parts[1:]:
+                if part == '':          # special case: last char is '%'
+                    value = '%'
+                else:
+                    try:
+                        value = self.format_functions[part[0]](self)
+                    except KeyError:
+                        value = '%' + part[0]
+                chunk_pieces.append(value)
+                chunk_pieces.append(part[1:])
+            output_pieces.append(''.join(chunk_pieces))
+        return '%'.join(output_pieces)

@@ -168,8 +168,8 @@ gregorian_test_data = [
     # year starts and ends on Sunday
     [  732312,      7, ( 2006,    1,   1),   1, '01', '00'],
     [  732313,      1, ( 2006,    1,   2),   2, '01', '01'],
-    [  732314,      6, ( 2006,    1,   7),   7, '01', '01'],
-    [  732371,      7, ( 2006,    1,   8),   8, '02', '01'],
+    [  732318,      6, ( 2006,    1,   7),   7, '01', '01'],
+    [  732319,      7, ( 2006,    1,   8),   8, '02', '01'],
     [  732669,      7, ( 2006,   12,  24), 358, '52', '51'],
     [  732670,      1, ( 2006,   12,  25), 359, '52', '52'],
     [  732675,      6, ( 2006,   12,  30), 364, '52', '52'],
@@ -179,8 +179,8 @@ gregorian_test_data = [
     [  730492,      7, ( 2001,    1,   7),   7, '01', '01'],
     [  730493,      1, ( 2001,    1,   8),   8, '01', '02'],
     [  730499,      7, ( 2001,    1,  14),  14, '02', '02'],
-    [  730842,      7, ( 2001,   12,  23), 358, '51', '51'],
-    [  730843,      1, ( 2001,   12,  24), 359, '51', '52'],
+    [  730842,      7, ( 2001,   12,  23), 357, '51', '51'],
+    [  730843,      1, ( 2001,   12,  24), 358, '51', '52'],
     [  730849,      7, ( 2001,   12,  30), 364, '52', '52'],
     [  730850,      1, ( 2001,   12,  31), 365, '52', '53'],
     # leap year starts on Sunday and ends on Monday
@@ -548,11 +548,12 @@ class TestGregorian(unittest.TestCase):
             self.assertEqual(greg.cformat('%d'), '{:02d}'.format(day), msg='cformat, day of month')
             self.assertEqual(greg.cformat('%j'), '{:03d}'.format(doy), msg='cformat, day of year')
             self.assertEqual(greg.cformat('%m'), '{:02d}'.format(month), msg='cformat, month as number')
-            self.assertEqual(greg.cformat('%w'), '{:02d}'.format(wday), msg='cformat, weekday as number')
-            self.assertEqual(greg.cformat('%y'), '{:02d}'.format(year % 100), msg='cformat, year without century')
+            self.assertEqual(greg.cformat('%w'), '{:d}'.format(wday), msg='cformat, weekday as number')
             if year >= 0:
+                self.assertEqual(greg.cformat('%y'), ('0' + str(year))[-2:], msg='cformat, year without century')
                 self.assertEqual(greg.cformat('%Y'), '{:04d}'.format(year), msg="cformat, year '{}' with century".format(year))
             else:
+                self.assertEqual(greg.cformat('%y'), ('0' + str(-year))[-2:], msg='cformat, year without century')
                 self.assertEqual(greg.cformat('%Y'), '-{:04d}'.format(-year), msg="cformat, year '{}' with century".format(year))
 
     def test_540_cformat_names(self):
@@ -580,8 +581,8 @@ class TestGregorian(unittest.TestCase):
             WNS = test_row[4]
             WNM = test_row[5]
             greg = GregorianCalendar(year, month, day)
-            self.assertEqual(greg.cformat('%U'), WNS, msg='cformat, week number, starts on Sunday')
-            self.assertEqual(greg.cformat('%W'), WNM, msg='cformat, week number, starts on Monday')
+            self.assertEqual(greg.cformat('%U'), WNS, msg='cformat, week number, starts on Sunday, RD = {}'.format(test_row[0]))
+            self.assertEqual(greg.cformat('%W'), WNM, msg='cformat, week number, starts on Monday, RD = {}'.format(test_row[0]))
 
     def test_560_cformat_percent(self):
         greg = GregorianCalendar(1, 2, 3)
