@@ -492,8 +492,9 @@ class TestISO(unittest.TestCase):
             doy = test_row[4]
             iso = IsoCalendar(year, week, day)
             self.assertEqual(iso.cformat('%j'), '{:03d}'.format(doy), msg='cformat, day of year')
-            self.assertEqual(iso.cformat('%w'), '{:02d}'.format(day), msg='cformat, weekday as number')
-            self.assertEqual(iso.cformat('%y'), '{:02d}'.format(year % 100), msg='cformat, year without century')
+            self.assertEqual(iso.cformat('%w'), '{:1d}'.format(day), msg='cformat, weekday as number')
+            self.assertEqual(iso.cformat('%W'), '{:02d}'.format(week), msg='cformat, week number')
+            self.assertEqual(iso.cformat('%y'), ('{:04d}'.format(year))[-2:], msg='cformat, year without century')
             if year >= 0:
                 self.assertEqual(iso.cformat('%Y'), '{:04d}'.format(year), msg="cformat, year '{}' with century".format(year))
             else:
@@ -516,7 +517,6 @@ class TestISO(unittest.TestCase):
             week = test_row[2]
             day = test_row[3]
             iso = IsoCalendar(year, week, day)
-            self.assertEqual(iso.cformat('%W'), ':{02d}'.format(week), msg='cformat, week number')
 
     def test_560_cformat_percent(self):
         iso = IsoCalendar(1, 2, 3)
