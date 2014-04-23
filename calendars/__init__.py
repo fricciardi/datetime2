@@ -28,8 +28,3 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 __author__ = 'Francesco Ricciardi <francescor2010 at yahoo.it>'
-
-
-
-
-
