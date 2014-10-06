@@ -15,7 +15,7 @@ classes defining each calendar are not depending on the
 
 .. TODO: if we will be keeping all calendars on a page, a ToC here will be useful
 
-All the calendars listed here define the six standard comparison operators:
+All calendars listed here define the six standard comparison operators:
 ``<``, ``>``, ``==``, ``>=``, ``<=``, and ``!=``, which return a meaningful
 result when comparing calendar objects of the same type. When comparing a
 calendar object with an object of a different type, the ``==`` and ``!=``
@@ -31,7 +31,7 @@ Gregorian calendar
 ^^^^^^^^^^^^^^^^^^
 
 An instance of the :class:`GregorianCalendar` class represents a day in the
-calendar generally used in western countries. It is a solar calendar dividing
+calendar as generally done in western countries. It is a solar calendar dividing
 day count in years of 365 or 366 days, each year is then divided in 12 months
 of 28 (or 29), 30 and 31 days.
 
@@ -67,11 +67,11 @@ The other two constructors are:
 
 A :class:`GregorianCalendar` object has three attributes:
 
-.. attribute:: gregorian_calendar_day.year
+.. attribute:: gregorian.year
 
-.. attribute:: gregorian_calendar_day.month
+.. attribute:: gregorian.month
 
-.. attribute:: gregorian_calendar_day.day
+.. attribute:: gregorian.day
 
    These attributes are read-only integer numbers. Month will be between 1 and
    12, day will be between 1 and the number of days in the corresponding month.
@@ -105,6 +105,12 @@ methods:
 
    Return the day of the year as an integer, from 1 to 365 or 366 (in leap years).
    For example, ``GregorianCalendar(2008, 3, 1).day_of_year() == 61``.
+
+.. method:: gregorian.to_rata_die()
+
+   Returns an integer counting the number of days elapsed from January 1\
+   :sup:`st` of year 1 plus the current day. For example,
+   ``GregorianCalendar(1, 2, 3).to_rata_die() == 34``.
 
 .. _gregorian-replace:
 
@@ -285,6 +291,12 @@ An instance of the :class:`IsoCalendar` class has the following methods:
    371 (in long years). For example, ``IsoCalendar(2008, 3, 1).day_of_year() ==
    62``.
 
+
+.. method:: iso.to_rata_die()
+
+   Returns an integer counting the number of days elapsed from day 1 of week 1
+   of year 1 plus the current day. For example,
+   ``IsoCalendar(1, 2, 3).to_rata_die() == 10``.
 
 .. method:: iso.replace(year, week, day)
 
