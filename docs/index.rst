@@ -41,13 +41,22 @@ traces of them early.
 Overview
 --------
 
-The :mod:`datetime2` module implements four core classes, corresponding to the
-four classes implemented in the original :mod:`datetime` module. These are
-:class:`Date`, :class:`Time`, :class:`DateTime`,
-:class:`TimeDelta`. These  class names use the CapitalizedWords
-convention, required by :pep:`8`, not used in the old module. The classes
-provide generic service, not bound to any particular calendar or time
-representation. The :class:`DateTime` classe will be implemented
+The driving idea in the :mod:`datetime2`is to detach how date or time are
+handled from the representation in different cultures. Indeed, a day in
+history is the same independently from the way it is represented, and
+the same is true also for time, even if much fewer time representation
+systems are used.
+
+The four core classes implemented in the :mod:`datetime2` module
+(:class:`Date`, :class:`Time`, :class:`DateTime`, :class:`TimeDelta`) have
+close resemblance to those of the original :mod:`datetime` module. By
+themselves, they provide a generic service, not bound to any particular
+calendar or time representation.
+
+
+============================
+These  class names use the CapitalizedWords
+convention, required by :pep:`8`, not used in the old module.  The :class:`DateTime` classe will be implemented
 in a future version. The :class:`TimeDelta` class is currently a stub.
 
 .. class:: Date
