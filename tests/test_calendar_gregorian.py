@@ -29,13 +29,12 @@
 
 __author__ = 'Francesco Ricciardi <francescor2010 at yahoo.it>'
 
-
 import decimal
 import fractions
 import pickle
 import unittest
 
-from calendars.gregorian import GregorianCalendar
+from datetime2.calendars.gregorian import GregorianCalendar
 
 
 INF = float('inf')
@@ -438,7 +437,7 @@ class TestGregorian(unittest.TestCase):
                 msg = 'day_of_year, date = {}-{}-{}'.format(year, month, day))
 
     def test_430_replace(self):
-        for test_row in gregorian_test_data[:33]:   # take Calendrical Calculations test data only (other may make replace fail, as in the next test method)
+        for test_row in gregorian_test_data[:33]:   # take Calendrical Calculations tests data only (other may make replace fail, as in the next tests method)
             year = test_row[2][0]
             month = test_row[2][1]
             day = test_row[2][2]
@@ -502,7 +501,6 @@ class TestGregorian(unittest.TestCase):
         self.assertRaises(ValueError, greg.replace, day = 30)
 
     def test_500_repr(self):
-        import calendars
 
         for test_row in gregorian_test_data:
             year = test_row[2][0]
@@ -511,11 +509,11 @@ class TestGregorian(unittest.TestCase):
             greg = GregorianCalendar(year, month, day)
             greg_repr = repr(greg)
             names, args = greg_repr.split('(')
-            self.assertEqual(names.split('.'), ['calendars', 'gregorian', 'GregorianCalendar'], msg='Repr test 1 for {}-{}-{}'.format(year, month, day))
+            self.assertEqual(names.split('.'), ['calendars', 'gregorian', 'GregorianCalendar'], msg='Repr tests 1 for {}-{}-{}'.format(year, month, day))
             args = args[:-1] # drop ')'
             for found, expected in zip(args.split(','), (year, month, day)):
-                self.assertEqual(int(found), expected, msg='Repr test 2 for {}-{}-{}'.format(year, month, day))
-            self.assertEqual(greg, eval(repr(greg)), msg='Repr test 3 for {}-{}-{}'.format(year, month, day))
+                self.assertEqual(int(found), expected, msg='Repr tests 2 for {}-{}-{}'.format(year, month, day))
+            self.assertEqual(greg, eval(repr(greg)), msg='Repr tests 3 for {}-{}-{}'.format(year, month, day))
 
     def test_520_str(self):
         for test_row in gregorian_test_data:
@@ -535,7 +533,7 @@ class TestGregorian(unittest.TestCase):
                 expected += ys
             expected += '-' + ('0' + str(month))[-2:]
             expected += '-' + ('0' + str(day))[-2:]
-            self.assertEqual(str(greg), expected, msg='Str test for {}-{}-{}'.format(greg.year, month, day))
+            self.assertEqual(str(greg), expected, msg='Str tests for {}-{}-{}'.format(greg.year, month, day))
 
     def test_530_cformat_numbers(self):
         for test_row in gregorian_test_data:

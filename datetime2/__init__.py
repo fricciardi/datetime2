@@ -29,13 +29,14 @@
 
 __author__ = 'Francesco Ricciardi <francescor2010 at yahoo.it>'
 
-
-
 import time
 from fractions import Fraction
 from math import floor
-from calendars import gregorian
+
+from datetime2.calendars import gregorian, iso
 from calendars import iso
+
+
 
 
 ##############################################################################

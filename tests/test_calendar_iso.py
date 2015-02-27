@@ -29,13 +29,12 @@
 
 __author__ = 'Francesco Ricciardi <francescor2010 at yahoo.it>'
 
-
 import decimal
 import fractions
 import pickle
 import unittest
 
-from calendars.iso import IsoCalendar
+from datetime2.calendars.iso import IsoCalendar
 
 
 INF = float('inf')
@@ -398,7 +397,7 @@ class TestISO(unittest.TestCase):
                 msg = 'day_of_year, date = {}-{}-{}'.format(year, week, day))
 
     def test_420_replace(self):
-        for test_row in iso_test_data[:33]:   # take Calendrical Calculations test data only (other may make replace fail, as in the next test method)
+        for test_row in iso_test_data[:33]:   # take Calendrical Calculations tests data only (other may make replace fail, as in the next tests method)
             year = test_row[1]
             week = test_row[2]
             day = test_row[3]
@@ -449,7 +448,6 @@ class TestISO(unittest.TestCase):
         self.assertRaises(ValueError, iso.replace, week = 54)
 
     def test_500_repr(self):
-        import calendars
 
         for test_row in iso_test_data:
             year = test_row[1]
@@ -458,11 +456,11 @@ class TestISO(unittest.TestCase):
             iso = IsoCalendar(year, week, day)
             iso_repr = repr(iso)
             names, args = iso_repr.split('(')
-            self.assertEqual(names.split('.'), ['calendars', 'iso', 'IsoCalendar'], msg='Repr test 1 for {}-W{}-{}'.format(year, week, day))
+            self.assertEqual(names.split('.'), ['calendars', 'iso', 'IsoCalendar'], msg='Repr tests 1 for {}-W{}-{}'.format(year, week, day))
             args = args[:-1] # drop ')'
             for found, expected in zip(args.split(','), (year, week, day)):
-                self.assertEqual(int(found), expected, msg='Repr test 2 for {}-W{}-{}'.format(year, week, day))
-            self.assertEqual(iso, eval(repr(iso)), msg='Repr test 3 for {}-W{}-{}'.format(year, week, day))
+                self.assertEqual(int(found), expected, msg='Repr tests 2 for {}-W{}-{}'.format(year, week, day))
+            self.assertEqual(iso, eval(repr(iso)), msg='Repr tests 3 for {}-W{}-{}'.format(year, week, day))
 
     def test_520_str(self):
         for test_row in iso_test_data:
@@ -482,7 +480,7 @@ class TestISO(unittest.TestCase):
                 expected += ys
             expected += '-W' + ('0' + str(week))[-2:]
             expected += '-' + str(day)
-            self.assertEqual(str(iso), expected, msg='Str test for {}-W{}-{}'.format(iso.year, week, day))
+            self.assertEqual(str(iso), expected, msg='Str tests for {}-W{}-{}'.format(iso.year, week, day))
 
     def test_530_cformat_numbers(self):
         for test_row in iso_test_data:
