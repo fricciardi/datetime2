@@ -41,7 +41,7 @@ traces of them early.
 Overview
 --------
 
-The driving idea in the :mod:`datetime2`is to detach how date or time are
+The driving idea in the :mod:`datetime2` is to detach how date or time are
 handled from the representation in different cultures. Indeed, a day in
 history is the same independently from the way it is represented, and
 the same is true also for time, even if much fewer time representation
@@ -54,7 +54,6 @@ themselves, they provide a generic service, not bound to any particular
 calendar or time representation.
 
 
-============================
 These  class names use the CapitalizedWords
 convention, required by :pep:`8`, not used in the old module.  The :class:`DateTime` classe will be implemented
 in a future version. The :class:`TimeDelta` class is currently a stub.
@@ -391,7 +390,7 @@ The last two points seems conflicting: depending on the context (i.e. whether
 the attribute is retrieved from the class or from the instance) a different
 content is returned. This is obtained implementing a context-dependent
 attribute retrieval, well described in `Descriptor HowTo Guide
-<http://docs.python.org/3.3/howto/descriptor.html>`_).
+<http://docs.python.org/3.4/howto/descriptor.html>`_).
 
 This quite complex implementation has a few advantages:
 
@@ -408,7 +407,7 @@ This quite complex implementation has a few advantages:
 
 An indication of time, independent of any particular day. There might be a
 time correction, e.g. due to time zone or daylight saving time. Attributes
-of this class are: :attr:`day_frac`, :attr:`correction`. ``day_frac`` is
+of this class are: :attr:`day_frac` , :attr:`correction` . ``day_frac`` is
 a Python :class:`fractions.Fraction` and contains the time as as a
 fraction of a day. If present, ``correction`` indicates then number of
 *hours* to be added or subtracted from the time to provide knowledge about

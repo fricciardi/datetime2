@@ -448,7 +448,7 @@ class TestISO(unittest.TestCase):
         self.assertRaises(ValueError, iso.replace, week = 54)
 
     def test_500_repr(self):
-
+        import datetime2
         for test_row in iso_test_data:
             year = test_row[1]
             week = test_row[2]
@@ -456,7 +456,7 @@ class TestISO(unittest.TestCase):
             iso = IsoCalendar(year, week, day)
             iso_repr = repr(iso)
             names, args = iso_repr.split('(')
-            self.assertEqual(names.split('.'), ['calendars', 'iso', 'IsoCalendar'], msg='Repr tests 1 for {}-W{}-{}'.format(year, week, day))
+            self.assertEqual(names.split('.'), ['datetime2', 'calendars', 'iso', 'IsoCalendar'], msg='Repr tests 1 for {}-W{}-{}'.format(year, week, day))
             args = args[:-1] # drop ')'
             for found, expected in zip(args.split(','), (year, week, day)):
                 self.assertEqual(int(found), expected, msg='Repr tests 2 for {}-W{}-{}'.format(year, week, day))

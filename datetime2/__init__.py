@@ -34,7 +34,6 @@ from fractions import Fraction
 from math import floor
 
 from datetime2.calendars import gregorian, iso
-from calendars import iso
 
 
 

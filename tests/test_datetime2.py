@@ -249,7 +249,7 @@ class TestDate(unittest.TestCase):
             self.assertTrue(bool(Date(day_count)), msg = 'bool, day_count = {}'.format(day_count))
 
     def test_500_repr(self):
-
+        import datetime2
         for day_count in date_test_data:
             d = Date(day_count)
             date_repr = repr(d)

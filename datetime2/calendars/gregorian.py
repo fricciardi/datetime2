@@ -159,7 +159,7 @@ class GregorianCalendar:
         return hash((self.year, self.month, self.day))
 
     def __repr__(self):
-        return 'calendars.gregorian.{}({}, {}, {})'.format(self.__class__.__name__, self.year, self.month, self.day)
+        return 'datetime2.calendars.gregorian.{}({}, {}, {})'.format(self.__class__.__name__, self.year, self.month, self.day)
 
     def __str__(self):
         if self.year >= 0:
