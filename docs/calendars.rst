@@ -23,7 +23,7 @@ operators *always* consider them to be unequal, while the ``<``, ``>``, ``>=``
 and ``<=`` operators raise a :exc:`TypeError`.
 
 Also, all calendars listed here conform to the rules listed in
-:ref:`custom-calendars`.
+:ref:`customization`.
 
 .. _gregorian-calendar:
 

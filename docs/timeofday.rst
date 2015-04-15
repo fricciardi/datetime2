@@ -27,7 +27,7 @@ Note that these time representations do not have any notion of time correction
 like daylight saving time or time zone.
 
 Also, all time representations listed here conform to the rules listed in
-:ref:`custom-time-representations`.
+:ref:`customization`.
 
 .. _western-time:
 
