@@ -9,8 +9,8 @@ Calendars
 
    from calendars.iso import IsoCalendar
 
-This chapter lists the calendars defined in the :mod:`datetime2` package. The
-classes defining each calendar are not depending on the
+This chapter lists the calendars defined in the :mod:`datetime2` package.
+The classes defining each calendar are not depending on the
 :class:`~datetime2.Date` class.
 
 .. TODO: if we will be keeping all calendars on a page, a ToC here will be useful
@@ -19,11 +19,13 @@ All calendars listed here define the six standard comparison operators:
 ``<``, ``>``, ``==``, ``>=``, ``<=``, and ``!=``, which return a meaningful
 result when comparing calendar objects of the same type. When comparing a
 calendar object with an object of a different type, the ``==`` and ``!=``
-operators *always* consider them to be unequal, while the ``<``, ``>``, ``>=``
-and ``<=`` operators raise a :exc:`TypeError`.
+operators *always* consider them to be unequal, while the ``<``, ``>``,
+``>=`` and ``<=`` operators raise a :exc:`TypeError` exception.
 
 Also, all calendars listed here conform to the rules listed in
-:ref:`customization`.
+:ref:`customization`. The descriptions below omit the comparison operators
+and the ``from_rata_die`` and ``to_rata_die`` methods.
+
 
 .. _gregorian-calendar:
 
@@ -35,7 +37,7 @@ calendar as generally done in western countries. It is a solar calendar dividing
 day count in years of 365 or 366 days, each year is then divided in 12 months
 of 28 (or 29), 30 and 31 days.
 
-There are three constructors for a Gregorian day. The default one is:
+The default constructor for a Gregorian day is:
 
 .. class:: GregorianCalendar(year, month, day)
 
@@ -50,7 +52,7 @@ There are three constructors for a Gregorian day. The default one is:
    If an argument is outside those ranges, a :exc:`ValueError` exception is
    raised.
 
-The other two constructors are:
+Another constructor can be used if the day in the year is known:
 
 .. class:: GregorianCalendar.year_day(year, day_of_year)
 
@@ -59,11 +61,6 @@ The other two constructors are:
    Value for ``day_of_year`` must be between 1 and the number of days in the year
    (either 365 or 366), otherwise a :exc:`ValueError` exception is raised.
 
-.. class:: GregorianCalendar.from_rata_die(day_count)
-
-   Return an object that represents the day specified by counting all elapsed
-   days from January 1\ :sup:`st` of year 1 plus the current day. The
-   ``day_count`` argument is required and must be an integer.
 
 A :class:`GregorianCalendar` object has three attributes:
 
@@ -76,7 +73,7 @@ A :class:`GregorianCalendar` object has three attributes:
    These attributes are read-only integer numbers. Month will be between 1 and
    12, day will be between 1 and the number of days in the corresponding month.
 
-There are two static methods:
+Two static method have been implmented to give details of a Gregorian year:
 
 .. classmethod:: GregorianCalendar.is_leap_year(year)
 
@@ -89,7 +86,6 @@ There are two static methods:
    Return 366 if *year* is a leap year in the Gregorian calendar, 365
    otherwise. For example, ``GregorianCalendar.days_in_year(2100) == 365``.
 
-
 An instance of the :class:`GregorianCalendar` class has the following
 methods:
 
@@ -100,19 +96,10 @@ methods:
    Note that this is the ISO convention for weekdays, *not* the one used by
    :meth:`datetime.date.weekday`, where Monday is 0 and Sunday is 6.
 
-
 .. method:: gregorian.day_of_year()
 
    Return the day of the year as an integer, from 1 to 365 or 366 (in leap years).
    For example, ``GregorianCalendar(2008, 3, 1).day_of_year() == 61``.
-
-.. method:: gregorian.to_rata_die()
-
-   Returns an integer counting the number of days elapsed from January 1\
-   :sup:`st` of year 1 plus the current day. For example,
-   ``GregorianCalendar(1, 2, 3).to_rata_die() == 34``.
-
-.. _gregorian-replace:
 
 .. method:: gregorian.replace(year, month, day)
 
@@ -236,7 +223,7 @@ A good discussion of the ISO calendar can be read at `The Mathematics of the
 ISO 8601 Calendar
 <http://www.staff.science.uu.nl/~gent0113/calendar/isocalendar.htm>`_.
 
-There are two constructors for a ISO calendar day. The default one is :
+The constructor of an ISO calendar is:
 
 .. class:: IsoCalendar(year, week, day)
 
@@ -250,13 +237,6 @@ There are two constructors for a ISO calendar day. The default one is :
    If an argument is outside those ranges, a :exc:`ValueError` exception is
    raised. They day number goes from 1 (Monday) to 7 (Sunday).
 
-The other constructor is:
-
-.. class:: IsoCalendar.from_rata_die(day_count)
-
-   Return an object that represents the day specified by counting all elapsed
-   days from day 1 of week 1 of year 1 including the current day. The
-   ``day_count`` argument is required and must be an integer.
 
 An :class:`IsoCalendar` object has three attributes:
 
@@ -269,7 +249,7 @@ An :class:`IsoCalendar` object has three attributes:
    These attributes are read-only integer numbers. Week will be between 1 and
    the number of weeks in the ISO year (52 or 53), day will be between 1 and 7.
 
-There are two static methods:
+Two static method have been implmented to give details of an ISO year:
 
 .. classmethod:: IsoCalendar.is_long_year(year)
 
@@ -290,13 +270,6 @@ An instance of the :class:`IsoCalendar` class has the following methods:
    Return the day of the year as an integer, from 1 to 364 (in short years) or
    371 (in long years). For example, ``IsoCalendar(2008, 3, 1).day_of_year() ==
    62``.
-
-
-.. method:: iso.to_rata_die()
-
-   Returns an integer counting the number of days elapsed from day 1 of week 1
-   of year 1 plus the current day. For example,
-   ``IsoCalendar(1, 2, 3).to_rata_die() == 10``.
 
 .. method:: iso.replace(year, week, day)
 
@@ -380,5 +353,3 @@ Notes:
 
    .. versionadded:: 0.4
       :meth:`cformat` was added in version 0.4.
-
-

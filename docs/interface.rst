@@ -181,11 +181,11 @@ All registration methods have the same structure:
    Register the class ``InterfaceClass`` to the corresponding
    :mod:`datetime2` base class, accessing it with the ``access_attribute``
    attribute. If ``access_attribute`` is already defined, an
-   :exc:`AttributeError` exception is generated. If ``access_attribute`` is
-   not a valid identifier, a :exc:`ValueError` exception is generated.
+   :exc:`AttributeError` exception is raised. If ``access_attribute`` is
+   not a valid identifier, a :exc:`ValueError` exception is raised.
 
    ``InterfaceClass`` must have the non-default constructor and conversion
-   method listed above, otherwise a :exc:`TypeError` exception is generated.
+   method listed above, otherwise a :exc:`TypeError` exception is raised.
 
 
 Inner workings

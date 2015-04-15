@@ -11,23 +11,26 @@ Time of day
 
 This chapter lists the time representations classes defined in the
 :mod:`datetime2` package. These classes are not depending on the
-:class:`~datetime2.Time` class.
+:class:`~datetime2.Time` class. Note that these time representations
+do not have any notion of time correction like daylight saving time or
+time zone.
 
 .. TODO: if we will be keeping all time representations on a page, a ToC here will be useful
 
-All time representations listed here define the six standard comparison operators:
-``<``, ``>``, ``==``, ``>=``, ``<=``, and ``!=``, which return a meaningful
-result when comparing time representation objects of the same type. When comparing a
-time representation object with an object of a different type, the ``==`` and ``!=``
-operators *always* consider them to be unequal, while the ``<``, ``>``, ``>=``
-and ``<=`` operators raise a :exc:`TypeError`. In the following we will call a Python
-number any Python integer, float, Fraction or Decimal number.
-
-Note that these time representations do not have any notion of time correction
-like daylight saving time or time zone.
+All time representations listed here define the six standard comparison
+operators: ``<``, ``>``, ``==``, ``>=``, ``<=``, and ``!=``, which return a
+meaningful result when comparing time representation objects of the same
+type. When comparing a time representation object with an object of a
+different type, the ``==`` and ``!=`` operators *always* consider them to be
+unequal, while the ``<``, ``>``, ``>=`` and ``<=`` operators raise a
+:exc:`TypeError` exception.
 
 Also, all time representations listed here conform to the rules listed in
-:ref:`customization`.
+:ref:`customization`. The descriptions below omit the comparison operators
+and the ``from_day_frac`` and ``to_day_frac`` methods.
+
+In the following we will call a Python number any Python integer, float,
+Fraction or Decimal number.
 
 .. _western-time:
 
@@ -38,58 +41,50 @@ An instance of the :class:`WesternTime` class represents a moment of a day as
 generally done in western countries, dividing each day in 24 hours, each hour
 in 60 minutes and each minute in 60 seconds.
 
-There are five constructors for a western time. The default one is:
+There are four constructors for a western time. The default one is:
 
 .. class:: WesternTime(hour, minute, second)
 
    Return an object that represents the moment of a day in hour, minute and
-   second. This representation does not take into account the possibility of
-   one or two additional seconds that sometimes are added in specific dates
-   to compensate earth rotation. All arguments are required and must satisfy
-   the following requirements:
+   second elapsed from midnight. This representation does not take into
+   account the possibility of one or two additional seconds that sometimes
+   are added in specific dates to compensate earth rotation. All arguments
+   are required and must satisfy the following requirements:
 
    * ``hour`` must be an integer and ``0 <= month <= 23``
    * ``minute`` must be an integer and ``0 <= minute <= 59``
    * ``second`` must be a Python number; its value must be ``0 <= second < 60``
 
    If an argument is not of the accepted type, a :exc:`TypeError` exception
-   is raised. If an argument is outside its accepted range, a :exc:`ValueError`
-   exception is raised.
+   is raised. If an argument is outside its accepted range, a
+   :exc:`ValueError` exception is raised.
 
-The other four constructors are:
+The other three constructors are:
 
 .. class:: WesternTime.in_hours(hour)
 
-   Return an object that represents the moment of the day specified as a
-   multiple, possibly with decimals, of an hour. The argument must be a Python
-   number, otherwise a :exc:`TypeError` exception is generated. Its value must
-   be equal or greater than 0 and less than 24, otherwise a :exc:`ValueError`
-   exception is raised.
+   Return an object that represents the moment of the day specified in
+   hours, possibly fractional, elapsed from midnight. The argument must be a
+   Python number, otherwise a :exc:`TypeError` exception is raised. Its
+   value must be greater or equal to 0 and less than 24, otherwise a
+   :exc:`ValueError` exception is raised.
 
 .. class:: WesternTime.in_minutes(minute)
 
-   Return an object that represents the moment of the day specified as a
-   multiple, possibly with decimals, of a minute. The argument must be a Python
-   number, otherwise a :exc:`TypeError` exception is generated. Its value must
-   be equal or greater than 0 and less than 1440, otherwise a :exc:`ValueError`
-   exception is raised.
+   Return an object that represents the moment of the day specified in
+   minutes, possibly fractional, elapsed from midnight. The argument must be
+   a Python number, otherwise a :exc:`TypeError` exception is raised. Its
+   value must be greater or equal to 0 and less than 1440, otherwise a
+   :exc:`ValueError` exception is raised.
 
 .. class:: WesternTime.in_seconds(second)
 
-   Return an object that represents the moment of the day specified as a
-   multiple, possibly with decimals, of a second. The argument must be a Python
-   number, otherwise a :exc:`TypeError` exception is generated. Its value must
-   be equal or greater than 0 and less than 86400, otherwise a :exc:`ValueError`
-   exception is raised.
+   Return an object that represents the moment of the day specified in
+   seconds, possibly fractional, elapsed from midnight. The argument must be
+   a Python number, otherwise a :exc:`TypeError` exception is raised. Its
+   value must be greater or equal to 0 and less than 86400, otherwise a
+   :exc:`ValueError` exception is raised.
 
-.. class:: WesternTime.from_day_frac(day_frac)
-
-   Return an object that represents the fraction of the day in hours,
-   minutes and seconds. The ``day_frac`` argument is required and must be
-   a Python number, otherwise a :exc:`TypeError` exception is generated. Its
-   value must be equal or greater than 0 and less than 1, otherwise a
-   :exc:`ValueError` exception is raised. Note that the only accepted integer
-   value is ``0``.
 
 A :class:`WesternTime` object has three attributes:
 
@@ -101,7 +96,7 @@ A :class:`WesternTime` object has three attributes:
 
    These attributes are read-only numbers. The first two are integers; the
    last one is a Python Fraction. The three attributes will respect the
-   value requirements of the main constructor.
+   value requirements listed in the default constructor description.
 
 An instance of the :class:`WesternTime` class has the following methods:
 
@@ -123,19 +118,12 @@ An instance of the :class:`WesternTime` class has the following methods:
    Thus the returned value will be equal or greater than 0, and less
    than 86400.
 
-.. method:: western.to_day_frac()
-
-   Return a Python Fraction representing the moment of the day in days.
-   Thus the returned value will be equal or greater than 0, and less
-   than 1. For example,
-   ``WesternTime(14, 45, 0).to_day_fraction() == fractions.Fraction(45, 96)``.
-
 .. method:: western.replace(hour, minute, second)
 
    Returns a new :class:`WesternTime` object with the same value, except
    for those parameters given new values by whichever keyword arguments are
    specified. All values are optional; if used, they must respect the
-   requirements of the main constructor, otherwise a :exc:`TypeError` or
+   requirements of the default constructor, otherwise a :exc:`TypeError` or
    :exc:`ValueError` exception is raised. For example:
 
 .. doctest:: western
