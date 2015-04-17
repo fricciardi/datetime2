@@ -29,7 +29,7 @@ instance:
 * if called on the base class it creates a new instance of the base class
   using the values provided by the interface class:
 
-.. doctest:: test_date test_time
+.. doctest:: test_date,test_time
 
    >>> d1 = Date.gregorian(2013, 4, 18)
    >>> d1
@@ -41,7 +41,7 @@ instance:
 * if called on a base class instance, it allows to see the instance using
   attributes and methods of the corresponding interface class:
 
-.. doctest:: test_date test_time
+.. doctest:: test_date,test_time
 
    >>> d2 = Date(1)
    >>> str(d2.gregorian)
@@ -62,7 +62,7 @@ or use different access attributes on the same base class instance. In this
 way, the base class object is unchanged, but it can bee seen in many
 different ways.
 
-.. doctest:: test_date test_time
+.. doctest:: test_date,test_time
 
    >>> d = Date.gregorian(2013, 4, 22)
    >>> d.iso.week
@@ -85,7 +85,7 @@ referenced class, but one of the base class. E.g.
 instance, but when used via the :class:`Date` class this becomes a
 :class:`Date` instance:
 
-.. doctest:: test_date test_time
+.. doctest:: test_date,test_time
 
    >>> d1 = Date.gregorian.year_day(2012, 366)
    >>> d1
