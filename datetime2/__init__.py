@@ -51,8 +51,10 @@ def get_moment():
 
 
 ##############################################################################
-# Core classes
 #
+# TimeDelta
+#
+##############################################################################
 
 class TimeDelta:
     #==>> STUB <<==
@@ -66,22 +68,18 @@ class TimeDelta:
     def days(self):
         return self._days
     
-    def __add__(self, other):
-        raise TypeError   # required to let Date tests pass
+##############################################################################
+#
+# Date
+#
+##############################################################################
 
 class Date:
     def __init__(self, day_count):
         if isinstance(day_count, int):
             self._day_count = day_count
         else:
-            try:
-                rata_die = day_count.to_rata_die()
-            except AttributeError:
-                raise TypeError("an integer or an object with the to_rata_die method is required")
-            if isinstance(rata_die, int):
-                self._day_count = rata_die
-            else:
-                raise TypeError("the to_rata_die method of {} does not return an integer.".format(str(day_count)))
+            raise TypeError("the to_rata_die method of {} does not return an integer.".format(str(day_count)))
 
     @classmethod
     def today(cls):
@@ -99,17 +97,21 @@ class Date:
     
     def __add__(self, other):
         if isinstance(other, TimeDelta):
+            if other.days != floor(other.days):
+                raise ValueError("Date object cannot be added to non integral TimeDelta.")
             return Date(self.day_count + other.days)
         else:
             return NotImplemented
         
     def __radd__(self, other):
-        return self + other
+        return self.__add__(other)
     
     def __sub__(self, other):
         if isinstance(other, Date):
             return TimeDelta(self.day_count - other.day_count)
         elif isinstance(other, TimeDelta):
+            if other.days != floor(other.days):
+                raise ValueError("non integral TimeDelta cannot be subtracted from Date.")
             return Date(self.day_count - other.days)
         else:
             return NotImplemented
@@ -199,3 +201,4 @@ class Date:
 #
 Date.register_new_calendar('gregorian', gregorian.GregorianCalendar)
 Date.register_new_calendar('iso', iso.IsoCalendar)
+

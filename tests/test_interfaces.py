@@ -29,11 +29,15 @@
 
 __author__ = 'Francesco Ricciardi <francescor2010 at yahoo.it>'
 
+from fractions import Fraction
 import pytest
 
-from datetime2 import Date, TimeDelta
+from datetime2 import Date, Time
 
 
+#############################################################################
+# Date interface
+#
 class ExampleTestCalendar:  # probably one of the simplest form, it is also used in documentation as example
     def __init__(self, week, day):
         self.week = week
@@ -49,11 +53,11 @@ class ExampleTestCalendar:  # probably one of the simplest form, it is also used
 
 @pytest.fixture
 def clean_Date(request):
-    def clead_Date_class():
+    def clear_Date_class():
         for name in [name for name in Date.__dict__.keys() if name.startswith('test_')]:
             delattr(Date, name)
 
-    request.addfinalizer(clead_Date_class)
+    request.addfinalizer(clear_Date_class)
 
 class TestCalendarInterface():
     def test_000_register_new_calendar(self, clean_Date):
@@ -62,7 +66,7 @@ class TestCalendarInterface():
             Date.test_1
         Date.register_new_calendar('test_1', ExampleTestCalendar)
         assert hasattr(Date, 'test_1')
-        assert Date.test_1
+        Date.test_1
 
     def test_010_register_new_calendar_existing_calendar_or_attribute(self):
         with pytest.raises(AttributeError):
@@ -102,7 +106,7 @@ class TestCalendarInterface():
         with pytest.raises(TypeError):
             Date.register_new_calendar('test_1', NoToCalendar)
 
-    def test_040_registered_attribute_simple_class(self):
+    def test_040_registered_attribute_simple_class(self, clean_Date):
         Date.register_new_calendar('test_1', ExampleTestCalendar)
 
         # Date attribute type and metaclass are correct
@@ -131,7 +135,7 @@ class TestCalendarInterface():
         assert d1c.test_1.week == 5171
         assert d1c.test_1.day == 3
 
-    def test_043_registered_attribute_class_with_other_constructors(self):
+    def test_043_registered_attribute_class_with_other_constructors(self, clean_Date):
         class ExampleTestCalendar2(ExampleTestCalendar):
             @classmethod
             def with_thousands(cls, thousands, week, day):
@@ -168,7 +172,7 @@ class TestCalendarInterface():
         assert d2c.test_2.week == 5171
         assert d2c.test_2.day == 3
 
-    def test_046_registered_attribute_class_with_static_methods(self):
+    def test_046_registered_attribute_class_with_static_methods(self, clean_Date):
         class ExampleTestCalendar3(ExampleTestCalendar):
             @staticmethod
             def is_odd(number):
@@ -222,16 +226,16 @@ class TestCalendarInterface():
         with pytest.raises(KeyError):
             d1.__dict__['gregorian']
         assert hasattr(d1, 'gregorian')
-        assert d1.gregorian
+        d1.gregorian
         d2 = Date.iso(3, 4, 5)
         with pytest.raises(KeyError):
             d2.__dict__['gregorian']
         assert hasattr(d2, 'gregorian')
-        assert d2.gregorian
+        d2.gregorian
         # a Date instance created via the calendar does have the same attribute
         d3 = Date.gregorian(3, 4, 5)
         assert hasattr(d3, 'gregorian')
-        assert d3.gregorian
+        d3.gregorian
 
     def test_900_avoid_date_override(self):
         d = Date.gregorian(1, 1, 1)
@@ -241,3 +245,4 @@ class TestCalendarInterface():
             getattr(d, 'is_leap_year')
         with pytest.raises(AttributeError):
             d.is_leap_year
+

@@ -29,24 +29,23 @@
 
 __author__ = 'Francesco Ricciardi <francescor2010 at yahoo.it>'
 
-import decimal
-import fractions
+from decimal import Decimal
+from fractions import Fraction
 import pickle
 import pytest
-from fractions import Fraction
 
-from datetime2 import Date, TimeDelta
+from datetime2 import Date, Time, TimeDelta
 
 
 INF = float("inf")
 NAN = float("nan")
 
-date_test_data = (-2, -1, 0, 1, 2, -1000, 1000, -123456789, 123456789, -999999999, 999999999, -1000000000, 1000000000)
-
 
 #############################################################################
 # Date tests
 #
+date_test_data = (-2, -1, 0, 1, 2, -1000, 1000, -123456789, 123456789, -999999999, 999999999, -1000000000, 1000000000)
+
 class TestDate:
     def test_000_valid_parameter_types(self):
         "The argument is required and must be an integer."
@@ -65,7 +64,7 @@ class TestDate:
             with pytest.raises(TypeError):
                 Date(par)
         # exception with invalid numeric types
-        for par in (1.0, Fraction(1, 1), decimal.Decimal(1), 1j):
+        for par in (1.0, Fraction(1, 1), Decimal(1), 1j):
             with pytest.raises(TypeError):
                 Date(par)
 
@@ -135,6 +134,13 @@ class TestDate:
         a = Date(42)
         b = Date(24)
 
+        # These operations are invalid because TimeDelta is not integer.
+        for value in (42.25, 41.75, -42.25, -41.75):
+            with pytest.raises(ValueError):
+                a + TimeDelta(value)
+            with pytest.raises(ValueError):
+                a - TimeDelta(value)
+
         # Add/sub int, float, string, complex, specials and containers should be illegal
         for obj in (10, 34.5, "abc", 1 + 2j, INF, NAN, {}, [], ()):
             with pytest.raises(TypeError):
@@ -146,9 +152,8 @@ class TestDate:
             with pytest.raises(TypeError):
                 obj - a
 
-        # These operations make no sense for Date objects
-        with pytest.raises(TypeError):
-            TimeDelta(2) + a
+        # Reverse operations
+        assert TimeDelta(2) + a == Date(44)
         with pytest.raises(TypeError):
             TimeDelta(2) - a
 
@@ -226,7 +231,7 @@ class TestDate:
                 d >= par
 
         # exception with numeric types (all invalid) and other objects
-        for par in (1, 1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j, 1 + 1j, INF, NAN, SomeClass()):
+        for par in (1, 1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN, SomeClass()):
             assert not (d == par)
             assert d != par
             with pytest.raises(TypeError):
@@ -298,13 +303,12 @@ class TestDate:
             def newmeth(self, start):
                 return start + (self.day_count * 3) // 2
 
-        d1 = Date(2013)
-        d2 = D(2013, extra=7)
+        d1 = Date(102013)
+        d2 = D(102013, extra=7)
 
         assert d2.theAnswer == 42
         assert d2.extra == 7
         assert d1.day_count == d2.day_count
         assert d2.newmeth(-7) == (d1.day_count * 3) // 2 - 7
-
 
 
