@@ -32,10 +32,9 @@ __author__ = 'Francesco Ricciardi <francescor2010 at yahoo.it>'
 import time
 from fractions import Fraction
 from math import floor
+from functools import total_ordering
 
 from datetime2.calendars import gregorian, iso
-
-
 
 
 ##############################################################################
@@ -57,9 +56,9 @@ def get_moment():
 ##############################################################################
 
 class TimeDelta:
-    #==>> STUB <<==
+    # ==>> STUB <<==
     def __init__(self, days):
-        self._days = days
+        self._days = Fraction(days)
         
     def __repr__(self):
         return "TimeDelta({})".format(self.days)
@@ -67,19 +66,22 @@ class TimeDelta:
     @property
     def days(self):
         return self._days
-    
+
+
 ##############################################################################
 #
 # Date
 #
 ##############################################################################
+# TODO: try again using total_ordering
 
 class Date:
     def __init__(self, day_count):
+        # TODO: consider using the number hierarchy
         if isinstance(day_count, int):
             self._day_count = day_count
         else:
-            raise TypeError("the to_rata_die method of {} does not return an integer.".format(str(day_count)))
+            raise TypeError("day_count argument for Date must be an integer.".format(str(day_count)))
 
     @classmethod
     def today(cls):
@@ -99,7 +101,7 @@ class Date:
         if isinstance(other, TimeDelta):
             if other.days != floor(other.days):
                 raise ValueError("Date object cannot be added to non integral TimeDelta.")
-            return Date(self.day_count + other.days)
+            return Date(self.day_count + floor(other.days))
         else:
             return NotImplemented
         
@@ -112,7 +114,7 @@ class Date:
         elif isinstance(other, TimeDelta):
             if other.days != floor(other.days):
                 raise ValueError("non integral TimeDelta cannot be subtracted from Date.")
-            return Date(self.day_count - other.days)
+            return Date(self.day_count - floor(other.days))
         else:
             return NotImplemented
 
@@ -151,10 +153,6 @@ class Date:
     def __hash__(self):
         return hash(self._day_count)
 
-
-##############################################################################
-# Support functions and classes
-# This probably will be moved to a class which will be mixed in Date
     @classmethod
     def register_new_calendar(cls, attribute_name, calendar_class):
         if not isinstance(attribute_name, str) or not attribute_name.isidentifier():
@@ -201,4 +199,120 @@ class Date:
 #
 Date.register_new_calendar('gregorian', gregorian.GregorianCalendar)
 Date.register_new_calendar('iso', iso.IsoCalendar)
+
+
+##############################################################################
+#
+# Time
+#
+##############################################################################
+
+@total_ordering
+class Time:
+    def __init__(self, day_frac, denominator=1, *, correction=None):
+        self.correction = correction  # for the time being
+        try:
+            if denominator != 1:
+                self._day_frac = Fraction(day_frac, denominator)
+            else:
+                self._day_frac = Fraction(day_frac)
+        except ZeroDivisionError:
+            raise ZeroDivisionError("Time denominator cannot be <ero.".format(str(day_frac)))
+        if self.day_frac < 0 or self.day_frac >= 1:
+            raise ValueError("resulting fraction is outside range valid for Time instances (0 <= value < 1): {}".format(float(self.day_frac)))
+
+    @classmethod
+    def now(cls):
+        current_moment = get_moment()
+        return cls(current_moment - floor(current_moment))
+
+    @property
+    def day_frac(self):
+        return self._day_frac
+
+    def __repr__(self):
+        return "datetime2.{}({})".format(self.__class__.__name__, str(self.day_frac))
+
+    def __str__(self):
+        return "{} of a day".format(str(self.day_frac))
+
+    def __add__(self, other):
+        if isinstance(other, TimeDelta):
+            total = self.day_frac + other.days
+            return Time(total - floor(total))
+        else:
+            return NotImplemented
+
+    def __radd__(self, other):
+        return self.__add__(other)
+
+    def __sub__(self, other):
+        if isinstance(other, Time):
+            return TimeDelta(self.day_frac - other.day_frac)
+        elif isinstance(other, TimeDelta):
+            total = self.day_frac - other.days
+            return Time(total - floor(total))
+        else:
+            return NotImplemented
+
+    # Comparison operators (total_ordering builds all other operators)
+    def __eq__(self, other):
+        return isinstance(other, Time) and self.day_frac == other.day_frac
+
+    def __gt__(self, other):
+        if isinstance(other, Time):
+            return self.day_frac > other.day_frac
+        else:
+            return NotImplemented
+
+    # hash value
+    def __hash__(self):
+        return hash(self._day_frac)
+
+    @classmethod
+    def register_new_time(cls, attribute_name, time_repr_class):
+        if not isinstance(attribute_name, str) or not attribute_name.isidentifier():
+            raise ValueError("Invalid attribute name ('{}') for time representation.".format(attribute_name))
+        if hasattr(cls, attribute_name):
+            raise AttributeError('Time representation attribute already existing: {}.'.format(attribute_name))
+        if not hasattr(time_repr_class, 'from_day_frac'):
+            raise TypeError('Time representation class does not have method from_day_frac.')
+        if not hasattr(time_repr_class, 'to_day_frac'):
+            raise TypeError('Time representation class does not have method to_day_frac.')
+
+        class ModifiedClass(type):
+            def __call__(klass, *args, **kwargs):
+                time_repr_obj = super().__call__(*args, **kwargs)
+                time_obj = cls(time_repr_obj.to_day_frac())
+                setattr(time_obj, attribute_name, time_repr_obj)
+                return time_obj
+
+        # Create the modified calendar class
+        new_class_name = '{}In{}'.format(time_repr_class.__name__, cls.__name__)
+        modified_time_repr_class = ModifiedClass(new_class_name, (time_repr_class,), {})
+
+        class TimeReprAttribute:
+            # This class implements a context dependent attribute
+            def __init__(self, attr_name, modified_time_repr_class):
+                self.attr_name = attr_name
+                self.modified_time_repr_class = modified_time_repr_class
+
+            def __get__(self, instance, owner):
+                if instance is None:
+                    return self.modified_time_repr_class
+                else:
+                    assert self.attr_name not in instance.__dict__
+                    time_obj = self.modified_time_repr_class.from_day_frac(instance.day_frac)
+                    time_repr_obj = getattr(time_obj, self.attr_name)
+                    setattr(instance, self.attr_name, time_repr_obj)
+                    return time_repr_obj
+
+        setattr(cls, attribute_name, TimeReprAttribute(attribute_name, modified_time_repr_class))
+
+
+##############################################################################
+# Register current time representations
+#
+#Date.register_new_calendar('gregorian', gregorian.GregorianCalendar)
+#Date.register_new_calendar('iso', iso.IsoCalendar)
 

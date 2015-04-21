@@ -243,23 +243,26 @@ interpretation is left to the program that uses it.
 
 There are two ways of creating a :class:`Time` instance:
 
-.. class:: Time(day_frac, correction = None)
+.. class:: Time(day_frac, denominator=1, *, correction=None)
 
    Return an object that represent a moment in a day as a fraction of the
    whole day, given in the ``day_frac`` argument. If needed, a correction to
    this time, for whatever political, algorithmic or geographic need (e.g.
    time zone) can be given in hours and stored in the ``correction``
-   argument.
+   argument, which must be explicitly named.
 
    In version 0.5, time correction is not implemented, although the
    constructor supports it.
 
-   The ``day_frac`` argument can be the integer ``0``, a float or a
-   Python Fraction or Decimal, whose value is equal or greater than 0 and
-   less than 1, or a string representing a value in the same range. A
-   :exc:`TypeError` exception is raised if the argument type
-   is not one of the accepted types. A :exc:`ValueError` exception is raised
-   in the argument value is outside the accepted range.
+   The ``day_frac`` argument can be anything that can be passed to the
+   :class:`fractions.Fraction` constructor; it is also possible to use
+   the form with numerator and denominator: in this case, the ``day_frac``
+   argument becomes the numerator of the fraction. The resulting value must
+   be equal or greater than 0 and less than 1. A :exc:`TypeError` exception
+   is raised if the argument type is not one of the accepted types. A
+   :exc:`ZeroDivisionError` exception is raised if denominator is 0. A
+   :exc:`ValueError` exception is raised in the argument value is outside
+   the accepted range.
 
 .. classmethod:: Time.now(correction = None)
 
