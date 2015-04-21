@@ -73,8 +73,8 @@ class TimeDelta:
 # Date
 #
 ##############################################################################
-# TODO: try again using total_ordering
 
+@total_ordering
 class Date:
     def __init__(self, day_count):
         # TODO: consider using the number hierarchy
@@ -122,30 +122,9 @@ class Date:
     def __eq__(self, other):
         return isinstance(other, Date) and self.day_count == other.day_count
 
-    def __ne__(self, other):
-        return not isinstance(other, Date) or self.day_count != other.day_count
-
     def __gt__(self, other):
         if isinstance(other, Date):
             return self.day_count > other.day_count
-        else:
-            return NotImplemented
-
-    def __ge__(self, other):
-        if isinstance(other, Date):
-            return self.day_count >= other.day_count
-        else:
-            return NotImplemented
-
-    def __lt__(self, other):
-        if isinstance(other, Date):
-            return self.day_count < other.day_count
-        else:
-            return NotImplemented
-
-    def __le__(self, other):
-        if isinstance(other, Date):
-            return self.day_count <= other.day_count
         else:
             return NotImplemented
 
