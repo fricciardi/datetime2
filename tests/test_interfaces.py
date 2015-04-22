@@ -259,8 +259,8 @@ class ExampleTestTimeRepresentation:
 
     @classmethod
     def from_day_frac(cls, day_frac):
-        minutes_tot = day_frac / 10000
-        hour100 = int(minutes_tot * 100)
+        minutes_tot = day_frac * 10000
+        hour100 = int(minutes_tot / 100)
         return cls(hour100, minutes_tot - hour100 * 100)
 
     def to_day_frac(self):
@@ -275,7 +275,6 @@ def class_Time_resource(request):
 
     request.addfinalizer(clear_Time_class)
 
-@pytest.mark.xfail
 class TestTimeRepresentationInterface():
     def test_000_register_new_time_repr(self, class_Time_resource):
         assert not hasattr(Time, 'test_1')
@@ -371,7 +370,7 @@ class TestTimeRepresentationInterface():
         t2a = Time.test_2(10, 8)
         assert type(t2a) == Time
         assert t2a.day_frac == Fraction(63, 625)
-        d2d = Time.test_2.with_thousands(40, 40, 40)
+        d2d = Time.test_2.with_seconds(40, 40, 40)
         assert type(d2d) == Time
         assert d2d.day_frac == Fraction("10101/25000")
 
@@ -438,7 +437,7 @@ class TestTimeRepresentationInterface():
     def test_100_Time_has_attributes_but_instance_not(self):
         # the Time class aways has a registered attribute
         assert hasattr(Time, 'western')
-        assert Time.gregorian
+        assert Time.western
         # an instance created with another calendar or by Time does not have
         #   the attribute; it is instead is reachable via the Time class
         t1 = Time(4)

@@ -1,12 +1,9 @@
 `datetime2` customization
 =========================
 
-.. testsetup:: test_date
+.. testsetup:: 
 
    from datetime2 import Date
-
-.. testsetup:: test_time
-
    from datetime2 import Time
    from fractions import Fraction
 
@@ -29,7 +26,7 @@ instance:
 * if called on the base class it creates a new instance of the base class
   using the values provided by the interface class:
 
-.. doctest:: test_date,test_time
+.. doctest::
 
    >>> d1 = Date.gregorian(2013, 4, 18)
    >>> d1
@@ -41,7 +38,7 @@ instance:
 * if called on a base class instance, it allows to see the instance using
   attributes and methods of the corresponding interface class:
 
-.. doctest:: test_date,test_time
+.. doctest::
 
    >>> d2 = Date(1)
    >>> str(d2.gregorian)
@@ -62,7 +59,7 @@ or use different access attributes on the same base class instance. In this
 way, the base class object is unchanged, but it can bee seen in many
 different ways.
 
-.. doctest:: test_date,test_time
+.. doctest::
 
    >>> d = Date.gregorian(2013, 4, 22)
    >>> d.iso.week
@@ -85,7 +82,7 @@ referenced class, but one of the base class. E.g.
 instance, but when used via the :class:`Date` class this becomes a
 :class:`Date` instance:
 
-.. doctest:: test_date,test_time
+.. doctest::
 
    >>> d1 = Date.gregorian.year_day(2012, 366)
    >>> d1
@@ -101,7 +98,7 @@ instance, but when used via the :class:`Date` class this becomes a
 As expected, static methods are unchanged even when invoked via access
 attribute:
 
-.. doctest:: test_date
+.. doctest::
 
    >>> Date.gregorian.is_leap_year(2012)
    True
@@ -122,7 +119,7 @@ indicating the week number and the week day, counting the week of January
 1\ :sup:`st` of year 1 as week 1 and so on. In addition, this new calendar
 has a non-default constructor that takes as argument also thousands of weeks:
 
-.. doctest:: test_date
+.. doctest::
 
    >>> class SimpleWeekCalendar():
    ...     def __init__(self, week, day):

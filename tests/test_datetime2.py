@@ -265,7 +265,7 @@ class TestDate:
     def test_350_bool(self):
         "In boolean contexts, all Date instances are considered to be true."
         for day_count in date_test_data:
-            assert bool(Date(day_count))
+            assert Date(day_count)
 
     def test_500_repr(self):
         import datetime2
@@ -566,7 +566,7 @@ class TestTime:
         "In boolean contexts, all Time instances are considered to be true."
         for day_frac, input_values in time_test_data:
             for input_value in input_values:
-                assert bool(Time(input_value))
+                assert Time(input_value)
 
     def test_500_repr(self):
         import datetime2

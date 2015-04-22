@@ -5,14 +5,11 @@
    :synopsis: Second generation date and time types
 .. moduleauthor:: Francesco Ricciardi <francescor2010@yahoo.it>
 
-.. testsetup:: test_date
-
-   from datetime2 import Date
-
-.. testsetup:: test_time
+.. testsetup::
 
    from datetime2 import Time
    from fractions import Fraction
+   from datetime2 import Date
 
 The :mod:`datetime2` module is intended to be a replacement of the :mod:`datetime` module. Its most visible feature is
 the ability to have multiple representation of the same date or time object. There are a few representations already
@@ -21,7 +18,7 @@ ref:`added at run time<interface>`.
 
 Each representation can be reached via the attribute paradigm, e.g.:
 
-.. doctest:: test_date,test_time
+.. doctest::
 
    >>> d = Date(765432)
    >>> print(d.gregorian)
@@ -167,16 +164,15 @@ instances are considered to be true.
    Return ``R.D.`` followed by the day count. ``R.D.`` stands for Rata Die, the Latin
    for "fixed date".
 
-In addition, the following attributes are added at run time and are used to
-access the different calendars:
+In addition, the following calendars are reachable via the listed access attributes:
 
-+------------------+--------------+----------------------------------------------------------+
-| Attribute        | Calendar     | Calendar class                                           |
-+==================+==============+==========================================================+
-| ``gregorian``    | Gregorian    | :ref:`GregorianCalendar <gregorian-calendar>`            |
-+------------------+--------------+----------------------------------------------------------+
-| ``iso``          | ISO          | :ref:`IsoCalendar <iso-calendar>`                        |
-+------------------+--------------+----------------------------------------------------------+
++------------------+--------------+----------------------------------------------------------+-------------------+
+| Access attribute | Calendar     | Calendar class                                           | Module            |
++==================+==============+==========================================================+===================+
+| ``gregorian``    | Gregorian    | :ref:`GregorianCalendar <gregorian-calendar>`            | datetime2.western |
++------------------+--------------+----------------------------------------------------------+-------------------+
+| ``iso``          | ISO          | :ref:`IsoCalendar <iso-calendar>`                        | datetime2.modern  |
++------------------+--------------+----------------------------------------------------------+-------------------+
 
 
 
@@ -290,18 +286,7 @@ instances are considered to be true.
    daylight saving time. In version 0.5, correction is not implemented,
    although the supports it.
 
-In addition, the following attributes are added at run time and are used to
-access the different time representations:
-
-+----------------+----------------+------------------------------------------------+
-| Attribute      | Representation | Time representation class                      |
-+================+================+================================================+
-| ``western``    | Western        | :ref:`WesternTime <western-time>`              |
-+----------------+----------------+------------------------------------------------+
-| ``internet``   | Internet       | :ref:`InternetTime <internet-time>`            |
-+----------------+----------------+------------------------------------------------+
-
-Also :class:`Time` has one instance method:
+:class:`Time` has one instance method:
 
 .. method:: date.__str__()
 
@@ -309,6 +294,16 @@ Also :class:`Time` has one instance method:
    ``day_frac`` attribute.
 
    String representation of time correction will be defined in a future version.
+
+In addition, the following time representation are reachable via the listed access attributes:
+
++----------------+----------------+------------------------------------------------+--------------------+
+| Attribute      | Representation | Time representation class                      | Module             |
++================+================+================================================+====================+
+| ``western``    | Western        | :ref:`WesternTime <western-time>`              | datetime2.western  |
++----------------+----------------+------------------------------------------------+--------------------+
+| ``internet``   | Internet       | :ref:`InternetTime <internet-time>`            | datetime2.modern   |
++----------------+----------------+------------------------------------------------+--------------------+
 
 
 Supported operations

@@ -1,13 +1,10 @@
 Calendars
 =========
 
-.. testsetup:: gregorian
+.. testsetup::
 
-   from calendars.gregorian import GregorianCalendar
-
-.. testsetup:: iso
-
-   from calendars.iso import IsoCalendar
+   from datetime2.western import GregorianCalendar
+   from datetime2.modern import IsoCalendar
 
 This chapter lists the calendars defined in the :mod:`datetime2` package.
 The classes defining each calendar are not depending on the
@@ -109,7 +106,7 @@ methods:
    argument is outside its validity range or would create an invalid Gregorian
    date, a :exc:`ValueError` exception is raised. For example:
 
-.. doctest:: gregorian
+.. doctest::
 
       >>> greg = GregorianCalendar(2002, 12, 31)
       >>> print(greg.replace(day=26))
@@ -125,7 +122,7 @@ methods:
    above 9999 are represented adding necessary figures. Negative years are
    represented prepending the minus sign. For example:
 
-.. doctest:: gregorian
+.. doctest::
 
       >>> str(GregorianCalendar(2002, 12, 4))
       '2002-12-04'
@@ -279,7 +276,7 @@ An instance of the :class:`IsoCalendar` class has the following methods:
    argument is outside its validity range or would create an invalid Gregorian
    date, a :exc:`ValueError` exception is raised. For example:
 
-.. doctest:: iso
+.. doctest::
 
       >>> iso = IsoCalendar(2004, 53, 3)
       >>> print(iso.replace(week=26))
@@ -295,7 +292,7 @@ An instance of the :class:`IsoCalendar` class has the following methods:
    Years above 9999 are represented adding necessary figures. Negative years
    are represented prepending the minus sign. For example:
 
-.. doctest:: iso
+.. doctest::
 
       >>> str(IsoCalendar(2002, 12, 4))
       '2002-W12-4'

@@ -1,12 +1,9 @@
 Time of day
 ===========
 
-.. testsetup:: western
+.. testsetup::
 
    from timeofday.western import WesternTime
-
-.. testsetup:: internet
-
    from timeofday.other import InternetTime
 
 This chapter lists the time representations classes defined in the
@@ -141,7 +138,7 @@ An instance of the :class:`WesternTime` class has the following methods:
    Return a string representing the time with the 'HH:MM:SS' format. Any
    decimal will be truncated from the number of seconds. For example:
 
-.. doctest:: western
+.. doctest::
 
       >>> str(WesternTime(12, 44, 14.8))
       '12:44:14'
@@ -237,7 +234,7 @@ and the following methods:
    Return a string representing the moment of the day in beats, '@BBB' format.
    For example:
 
-.. doctest:: internet
+.. doctest::
 
       >>> str(InternetTime(345.8))
       '@345'

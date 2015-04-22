@@ -34,7 +34,9 @@ from fractions import Fraction
 from math import floor
 from functools import total_ordering
 
-from datetime2.calendars import gregorian, iso
+from datetime2 import western, modern
+
+
 
 
 ##############################################################################
@@ -176,8 +178,8 @@ class Date:
 ##############################################################################
 # Register current calendars
 #
-Date.register_new_calendar('gregorian', gregorian.GregorianCalendar)
-Date.register_new_calendar('iso', iso.IsoCalendar)
+Date.register_new_calendar('gregorian', western.GregorianCalendar)
+Date.register_new_calendar('iso', modern.IsoCalendar)
 
 
 ##############################################################################
