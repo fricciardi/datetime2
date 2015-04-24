@@ -29,8 +29,8 @@
 
 __author__ = 'Francesco Ricciardi <francescor2010 at yahoo.it>'
 
-import decimal
-import fractions
+from decimal import Decimal
+from fractions import Fraction
 import pickle
 import pytest
 
@@ -262,7 +262,7 @@ class TestGregorian():
             with pytest.raises(TypeError):
                 GregorianCalendar(1, 1, par)
         # exception with invalid numeric types
-        for par in (1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j, 1 + 1j, INF, NAN):
+        for par in (1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN):
             with pytest.raises(TypeError):
                 GregorianCalendar(par, 1, 1)
             with pytest.raises(TypeError):
@@ -284,7 +284,7 @@ class TestGregorian():
             with pytest.raises(TypeError):
                 GregorianCalendar.year_day(1, par)
         # exception with invalid numeric types
-        for par in (1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j, 1 + 1j, INF, NAN):
+        for par in (1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN):
             with pytest.raises(TypeError):
                 GregorianCalendar.year_day(par, 1)
             with pytest.raises(TypeError):
@@ -301,7 +301,7 @@ class TestGregorian():
             with pytest.raises(TypeError):
                 GregorianCalendar.from_rata_die(par)
         # exception with invalid numeric types
-        for par in (1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j, 1 + 1j, INF, NAN):
+        for par in (1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN):
             with pytest.raises(TypeError):
                 GregorianCalendar.from_rata_die(par)
 
@@ -365,8 +365,6 @@ class TestGregorian():
             assert not greg3 <= greg1
 
     def test_310_compare_invalid_types(self):
-        import operator
-
         class SomeClass:
             pass
 
@@ -385,7 +383,7 @@ class TestGregorian():
             with pytest.raises(TypeError):
                 greg >= par
         # exception with numeric types (all invalid) and other objects
-        for par in (1, 1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j, 1 + 1j, INF, NAN, SomeClass()):
+        for par in (1, 1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN, SomeClass()):
             assert not greg == par
             assert greg != par
             with pytest.raises(TypeError):
@@ -469,7 +467,7 @@ class TestGregorian():
             with pytest.raises(TypeError):
                 greg.replace(day=par)
         # exception with invalid numeric types
-        for par in (1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j, 1 + 1j, INF, NAN):
+        for par in (1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN):
             with pytest.raises(TypeError):
                 greg.replace(year=par)
             with pytest.raises(TypeError):
@@ -526,7 +524,7 @@ class TestGregorian():
             args = args[:-1]  # drop ')'
             for found, expected in zip(args.split(','), (year, month, day)):
                 assert int(found) == expected
-            assert greg == eval(repr(greg))
+            assert greg == eval(greg_repr)
 
     def test_520_str(self):
         for test_row in gregorian_test_data:

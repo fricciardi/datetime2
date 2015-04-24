@@ -34,6 +34,9 @@ __all__ = ['GregorianCalendar']
 
 
 import bisect
+from fractions import Fraction
+from functools import total_ordering
+from math import floor
 
 
 _days_in_month = [[31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
@@ -183,6 +186,172 @@ class GregorianCalendar:
         'W': lambda self: '{:02d}'.format((self.day_of_year() + 7 - self.weekday()) // 7),
         'y': lambda self: '{:03d}'.format(self.year)[-2:],
         'Y': lambda self: '{:04d}'.format(self.year) if self.year >= 0 else '-{:04d}'.format(-self.year)
+    }
+
+    def cformat(self, format_string):
+        if not isinstance(format_string, str):
+            raise TypeError("Format must be specified with string.")
+        output_pieces = []
+        for format_chunk in format_string.split('%%'):
+            format_parts = format_chunk.split('%')
+            chunk_pieces = [format_parts[0]]
+            for part in format_parts[1:]:
+                if part == '':          # special case: last char is '%'
+                    value = '%'
+                else:
+                    try:
+                        value = self.format_functions[part[0]](self)
+                    except KeyError:
+                        value = '%' + part[0]
+                chunk_pieces.append(value)
+                chunk_pieces.append(part[1:])
+            output_pieces.append(''.join(chunk_pieces))
+        return '%'.join(output_pieces)
+
+##############################################################################
+# Western time representation
+#
+@total_ordering
+class WesternTime:
+    def __init__(self, hour, minute, second):
+        if not isinstance(hour, int) or not isinstance(minute, int):
+            raise TypeError("hour and minute must be integer")
+        try:
+            second_fraction = Fraction(second)
+        except (TypeError, OverflowError):
+            raise TypeError("second is not a valid Fraction value")
+        if hour < 0 or hour > 23:
+            raise ValueError("Hour must be between 0 and 23, while it is {}.".format(hour))
+        if minute < 0 or minute > 59:
+            raise ValueError("Minute must be between 0 and 59, while it is {}.".format(minute))
+        if second_fraction < 0 or second_fraction >= 60:
+            raise ValueError("Second must be equal or greater than 0 and less than 60, while it is {}.".format(second_fraction))
+        self._hour = hour
+        self._minute = minute
+        self._second = second_fraction
+        self._day_frac = None
+
+    @property
+    def hour(self):
+        return self._hour
+
+    @property
+    def minute(self):
+        return self._minute
+
+    @property
+    def second(self):
+        return self._second
+
+    @classmethod
+    def in_hours(cls, day_hours):
+        try:
+            hour_fraction = Fraction(day_hours)
+        except (TypeError, OverflowError):
+            raise TypeError("hour is not of a valid Fraction value")
+        if hour_fraction < 0 or hour_fraction >= 24:
+            raise ValueError("Day fraction in hours must be equal or greater than 0 and less than 24, while it is {}.".format(hour_fraction))
+        hour = int(hour_fraction)
+        minute = int((hour_fraction - hour) * 60)
+        second = (hour_fraction - hour - Fraction(minute, 60)) * 3600
+        print(hour, minute, second)
+        western = cls(hour, minute, second)
+        western._day_frac = hour_fraction / 24
+        return western
+
+    @classmethod
+    def in_minutes(cls, day_minutes):
+        try:
+            minute_fraction = Fraction(day_minutes)
+        except (TypeError, OverflowError):
+            raise TypeError("minute is not of a valid Fraction value")
+        if minute_fraction < 0 or minute_fraction >= 1440:
+            raise ValueError("Day fraction in minutes must be equal or greater than 0 and less than 1440, while it is {}.".format(minute_fraction))
+        hour = int(minute_fraction / 60)
+        minute = int(minute_fraction - hour * 60)
+        second = (minute_fraction - hour * 60 - minute) * 60
+        western = cls(hour, minute, second)
+        western._day_frac = minute_fraction / 1440
+        return western
+
+    @classmethod
+    def in_seconds(cls, day_seconds):
+        try:
+            second_fraction = Fraction(day_seconds)
+        except (TypeError, OverflowError):
+            raise TypeError("second is not of a valid Fraction value")
+        if second_fraction < 0 or second_fraction >= 86400:
+            raise ValueError("Day fraction in seconds must be equal or greater than 0 and less than 86400, while it is {}.".format(second_fraction))
+        hour = int(second_fraction / 3600)
+        minute = int((second_fraction - hour * 3600) / 60)
+        second = second_fraction - hour * 3600 - minute * 60
+        western = cls(hour, minute, second)
+        western._day_frac = second_fraction / 86400
+        return western
+
+    @classmethod
+    def from_day_frac(cls, day_frac):
+        if not isinstance(day_frac, Fraction):
+            raise TypeError("Fraction argument expected")
+        if day_frac < 0 or day_frac >= 1:
+            raise ValueError("Day fraction must be equal or greater than 0 and less than 1, while it is {}.".format(day_frac))
+        hour = int(day_frac * 24)
+        minute = int((day_frac - Fraction(hour, 24)) * 1440)
+        second = (day_frac - Fraction(hour, 24) - Fraction(minute, 1440)) * 86400
+        western = cls(hour, minute, second)
+        western._day_frac = day_frac
+        return western
+
+    def to_day_frac(self):
+        if self._day_frac is None:
+            self._day_frac = self._second / 86400 + Fraction(self.minute, 1440) + Fraction(self.hour, 24)
+        return self._day_frac
+
+    def as_hours(self):
+        return self.to_day_frac() * 24
+
+    def as_minutes(self):
+        return self.to_day_frac() * 1440
+
+    def as_seconds(self):
+        return self.to_day_frac() * 86400
+
+    def replace(self, *, hour=None, minute=None, second=None):
+        if hour is None:
+            hour = self.hour
+        if minute is None:
+            minute = self.minute
+        if second is None:
+            second = self.second
+        return self.__class__(hour, minute, second)
+
+    # Comparison operators
+    def __eq__(self, other):
+        return isinstance(other, WesternTime) and self.hour == other.hour and self.minute == other.minute and self.second == other.second
+
+    def __gt__(self, other):
+        if isinstance(other, WesternTime):
+            return (self.hour, self.minute, self.second) > (other.hour, other.minute, other.second)
+        else:
+            return NotImplemented
+
+    # hash value
+    def __hash__(self):
+        return hash((self.hour, self.minute, self.second))
+
+    def __repr__(self):
+        return 'datetime2.western.{}({}, {}, {})'.format(self.__class__.__name__, self.hour, self.minute, repr(self.second))
+
+    def __str__(self):
+        return '{:02d}:{:02d}:{:02d}'.format(self.hour, self.minute, int(self.second))
+
+    format_functions = {
+        'H': lambda self: '{:02d}'.format(self.hour),
+        'I': lambda self: '{:02d}'.format(12 if self.hour == 0 else self.hour if self.hour <= 12 else self.hour - 12),
+        'p': lambda self: 'AM' if self.hour < 12 else 'PM',
+        'M': lambda self: '{:02d}'.format(self.minute),
+        'S': lambda self: '{:02d}'.format(floor(self.second)),
+        'f': lambda self: '{:06d}'.format(int((self.second - floor(self.second)) * 1000000))
     }
 
     def cformat(self, format_string):

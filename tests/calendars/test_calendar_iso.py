@@ -29,8 +29,8 @@
 
 __author__ = 'Francesco Ricciardi <francescor2010 at yahoo.it>'
 
-import decimal
-import fractions
+from decimal import Decimal
+from fractions import Fraction
 import pickle
 import pytest
 
@@ -254,7 +254,7 @@ class TestISO():
             with pytest.raises(TypeError):
                 IsoCalendar(1, par, 1)
         # exception with invalid numeric types
-        for par in (1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j, 1 + 1j, INF, NAN):
+        for par in (1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN):
             with pytest.raises(TypeError):
                 IsoCalendar(par, 1, 1)
             with pytest.raises(TypeError):
@@ -273,7 +273,7 @@ class TestISO():
             with pytest.raises(TypeError):
                 IsoCalendar.from_rata_die(par)
         # exception with invalid numeric types
-        for par in (1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j, 1 + 1j, INF, NAN):
+        for par in (1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN):
             with pytest.raises(TypeError):
                 IsoCalendar.from_rata_die(par)
 
@@ -332,8 +332,6 @@ class TestISO():
             assert not iso3 <= iso1
 
     def test_310_compare_invalid_types(self):
-        import operator
-
         class SomeClass:
             pass
 
@@ -352,7 +350,7 @@ class TestISO():
             with pytest.raises(TypeError):
                 iso >= par
         # exception with numeric types (all invalid) and other objects
-        for par in (1, 1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j, 1 + 1j, INF, NAN, SomeClass()):
+        for par in (1, 1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN, SomeClass()):
             assert not iso == par
             assert iso != par
             with pytest.raises(TypeError):
@@ -428,7 +426,7 @@ class TestISO():
             with pytest.raises(TypeError):
                 iso.replace(day=par)
         # exception with invalid numeric types
-        for par in (1.0, fractions.Fraction(1, 1), decimal.Decimal(1), 1j):
+        for par in (1.0, Fraction(1, 1), Decimal(1), 1j):
             with pytest.raises(TypeError):
                 iso.replace(year=par)
             with pytest.raises(TypeError):
@@ -470,7 +468,7 @@ class TestISO():
             args = args[:-1] # drop ')'
             for found, expected in zip(args.split(','), (year, week, day)):
                 assert int(found) == expected
-            assert iso == eval(repr(iso))
+            assert iso == eval(iso_repr)
 
     def test_520_str(self):
         for test_row in iso_test_data:
