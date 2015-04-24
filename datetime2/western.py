@@ -47,6 +47,7 @@ _days_in_previous_months = [ [ sum(_days_in_month[leap_year][:month]) for month 
 ##############################################################################
 # Gregorian calendar
 #
+@total_ordering
 class GregorianCalendar:
     def __init__(self, year, month, day):
         if not isinstance(year, int) or not isinstance(month, int) or not isinstance(day, int):
@@ -130,30 +131,9 @@ class GregorianCalendar:
     def __eq__(self, other):
         return isinstance(other, GregorianCalendar) and self.year == other.year and self.month == other.month and self.day == other.day
 
-    def __ne__(self, other):
-        return not isinstance(other, GregorianCalendar) or self.day != other.day or self.month != other.month or self.year != other.year
-
     def __gt__(self, other):
         if isinstance(other, GregorianCalendar):
             return (self.year, self.month, self.day) > (other.year, other.month, other.day)
-        else:
-            return NotImplemented
-
-    def __ge__(self, other):
-        if isinstance(other, GregorianCalendar):
-            return (self.year, self.month, self.day) >= (other.year, other.month, other.day)
-        else:
-            return NotImplemented
-
-    def __lt__(self, other):
-        if isinstance(other, GregorianCalendar):
-            return (self.year, self.month, self.day) < (other.year, other.month, other.day)
-        else:
-            return NotImplemented
-
-    def __le__(self, other):
-        if isinstance(other, GregorianCalendar):
-            return (self.year, self.month, self.day) <= (other.year, other.month, other.day)
         else:
             return NotImplemented
 
