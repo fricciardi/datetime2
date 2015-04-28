@@ -317,8 +317,8 @@ class TestTimeRepresentationInterface():
 
             @classmethod
             def from_day_frac(cls, day_frac):
-                minutes_tot = day_frac / 10000
-                hour100 = int(minutes_tot * 100)
+                minutes_tot = day_frac * 10000
+                hour100 = int(minutes_tot / 100)
                 return cls(hour100, minutes_tot - hour100 * 100)
 
         with pytest.raises(TypeError):
@@ -351,7 +351,7 @@ class TestTimeRepresentationInterface():
         assert type(t1c.test_1).__name__ == 'ExampleTestTimeRepresentationInTime'
         assert type(t1c.test_1.__class__).__name__ == 'ModifiedClass'
         assert t1c.test_1.hour100 == 44
-        assert t1c.test_1.minute100 == Fraction("11/96")
+        assert t1c.test_1.minute100 == Fraction("275/24")
 
     def test_043_registered_attribute_class_with_other_constructors(self, class_Time_resource):
         class ExampleTestTimeRepresentation2(ExampleTestTimeRepresentation):
@@ -388,7 +388,7 @@ class TestTimeRepresentationInterface():
         assert type(t2c.test_2).__name__ == 'ExampleTestTimeRepresentation2InTime'
         assert type(t2c.test_2.__class__).__name__ == 'ModifiedClass'
         assert t2c.test_2.hour100 == 44
-        assert t2c.test_2.minute100 == Fraction("11/96")
+        assert t2c.test_2.minute100 == Fraction("275/24")
 
     def test_046_registered_attribute_class_with_static_methods(self, class_Time_resource):
         class ExampleTestTimeRepresentation3(ExampleTestTimeRepresentation):
@@ -422,7 +422,7 @@ class TestTimeRepresentationInterface():
         assert type(t3c.test_3).__name__ == 'ExampleTestTimeRepresentation3InTime'
         assert type(t3c.test_3.__class__).__name__ == 'ModifiedClass'
         assert t3c.test_3.hour100 == 44
-        assert t3c.test_3.minute100 == Fraction("11/96")
+        assert t3c.test_3.minute100 == Fraction("275/24")
 
         # static method can be reached on the class and on all types of instance
         assert Time.test_3.is_odd(3)
@@ -440,11 +440,11 @@ class TestTimeRepresentationInterface():
         assert Time.western
         # an instance created with another calendar or by Time does not have
         #   the attribute; it is instead is reachable via the Time class
-        t1 = Time(4)
+        t1 = Time('4/10')
         with pytest.raises(KeyError):
             t1.__dict__['western']
         assert hasattr(t1, 'western')
-        t1.gregorian
+        t1.western
         t2 = Time.internet(345)
         with pytest.raises(KeyError):
             t2.__dict__['western']

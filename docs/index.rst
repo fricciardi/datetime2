@@ -11,6 +11,9 @@
    from fractions import Fraction
    from datetime2 import Date
 
+:: TODO: find the way of having classes in Index not classified as built-it
+
+
 The :mod:`datetime2` module is intended to be a replacement of the :mod:`datetime` module. Its most visible feature is
 the ability to have multiple representation of the same date or time object. There are a few representations already
 available (see to :ref:`Available date and time representations<list-of-calendars>`), but others can be
@@ -251,8 +254,10 @@ There are two ways of creating a :class:`Time` instance:
    constructor supports it.
 
    The ``day_frac`` argument can be anything that can be passed to the
-   :class:`fractions.Fraction` constructor; it is also possible to use
-   the form with numerator and denominator: in this case, the ``day_frac``
+   :class:`fractions.Fraction` constructor, i.e. an integer, a float,
+   another Fraction, a Decimal number or a string representing an integer,
+   a float or a fraction. It is also possible to use a constructor form
+   with numerator and denominator: in this case, the ``day_frac``
    argument becomes the numerator of the fraction. The resulting value must
    be equal or greater than 0 and less than 1. A :exc:`TypeError` exception
    is raised if the argument type is not one of the accepted types. A

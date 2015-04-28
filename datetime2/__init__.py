@@ -294,6 +294,6 @@ class Time:
 ##############################################################################
 # Register current time representations
 #
-#Date.register_new_calendar('gregorian', gregorian.GregorianCalendar)
-#Date.register_new_calendar('iso', iso.IsoCalendar)
+Time.register_new_time('western', western.WesternTime)
+Time.register_new_time('internet', modern.InternetTime)
 

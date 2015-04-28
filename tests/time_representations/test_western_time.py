@@ -129,6 +129,14 @@ class TestWestern():
             western = WesternTime(hour, minute, second)
             assert (western.hour, western.minute, western.second) == (hour, minute, second)
 
+    def test_001_constructor_types_for_seconds(self):
+        for integer_second in (3, '3'):
+            western = WesternTime(5, 4, integer_second)
+            assert western.as_seconds() == Fraction(18243, 1)
+        for fractional_second in (1.25, Fraction(5, 4), '1.25', Decimal('1.25'), '5/4'):
+            western = WesternTime(5, 4, fractional_second)
+            assert western.as_seconds() == Fraction(72965, 4)
+
     def test_002_constructor_in_hours(self):
         for test_row in western_time_test_data:
             in_hours = Fraction(test_row[2])

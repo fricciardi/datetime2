@@ -26,8 +26,9 @@ Also, all time representations listed here conform to the rules listed in
 :ref:`customization`. The descriptions below omit the comparison operators
 and the ``from_day_frac`` and ``to_day_frac`` methods.
 
-In the following we will call a Python number any Python integer, float,
-Fraction or Decimal number.
+In the following we will call a Python number anything that can be passed
+to a Fraction constructor, i.e. an integer, a float, another Fraction,
+a Decimal number or a string representing an integer, a float or a fraction.
 
 .. _western-time:
 
@@ -195,30 +196,15 @@ called "beats". A beat is equivalent to 1 minute and 26.4 seconds. A `Wikipedia
 article <http://en.wikipedia.org/wiki/Swatch_Internet_Time>`_ well describes
 the Internet time.
 
-There are two constructors for the Internet time representation. The default
-one is :
+The default constructor for Internet time is:
 
 .. class:: InternetTime(beat)
 
    Return an object that represents the time in thousandths of a day. The
    ``beat`` argument is required and must be Python number; its value must
-   be:
-
-   * ``0 <= beat < 1000``
-
-   If an argument is a Python number, a :exc:`TypeError` exception is raised.
-   If an argument is outside its accepted range, a :exc:`ValueError`
-   exception is raised.
-
-The other constructor is:
-
-.. class:: InternetTime.from_day_frac(day_frac)
-
-   Return an object that represents the fraction of the day in thousandths
-   of a day. The ``day_frac`` argument is required and must be a Python number,
-   otherwise a :exc:`TypeError` exception is generated. Its value must be
-   equal or greater than 0 and less than 1, otherwise a :exc:`ValueError`
-   exception is raised. Note that the only accepted integer value is ``0``.
+   be equal or greater than 0 and less than 1000. If the argument is not a
+   Python number, a :exc:`TypeError` exception is raised. If the argument
+   is outside its accepted range, a :exc:`ValueError` exception is raised.
 
 An :class:`InternetTime` object has one attribute:
 
@@ -236,14 +222,8 @@ and the following methods:
 
 .. doctest::
 
-      >>> str(InternetTime(345.8))
+      >>> str(InternetTime(345.25))
       '@345'
-
-.. method:: internet_time.to_day_frac()
-
-   Returns a the moment of the day as a Python :class:`fractions.Fraction`. For
-   example,
-   ``InternetTime(125).to_day_fraction() == fractions.Fraction(1, 8)``.
 
 .. method:: internet_time.cformat(format)
 

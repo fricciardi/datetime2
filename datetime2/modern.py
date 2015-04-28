@@ -34,7 +34,9 @@ __all__ = ['IsoCalendar']
 
 
 import bisect
-
+from fractions import Fraction
+from functools import total_ordering
+from math import floor
 
 _long_years = frozenset([  4,   9,  15,  20,  26,  32,  37,  43,  48,
                           54,  60,  65,  71,  76,  82,  88,  93,  99,
@@ -56,6 +58,7 @@ for year_index in range(1, 400):
 ##############################################################################
 # Iso calendar
 #
+@total_ordering
 class IsoCalendar:
     def __init__(self, year, week, day):
         if not isinstance(year, int) or not isinstance(week, int) or not isinstance(day, int):
@@ -125,30 +128,9 @@ class IsoCalendar:
     def __eq__(self, other):
         return isinstance(other, IsoCalendar) and self.year == other.year and self.week == other.week and self.day == other.day
 
-    def __ne__(self, other):
-        return not isinstance(other, IsoCalendar) or self.day != other.day or self.week != other.week or self.year != other.year
-
     def __gt__(self, other):
         if isinstance(other, IsoCalendar):
             return (self.year, self.week, self.day) > (other.year, other.week, other.day)
-        else:
-            return NotImplemented
-
-    def __ge__(self, other):
-        if isinstance(other, IsoCalendar):
-            return (self.year, self.week, self.day) >= (other.year, other.week, other.day)
-        else:
-            return NotImplemented
-
-    def __lt__(self, other):
-        if isinstance(other, IsoCalendar):
-            return (self.year, self.week, self.day) < (other.year, other.week, other.day)
-        else:
-            return NotImplemented
-
-    def __le__(self, other):
-        if isinstance(other, IsoCalendar):
-            return (self.year, self.week, self.day) <= (other.year, other.week, other.day)
         else:
             return NotImplemented
 
@@ -175,6 +157,87 @@ class IsoCalendar:
         'W': lambda self: '{:02d}'.format((self.day_of_year() + 7 - self.day) // 7),
         'y': lambda self: '{:03d}'.format(self.year)[-2:],
         'Y': lambda self: '{:04d}'.format(self.year) if self.year >= 0 else '-{:04d}'.format(-self.year)
+    }
+
+    def cformat(self, format_string):
+        if not isinstance(format_string, str):
+            raise TypeError("Format must be specified with string.")
+        output_pieces = []
+        for format_chunk in format_string.split('%%'):
+            format_parts = format_chunk.split('%')
+            chunk_pieces = [format_parts[0]]
+            for part in format_parts[1:]:
+                if part == '':          # special case: last char is '%'
+                    value = '%'
+                else:
+                    try:
+                        value = self.format_functions[part[0]](self)
+                    except KeyError:
+                        value = '%' + part[0]
+                chunk_pieces.append(value)
+                chunk_pieces.append(part[1:])
+            output_pieces.append(''.join(chunk_pieces))
+        return '%'.join(output_pieces)
+
+
+##############################################################################
+# Western time representation
+#
+@total_ordering
+class InternetTime:
+    def __init__(self, beat):
+        try:
+            beat_fraction = Fraction(beat)
+        except (TypeError, OverflowError):
+            raise TypeError("beat is not a valid Fraction value")
+        if beat_fraction < 0 or beat_fraction >= 1000:
+            raise ValueError("Beat must be equal or greater than 0 and less than 1000, while it is {}.".format(beat_fraction))
+        self._beat = beat_fraction
+        self._day_frac = None
+
+    @property
+    def beat(self):
+        return self._beat
+
+    @classmethod
+    def from_day_frac(cls, day_frac):
+        if not isinstance(day_frac, Fraction):
+            raise TypeError("Fraction argument expected")
+        if day_frac < 0 or day_frac >= 1:
+            raise ValueError("Day fraction must be equal or greater than 0 and less than 1, while it is {}.".format(day_frac))
+        beat = day_frac * 1000
+        internet = cls(beat)
+        internet._day_frac = day_frac
+        return internet
+
+    def to_day_frac(self):
+        if self._day_frac is None:
+            self._day_frac = self._beat / 1000
+        return self._day_frac
+
+    # Comparison operators
+    def __eq__(self, other):
+        return isinstance(other, InternetTime) and self.beat == other.beat
+
+    def __gt__(self, other):
+        if isinstance(other, InternetTime):
+            return self.beat > other.beat
+        else:
+            return NotImplemented
+
+    # hash value
+    def __hash__(self):
+        return hash(self.beat)
+
+    def __repr__(self):
+        return 'datetime2.modern.{}({})'.format(self.__class__.__name__, repr(self.beat))
+
+    def __str__(self):
+        return '@{:03d}'.format(int(self.beat))
+
+    format_functions = {
+        'b': lambda self: '{:03d}'.format(int(self.beat)),
+        'f': lambda self: '{:03d}'.format(int((self.beat - floor(self.beat)) * 1000))
     }
 
     def cformat(self, format_string):
