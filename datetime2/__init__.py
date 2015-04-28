@@ -212,7 +212,7 @@ class Time:
         return self._day_frac
 
     def __repr__(self):
-        return "datetime2.{}({})".format(self.__class__.__name__, str(self.day_frac))
+        return "datetime2.{}('{}')".format(self.__class__.__name__, str(self.day_frac))
 
     def __str__(self):
         return "{} of a day".format(str(self.day_frac))

@@ -3,8 +3,8 @@ Time of day
 
 .. testsetup::
 
-   from timeofday.western import WesternTime
-   from timeofday.other import InternetTime
+   from datetime2.western import WesternTime
+   from datetime2.modern import InternetTime
 
 This chapter lists the time representations classes defined in the
 :mod:`datetime2` package. These classes are not depending on the
@@ -124,11 +124,11 @@ An instance of the :class:`WesternTime` class has the following methods:
    requirements of the default constructor, otherwise a :exc:`TypeError` or
    :exc:`ValueError` exception is raised. For example:
 
-.. doctest:: western
+.. doctest::
 
       >>> my_time = WesternTime(19, 6, 29)
       >>> print(my_time.replace(minute=38))
-      06:38:29
+      19:38:29
       >>> my_time.replace(hour=24)
       Traceback (most recent call last):
         |

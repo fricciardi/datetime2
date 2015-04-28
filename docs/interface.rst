@@ -33,7 +33,7 @@ instance:
    datetime2.Date(734976)
    >>> t1 = Time.western(17, 16, 28)
    >>> t1
-   datetime2.Time(Fraction(15547, 21600))
+   datetime2.Time('15547/21600')
 
 * if called on a base class instance, it allows to see the instance using
   attributes and methods of the corresponding interface class:
@@ -68,7 +68,7 @@ different ways.
    >>> str(t.western)
    '12:00:00'
    >>> t.internet.beat
-   500
+   Fraction(500, 1)
 
 A feature of :mod:`datetime2` is that all representations are
 computed only once, when first accessed.
@@ -89,11 +89,11 @@ instance, but when used via the :class:`Date` class this becomes a
    datetime2.Date(734868)
    >>> str(d1.gregorian)
    '2012-12-31'
-   >>> d2 = d1.gregorian.replace(year = 2013, month = 6)
+   >>> d2 = d1.gregorian.replace(year = 2013, month = 7)
    >>> d2
-   datetime2.Date(735050)
+   datetime2.Date(735080)
    >>> str(d2.gregorian)
-   '2013-06-19'
+   '2013-07-31'
 
 As expected, static methods are unchanged even when invoked via access
 attribute:
