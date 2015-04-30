@@ -21,6 +21,7 @@ Project objectives
   representation.
 * Access to different calendars, for input parsing and output formatting.
 * Access to different time representations, also for input and output.
+* Infinite precision in converting between different time representations.
 * Ability to dynamically register new formatting classes.
 * Internationalization.
 * Implementation of the part of the Unicode Locale Database concerned with

@@ -11,8 +11,6 @@
    from fractions import Fraction
    from datetime2 import Date
 
-:: TODO: find the way of having classes in Index not classified as built-it
-
 
 The :mod:`datetime2` module is intended to be a replacement of the :mod:`datetime` module. Its most visible feature is
 the ability to have multiple representation of the same date or time object. There are a few representations already
@@ -154,7 +152,7 @@ instances are considered to be true.
 
 :class:`Date` instances have one attribute:
 
-.. attribute:: date.day_count
+.. attribute:: Date.day_count
 
    An integer that represents the number of days between the given date and January
    1\ :sup:`st`, year 1. This attribute is read-only: an :exc:`AttributeError` exception is raised
@@ -162,7 +160,7 @@ instances are considered to be true.
 
 :class:`Date` has one instance method:
 
-.. method:: date.__str__()
+.. method:: Date.__str__()
 
    Return ``R.D.`` followed by the day count. ``R.D.`` stands for Rata Die, the Latin
    for "fixed date".
@@ -279,13 +277,13 @@ instances are considered to be true.
 
 :class:`Time` instances have two attributes:
 
-.. attribute:: time.day_frac
+.. attribute:: Time.day_frac
 
    A  Python :class:`fractions.Fraction` that represents the part of the day
    after midnight. This attribute is read-only: an :exc:`AttributeError`
    exception is raised when trying to change it.
 
-.. attribute:: time.correction
+.. attribute:: Time.correction
 
    A correction to the time of the day, in order to indicate a location and/or
    daylight saving time. In version 0.5, correction is not implemented,
@@ -293,7 +291,7 @@ instances are considered to be true.
 
 :class:`Time` has one instance method:
 
-.. method:: date.__str__()
+.. method:: time.__str__()
 
    Return the string ``<fraction> of a day``, where *fraction* is the value of the
    ``day_frac`` attribute.

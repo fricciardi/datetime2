@@ -36,6 +36,8 @@ of 28 (or 29), 30 and 31 days.
 
 The default constructor for a Gregorian day is:
 
+.. module:: datetime2.western
+
 .. class:: GregorianCalendar(year, month, day)
 
    Return an object that represents the date given with Gregorian year, month
@@ -51,7 +53,7 @@ The default constructor for a Gregorian day is:
 
 Another constructor can be used if the day in the year is known:
 
-.. class:: GregorianCalendar.year_day(year, day_of_year)
+.. classmethod:: GregorianCalendar.year_day(year, day_of_year)
 
    Return an object that represents the day specified by a Gregorian year and
    the day in that year. Both arguments are required and must be integers.
@@ -61,24 +63,24 @@ Another constructor can be used if the day in the year is known:
 
 A :class:`GregorianCalendar` object has three attributes:
 
-.. attribute:: gregorian.year
+.. attribute:: GregorianCalendar.year
 
-.. attribute:: gregorian.month
+.. attribute:: GregorianCalendar.month
 
-.. attribute:: gregorian.day
+.. attribute:: GregorianCalendar.day
 
    These attributes are read-only integer numbers. Month will be between 1 and
    12, day will be between 1 and the number of days in the corresponding month.
 
-Two static method have been implmented to give details of a Gregorian year:
+Two static method have been implemented to give details of a Gregorian year:
 
-.. classmethod:: GregorianCalendar.is_leap_year(year)
+.. staticmethod:: GregorianCalendar.is_leap_year(year)
 
    Return ``True`` if *year* is a leap year in the Gregorian calendar.
    ``False`` otherwise. For example,
    ``GregorianCalendar.is_leap_year(2008) == True``.
 
-.. classmethod:: GregorianCalendar.days_in_year(year)
+.. staticmethod:: GregorianCalendar.days_in_year(year)
 
    Return 366 if *year* is a leap year in the Gregorian calendar, 365
    otherwise. For example, ``GregorianCalendar.days_in_year(2100) == 365``.
@@ -86,19 +88,19 @@ Two static method have been implmented to give details of a Gregorian year:
 An instance of the :class:`GregorianCalendar` class has the following
 methods:
 
-.. method:: gregorian.weekday()
+.. method:: GregorianCalendar.weekday()
 
    Return the day of the week as an integer, where Monday is 1 and Sunday is 7.
    For example, ``GregorianCalendar(2002, 12, 4).weekday() == 3``, a Wednesday.
    Note that this is the ISO convention for weekdays, *not* the one used by
    :meth:`datetime.date.weekday`, where Monday is 0 and Sunday is 6.
 
-.. method:: gregorian.day_of_year()
+.. method:: GregorianCalendar.day_of_year()
 
    Return the day of the year as an integer, from 1 to 365 or 366 (in leap years).
    For example, ``GregorianCalendar(2008, 3, 1).day_of_year() == 61``.
 
-.. method:: gregorian.replace(year, month, day)
+.. method:: GregorianCalendar.replace(year, month, day)
 
    Returns a new :class:`GregorianCalendar` object with the same value, except
    for those parameters given new values by whichever keyword arguments are
@@ -116,7 +118,7 @@ methods:
         |
       ValueError: Day must be between 1 and number of days in month, while it is 31.
 
-.. method:: gregorian.__str__()
+.. method:: GregorianCalendar.__str__()
 
    Return a string representing the date with the 'YYYY-MM-DD' format. Years
    above 9999 are represented adding necessary figures. Negative years are
@@ -130,7 +132,7 @@ methods:
       '-0001-01-01'
 
 
-.. method:: gregorian.cformat(format)
+.. method:: GregorianCalendar.cformat(format)
 
    Return a string representing the date, controlled by an explicit format
    string. The formatting directives are a subset of those accepted by
@@ -222,6 +224,8 @@ ISO 8601 Calendar
 
 The constructor of an ISO calendar is:
 
+.. currentmodule:: datetime2.modern
+
 .. class:: IsoCalendar(year, week, day)
 
    Return an object that represents the date given with ISO year, week number
@@ -237,11 +241,11 @@ The constructor of an ISO calendar is:
 
 An :class:`IsoCalendar` object has three attributes:
 
-.. attribute:: iso_calendar_day.year
+.. attribute:: IsoCalendar.year
 
-.. attribute:: iso_calendar_day.week
+.. attribute:: IsoCalendar.week
 
-.. attribute:: iso_calendar_day.day
+.. attribute:: IsoCalendar.day
 
    These attributes are read-only integer numbers. Week will be between 1 and
    the number of weeks in the ISO year (52 or 53), day will be between 1 and 7.
@@ -262,13 +266,13 @@ Two static method have been implmented to give details of an ISO year:
 
 An instance of the :class:`IsoCalendar` class has the following methods:
 
-.. method:: iso.day_of_year()
+.. method:: IsoCalendar.day_of_year()
 
    Return the day of the year as an integer, from 1 to 364 (in short years) or
    371 (in long years). For example, ``IsoCalendar(2008, 3, 1).day_of_year() ==
    62``.
 
-.. method:: iso.replace(year, week, day)
+.. method:: IsoCalendar.replace(year, week, day)
 
    Returns a new :class:`IsoCalendar` object with the same value, except for
    those parameters given new values by whichever keyword arguments are
@@ -286,7 +290,7 @@ An instance of the :class:`IsoCalendar` class has the following methods:
         |
       ValueError: Week must be between 1 and number of weeks in year, while it is 53.
 
-.. method:: iso.__str__()
+.. method:: IsoCalendar.__str__()
 
    Return a string representing the date with the 'YYYY-**W**\ WW-DD' format.
    Years above 9999 are represented adding necessary figures. Negative years
@@ -300,7 +304,7 @@ An instance of the :class:`IsoCalendar` class has the following methods:
       '-0001-W01-1'
 
 
-.. method:: iso.cformat(format)
+.. method:: IsoCalendar.cformat(format)
 
    Return a string representing the ISO date, controlled by an explicit format
    string. The formatting directives are a subset of those accepted by

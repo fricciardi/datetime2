@@ -1,6 +1,8 @@
 Time of day
 ===========
 
+.. module:: datetime2
+
 .. testsetup::
 
    from datetime2.western import WesternTime
@@ -41,7 +43,7 @@ in 60 minutes and each minute in 60 seconds.
 
 There are four constructors for a western time. The default one is:
 
-.. class:: WesternTime(hour, minute, second)
+.. class:: western.WesternTime(hour, minute, second)
 
    Return an object that represents the moment of a day in hour, minute and
    second elapsed from midnight. This representation does not take into
@@ -59,7 +61,7 @@ There are four constructors for a western time. The default one is:
 
 The other three constructors are:
 
-.. class:: WesternTime.in_hours(hour)
+.. class:: datetimeWesternTime.in_hours(hour)
 
    Return an object that represents the moment of the day specified in
    hours, possibly fractional, elapsed from midnight. The argument must be a
@@ -160,7 +162,7 @@ An instance of the :class:`WesternTime` class has the following methods:
    |           | zero-padded decimal number [00, 23].      |       |
    +-----------+-------------------------------------------+-------+
    | ``%I``    | Hour (12-hour clock) as a                 |       |
-   |           | zero-padded decimal number [00, 11].      |       |
+   |           | zero-padded decimal number [01, 12].      |       |
    +-----------+-------------------------------------------+-------+
    | ``%p``    | Returns 'AM' if hour is between 0 and 11, |       |
    |           | 'PM' if hour is between 12 and 23.        | \(1)  |

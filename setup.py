@@ -10,7 +10,7 @@ with open(path.join(here, 'PYPI_DESCRIPTION.rst'), encoding='utf-8') as f:
 
 setup(
     name='datetime2',
-    version='0.5dev',
+    version='0.6',
 
     description='New date and time classes',
     long_description=long_description,
@@ -19,6 +19,8 @@ setup(
     author='Francesco Ricciardi',
     author_email='francescor2010 at yahoo dot it',
     license='BSD License',
+
+    keywords='date time datetime calendar',
 
     classifiers=[
           'Development Status :: 3 - Alpha',
@@ -29,7 +31,7 @@ setup(
           'Topic :: Software Development :: Libraries'
           ],
 
-    packages=find_packages(exclude=['docs', 'tests*']),
+    packages=find_packages(exclude=['docs*', 'tests*']),
 
     platforms=['Platform independent']
     )
