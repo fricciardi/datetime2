@@ -248,8 +248,8 @@ There are two ways of creating a :class:`Time` instance:
    time zone) can be given in hours and stored in the ``correction``
    argument, which must be explicitly named.
 
-   In version 0.5, time correction is not implemented, although the
-   constructor supports it.
+   In version 0.6, time correction is not implemented, although the
+   constructor accepts it it.
 
    The ``day_frac`` argument can be anything that can be passed to the
    :class:`fractions.Fraction` constructor, i.e. an integer, a float,
@@ -268,8 +268,8 @@ There are two ways of creating a :class:`Time` instance:
    Return a :class:`Time` object that represents the current moment in the
    day. It is possible to add a correction to this time.
 
-   In version 0.5, time correction is not implemented, although the
-   constructor supports it.
+   In version 0.6, time correction is not implemented, although the
+   constructor accepts it.
 
 :class:`Time` instances are immutable, so they can be used as dictionary keys.
 They can also be pickled and unpickled. In boolean contexts, all :class:`Time`
@@ -286,8 +286,8 @@ instances are considered to be true.
 .. attribute:: Time.correction
 
    A correction to the time of the day, in order to indicate a location and/or
-   daylight saving time. In version 0.5, correction is not implemented,
-   although the supports it.
+   daylight saving time. In version 0.6, correction is not implemented,
+   although the class accepts it.
 
 :class:`Time` has one instance method:
 
