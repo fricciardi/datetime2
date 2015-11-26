@@ -240,7 +240,7 @@ interpretation is left to the program that uses it.
 
 There are two ways of creating a :class:`Time` instance:
 
-.. class:: Time(day_frac, denominator=1, *, correction=None)
+.. class:: Time(day_frac, *, correction=None)
 
    Return an object that represent a moment in a day as a fraction of the
    whole day, given in the ``day_frac`` argument. If needed, a correction to
@@ -254,10 +254,11 @@ There are two ways of creating a :class:`Time` instance:
    The ``day_frac`` argument can be anything that can be passed to the
    :class:`fractions.Fraction` constructor, i.e. an integer, a float,
    another Fraction, a Decimal number or a string representing an integer,
-   a float or a fraction. It is also possible to use a constructor form
-   with numerator and denominator: in this case, the ``day_frac``
-   argument becomes the numerator of the fraction. The resulting value must
-   be equal or greater than 0 and less than 1. A :exc:`TypeError` exception
+   a float or a fraction. It is also possible to use a 2-value tuple with
+   integer values. This tuple represent the numerator and denominator of a
+   fraction that will be passed to the :class:`fractions.Fraction`
+   constructor. In any case, the resulting value for ``day_frac`` must be
+   equal or greater than 0 and less than 1. A :exc:`TypeError` exception
    is raised if the argument type is not one of the accepted types. A
    :exc:`ZeroDivisionError` exception is raised if denominator is 0. A
    :exc:`ValueError` exception is raised in the argument value is outside
