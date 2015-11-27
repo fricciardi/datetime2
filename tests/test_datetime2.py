@@ -317,12 +317,12 @@ class TestDate:
 # Time tests
 #
 time_test_data = [
-    [Fraction(0, 1), [0, Fraction(0), Decimal('0'), 0.0, '0', '0/33']],
-    [Fraction(1, 4), [Fraction(1, 4), Decimal('0.25'), 0.25, '0.25', '1/4']]]
+    [Fraction(0, 1), [0, Fraction(0), Decimal('0'), 0.0, '0', '0/33', (0, 5)]],
+    [Fraction(1, 4), [Fraction(1, 4), Decimal('0.25'), 0.25, '0.25', '1/4', (2, 8)]]]
 # we are not going to test more values, because we don't want to test the Fraction constructor :-)
 
 # but we want to test with a few strange values
-time_strange_test_data = (Fraction(123, 4567), 0.999999, '0.999999', '0.0000001', '5/456789')
+time_strange_test_data = (Fraction(123, 4567), 0.999999, '0.999999', '0.0000001', '5/456789', (123, 4567))
 
 class TestTime:
     def test_000_valid_argument_types(self):
@@ -331,17 +331,10 @@ class TestTime:
             for input_value in input_values:
                 assert Time(input_value).day_frac == day_frac
 
-    def test_003_valid_argument_types_strange(self):
+    def test_005_valid_argument_types_strange(self):
         "The day_frac argument can be anything that can be passed to the fractions.Fraction constructor."
         for input_value in time_strange_test_data:
             Time(input_value)
-
-    def test_006_valid_fractional_argument(self):
-        "The day_frac argument can be anything that can be passed to the fractions.Fraction constructor."
-        for numerator in (2, Fraction(4, 3)):
-            Time(numerator, 4)
-        for denominator in (2, Fraction(4, 3)):
-            Time(1, denominator)
 
     def test_010_invalid_argument_types(self):
         "A TypeError exception is raised if the argument type is not one of the accepted types."
@@ -349,9 +342,9 @@ class TestTime:
         with pytest.raises(TypeError):
             Time()
         with pytest.raises(TypeError):
-            Time(1, 2, 3)
+            Time(1, 2)
         # exception with non-numeric types
-        for par in (1j, (1,), [1], {1:1}, (), [], {}, None):
+        for par in (1j, (1,), [1], {1:1}, [], {}, None, (1,2,3)):
             with pytest.raises(TypeError):
                 Time(par)
 
@@ -360,11 +353,15 @@ class TestTime:
         for par in (-0.00001, 1, 1.00000001, 10000, -10000):
             with pytest.raises(ValueError):
                 Time(par)
+        # same for tuple argument
+        for par in ( (1000, 1), (4, 2), (2, 2), (-1, -1), (-1, 1000000), (-3, 3), (1000000, -2)):
+            with pytest.raises(ValueError):
+                Time(par)
         for den in (2, -2, -10000):
             with pytest.raises(ValueError):
-                Time(2, den)
+                Time((2, den))
         with pytest.raises(ZeroDivisionError):
-            Time(2, 0)
+            Time((2, 0))
 
     def test_020_now(self):
         "Return an object that represents the current moment in the day."

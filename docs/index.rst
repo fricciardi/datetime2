@@ -259,10 +259,9 @@ There are two ways of creating a :class:`Time` instance:
    fraction that will be passed to the :class:`fractions.Fraction`
    constructor. In any case, the resulting value for ``day_frac`` must be
    equal or greater than 0 and less than 1. A :exc:`TypeError` exception
-   is raised if the argument type is not one of the accepted types. A
-   :exc:`ZeroDivisionError` exception is raised if denominator is 0. A
-   :exc:`ValueError` exception is raised in the argument value is outside
-   the accepted range.
+   is raised if the argument type is not one of the accepted types or the
+   tuple argument does not have two values. A :exc:`ZeroDivisionError`
+   exception is raised if denominator is 0.
 
 .. classmethod:: Time.now(correction = None)
 
