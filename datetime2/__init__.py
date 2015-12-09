@@ -190,15 +190,18 @@ Date.register_new_calendar('iso', modern.IsoCalendar)
 
 @total_ordering
 class Time:
-    def __init__(self, day_frac, denominator=1, *, correction=None):
+    def __init__(self, day_frac, *, correction=None):
         self.correction = correction  # for the time being
         try:
-            if denominator != 1:
-                self._day_frac = Fraction(day_frac, denominator)
+            if type(day_frac) == tuple:
+                if len(day_frac) == 2:
+                    self._day_frac = Fraction(*day_frac)
+                else:
+                    raise TypeError('Time argument tuple is invalid')
             else:
                 self._day_frac = Fraction(day_frac)
         except ZeroDivisionError:
-            raise ZeroDivisionError("Time denominator cannot be <ero.".format(str(day_frac)))
+            raise ZeroDivisionError("Time denominator cannot be zero.".format(str(day_frac)))
         if self.day_frac < 0 or self.day_frac >= 1:
             raise ValueError("resulting fraction is outside range valid for Time instances (0 <= value < 1): {}".format(float(self.day_frac)))
 
