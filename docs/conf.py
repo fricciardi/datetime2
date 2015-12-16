@@ -218,7 +218,7 @@ man_pages = [
 
 # -- Options for intersphinx ---------------------------------------------------
 
-intersphinx_mapping = {'python': ('http://docs.python.org/3.4', None)}
+intersphinx_mapping = {'python': ('http://docs.python.org/3.5', None)}
 
 
 # -- Options for doctest -------------------------------------------------------
