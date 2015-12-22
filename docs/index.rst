@@ -250,7 +250,7 @@ interpretation is left to the program that uses it.
 
 There are two ways of creating a :class:`Time` instance:
 
-.. class:: Time(day_frac, *, correction=None)
+.. class:: Time(day_frac, *, time_to_utc=None)
 
    Return an object that represent a moment in a day as a fraction of the
    whole day, given in the ``day_frac`` argument. If needed, a correction to
@@ -264,7 +264,9 @@ There are two ways of creating a :class:`Time` instance:
    representing an integer, a float or a fraction. It is also possible to
    use a 2-value tuple with integer values. This tuple represents the
    numerator and denominator of a fraction that will be passed to the
-   :class:`fractions.Fraction` constructor.
+   :class:`fractions.Fraction` constructor. ``time_to_utc`` can also be
+   any object that has a ``time_to_utc`` method that returns a
+   :class:`fractions.Fraction` representing the correction.
 
    The resulting value for ``day_frac`` must be equal or greater than 0 and
    less than 1. The resulting value for ``time_to_utc`` must be greater than
@@ -295,7 +297,7 @@ instances are considered to be true.
 
 .. attribute:: Time.time_to_utc
 
-   If not ``None``, this attribute ise a Python :class:`fractions.Fraction`
+   If not ``None``, this attribute is a Python :class:`fractions.Fraction`
    that represents the fraction of a day that must be added to current time
    to get UTC. This attribute is read-only: an :exc:`AttributeError`
    exception is raised when trying to change it.
@@ -309,9 +311,12 @@ instances are considered to be true.
 
 .. doctest::
 
-   >>> t = Time((3, 24), time_to_utc=(-4, 24))
-   >>> print(t)
-   1/8 of a day, -1/6 to UTC
+   >>> t1 = Time((4, 12))
+   >>> print(t1)
+   1/3 of a day
+   >>> t2 = Time((3, 24), time_to_utc=(-4, 24))
+   >>> print(t2)
+   1/8 of a day, -1/6 of a day to UTC
 
 .. method:: time.move(new_time_to_utc)
 
