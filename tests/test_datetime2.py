@@ -106,7 +106,19 @@ class TestDate:
         one = TimeDelta(1)
         minusone = TimeDelta(-1)
 
-        # Addition between Date and TimeDelta, reverse is not defined
+        # Addition between Date and TimeDelta
+        # test with zero, negative and positive dates
+        assert a + zero == Date(0)
+        assert a + one == Date(1)
+        assert a + minusone == Date(-1)
+        assert b + zero == Date(-3)
+        assert b + one == Date(-2)
+        assert b + minusone == Date(-4)
+        assert c + zero == Date(5)
+        assert c + one == Date(6)
+        assert c + minusone == Date(4)
+
+        # Reverse addition between TimeDelta and Date
         # test with zero, negative and positive dates
         assert a + zero == Date(0)
         assert a + one == Date(1)

@@ -184,7 +184,8 @@ Supported operations
 | Operation                     | Result                                       |
 +===============================+==============================================+
 | ``date2 = date1 + timedelta`` | *date2* is ``timedelta`` days after          |
-|                               | *date1*. (1) (2)                             |
+|                               | *date1*. Reverse addition (``timedelta +     |
+|                               | date1``) is also allowed. (1) (2)            |
 +-------------------------------+----------------------------------------------+
 | ``date2 = date1 - timedelta`` | *date2* is ``timedelta`` days before         |
 |                               | *date1*. (1) (3)                             |

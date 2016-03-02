@@ -10,7 +10,7 @@ with open(path.join(here, 'PYPI_DESCRIPTION.rst'), encoding='utf-8') as f:
 
 setup(
     name='datetime2',
-    version='0.6.6',
+    version='0.6.7',
 
     description='New date and time classes',
     long_description=long_description,
