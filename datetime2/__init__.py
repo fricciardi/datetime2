@@ -227,8 +227,7 @@ class Time:
         else:
             return NotImplemented
 
-    def __radd__(self, other):
-        return self.__add__(other)
+    __radd__ = __add__
 
     def __sub__(self, other):
         if isinstance(other, Time):

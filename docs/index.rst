@@ -316,7 +316,8 @@ Supported operations
 | Operation                     | Result                                       |
 +===============================+==============================================+
 | ``time2 = time1 + timedelta`` | *time2* is ``timedelta`` time after          |
-|                               | *time1*. (1) (2)                             |
+|                               | *time1*. Reverse addition (``timedelta +     |
+|                               | time1``) is also allowed. (1) (2)            |
 +-------------------------------+----------------------------------------------+
 | ``time2 = time1 - timedelta`` | *time2* is ``timedelta`` time before         |
 |                               | *time1*. (1) (3)                             |

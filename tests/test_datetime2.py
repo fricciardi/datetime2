@@ -404,7 +404,7 @@ class TestTime:
         minus_half = TimeDelta(-1.5)
         integer = TimeDelta(3)
 
-        # Addition between Time and TimeDelta, reverse is not defined
+        # Addition between Time and TimeDelta
         # test with zero, negative and positive dates
         assert a + zero == Time(0)
         assert a + plus_half == Time(0.5)
@@ -418,6 +418,21 @@ class TestTime:
         assert c + plus_half == Time(0.25)
         assert c + minus_half == Time(0.25)
         assert c + integer == Time(0.75)
+
+        # Reversed addition between Time and TimeDelta
+        # test with zero, negative and positive dates
+        assert zero + a == Time(0)
+        assert plus_half + a == Time(0.5)
+        assert minus_half + a == Time(0.5)
+        assert integer + a == Time(0)
+        assert zero + b == Time(0.25)
+        assert plus_half + b == Time(0.75)
+        assert minus_half + b == Time(0.75)
+        assert integer + b  == Time(0.25)
+        assert zero + c == Time(0.75)
+        assert plus_half + c == Time(0.25)
+        assert minus_half + c == Time(0.25)
+        assert integer + c == Time(0.75)
 
         # subtraction between Time and TimeDelta, reverse is not defined
         # test with zero, negative and positive Times
