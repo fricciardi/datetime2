@@ -194,7 +194,8 @@ Supported operations
 | Operation                     | Result                                       |
 +===============================+==============================================+
 | ``date2 = date1 + timedelta`` | *date2* is ``timedelta`` days after          |
-|                               | *date1*. (1) (2)                             |
+|                               | *date1*. Reverse addition (``timedelta +     |
+|                               | date1``) is also allowed. (1) (2)            |
 +-------------------------------+----------------------------------------------+
 | ``date2 = date1 - timedelta`` | *date2* is ``timedelta`` days before         |
 |                               | *date1*. (1) (3)                             |
@@ -352,7 +353,8 @@ Supported operations
 | Operation                     | Result                                       |
 +===============================+==============================================+
 | ``time2 = time1 + timedelta`` | *time2* is ``timedelta`` time after          |
-|                               | *time1*. (1) (2)                             |
+|                               | *time1*. Reverse addition (``timedelta +     |
+|                               | time1``) is also allowed. (1) (2)            |
 +-------------------------------+----------------------------------------------+
 | ``time2 = time1 - timedelta`` | *time2* is ``timedelta`` time before         |
 |                               | *time1*. (1) (3)                             |

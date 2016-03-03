@@ -106,7 +106,19 @@ class TestDate:
         one = TimeDelta(1)
         minusone = TimeDelta(-1)
 
-        # Addition between Date and TimeDelta, reverse is not defined
+        # Addition between Date and TimeDelta
+        # test with zero, negative and positive dates
+        assert a + zero == Date(0)
+        assert a + one == Date(1)
+        assert a + minusone == Date(-1)
+        assert b + zero == Date(-3)
+        assert b + one == Date(-2)
+        assert b + minusone == Date(-4)
+        assert c + zero == Date(5)
+        assert c + one == Date(6)
+        assert c + minusone == Date(4)
+
+        # Reverse addition between TimeDelta and Date
         # test with zero, negative and positive dates
         assert a + zero == Date(0)
         assert a + one == Date(1)
@@ -404,7 +416,7 @@ class TestTime:
         minus_half = TimeDelta(-1.5)
         integer = TimeDelta(3)
 
-        # Addition between Time and TimeDelta, reverse is not defined
+        # Addition between Time and TimeDelta
         # test with zero, negative and positive dates
         assert a + zero == Time(0)
         assert a + plus_half == Time(0.5)
@@ -418,6 +430,21 @@ class TestTime:
         assert c + plus_half == Time(0.25)
         assert c + minus_half == Time(0.25)
         assert c + integer == Time(0.75)
+
+        # Reversed addition between Time and TimeDelta
+        # test with zero, negative and positive dates
+        assert zero + a == Time(0)
+        assert plus_half + a == Time(0.5)
+        assert minus_half + a == Time(0.5)
+        assert integer + a == Time(0)
+        assert zero + b == Time(0.25)
+        assert plus_half + b == Time(0.75)
+        assert minus_half + b == Time(0.75)
+        assert integer + b  == Time(0.25)
+        assert zero + c == Time(0.75)
+        assert plus_half + c == Time(0.25)
+        assert minus_half + c == Time(0.25)
+        assert integer + c == Time(0.75)
 
         # subtraction between Time and TimeDelta, reverse is not defined
         # test with zero, negative and positive Times
