@@ -1,8 +1,6 @@
 Time of day
 ===========
 
-.. module:: datetime2
-
 .. testsetup::
 
    from datetime2.western import WesternTime

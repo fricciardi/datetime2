@@ -1,6 +1,7 @@
 # datetime2 package main file
+# TODO: change copytirht dates in all license headers
 
-# Copyright (c) 2011-2012 Francesco Ricciardi
+# Copyright (c) 2011-2018 Francesco Ricciardi
 #
 # All rights reserved.
 #
@@ -44,6 +45,7 @@ from datetime2 import western, modern
 #
 def get_moment():
     """Return date and time as day_count and day fraction."""
+    # TODO: check if it possible to have greater resolution
     moment = time.localtime()
     year = moment.tm_year
     days_before_year = (year - 1) * 365 + (year - 1) // 4 - (year - 1) // 100 + (year - 1) // 400

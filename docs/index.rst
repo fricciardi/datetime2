@@ -12,10 +12,12 @@
    from datetime2 import Date
 
 
-The :mod:`datetime2` module is intended to be a replacement of the :mod:`datetime` module. Its most visible feature is
-the ability to have multiple representation of the same date or time object. There are a few representations already
-available (see :ref:`Available date and time representations<list-of-calendars>`), but others can be
-ref:`added at run time<interface>`.
+The :mod:`datetime2` module is intended to be an enhancement of the
+:mod:`datetime` module. Its most visible feature is the ability to have
+multiple representation of the same date or time object. There are a few
+representations already available (see :ref:`Available date and time
+representations<list-of-calendars>`), but others can be :ref:`added at run
+time<interface>`.
 
 Each representation can be reached via the attribute paradigm, e.g.:
 
@@ -42,8 +44,10 @@ especially important for calendars, where many representation exists [#many]_ .
 
 Some long term objectives of the :mod:`datetime2` module are:
  * internationalization;
- * implementation of the part of the Unicode Locale Database concerned with dates and times;
- * interface with other Python modules or inclusion of their functionalities in submodules.
+ * implementation of the part of the Unicode Locale Database concerned with
+   dates and times;
+ * interface with other Python modules or inclusion of their functionalities in
+   submodules.
 
 
 .. toctree::
@@ -56,9 +60,11 @@ Some long term objectives of the :mod:`datetime2` module are:
 Overview
 --------
 
-The driving idea in the :mod:`datetime2` is to detach operations on date or time from their representation
-in different cultures. After all, a day in history, or in future, is the same independently from the way it is represented, and
-the same is true also for time. Indeed, the four base classes of :mod:`datetime2` have a very simple definition of day and time.
+The driving idea in the :mod:`datetime2` is to detach operations on date or
+time from their representation in different cultures. After all, a day in
+history, or in future, is the same independently from the way it is
+represented, and the same is true also for time. Indeed, the four base classes
+of :mod:`datetime2` have a very simple definition of day and time.
 
 This is a brief description of these four classes:
 
@@ -75,36 +81,40 @@ This is a brief description of these four classes:
    :noindex:
 
    An indication of time, independent of any particular day. There might be a
-   time correction, e.g. due to time zone or daylight saving time. Time and correction
-   are stored as fraction of a day, using a Python :class:`fractions.Fraction`.
-   Attributes of this class are: :attr:`day_frac`, :attr:`time_to_utc`.
+   time correction, e.g. due to time zone or daylight saving time. Time and
+   correction are stored as fraction of a day, using a Python
+   :class:`fractions.Fraction`. Attributes of this class are: :attr:`day_frac`,
+   :attr:`time_to_utc`.
 
 
 .. class:: DateTime
    :noindex:
 
-   A precise moment in time. There might be a time correction, e.g. due to time zone or daylight saving time. This
-   class has not been implemented yet, but will interface with calendars and time representations used by the two
+   A precise moment in time. There might be a time correction, e.g. due to time
+   zone or daylight saving time. This class has not been implemented yet, but
+   will interface with calendars and time representations used by the two
    classes above.
-
 
 
 .. class:: TimeDelta
    :noindex:
 
    A duration expressing the difference between two :class:`Date`,
-   :class:`Time`, or :class:`DateTime` instances. This difference is stored
-   in a single Python :class:`fractions.Fraction`. The only attribute of
-   this class is: :attr:`days`. The current implementation of this class is just a stub.
+   :class:`Time`, or :class:`DateTime` instances. This difference is stored in
+   a single Python :class:`fractions.Fraction`. The only attribute of this
+   class is: :attr:`days`. The current implementation of this class is just a
+   stub.
 
-:mod:`datetime2` class names use the CapitalizedWords convention required by :pep:`8`, so they
-differ from the names of their similar counterparts in :mod:`datetime` module.
+:mod:`datetime2` class names use the CapitalizedWords convention required by
+:pep:`8`, so they differ from the names of their similar counterparts in
+:mod:`datetime` module.
 
 
 
 .. _list-of-calendars:
 
-Currently (version |release|) the following calendars and time representation are available.
+Currently (version |release|) the following calendars and time representation
+are available.
 
 Calendars:
 
@@ -140,8 +150,7 @@ A :class:`Date` object represents a date in an idealized calendar, just
 counting the days elapsed from Gregorian Dec 31\ :sup:`st` of year 0, i.e.
 January 1\ :sup:`st` of year 1 is day number 1, January 2\ :sup:`nd` of year 1
 is day number 2, and so on. This calendar ideally extends indefinitely in both
-directions. A :class:`Date` object is printed as ``R.D.`` followed by the day
-count. ``R.D.`` stands for Rata Die, the Latin for "fixed date".
+directions.
 
 There are two ways of creating a :class:`Date` instance:
 
@@ -164,18 +173,19 @@ instances are considered to be true.
 
 .. attribute:: Date.day_count
 
-   An integer that represents the number of days between the given date and January
-   1\ :sup:`st`, year 1. This attribute is read-only: an :exc:`AttributeError` exception is raised
-   when trying to change it.
+   An integer that represents the number of days between the given date and
+   January 1\ :sup:`st`, year 1. This attribute is read-only: an
+   :exc:`AttributeError` exception is raised when trying to change it.
 
 :class:`Date` has one instance method:
 
 .. method:: Date.__str__()
 
-   Return ``R.D.`` followed by the day count. ``R.D.`` stands for Rata Die, the Latin
-   for "fixed date".
+   Return ``R.D.`` followed by the day count. ``R.D.`` stands for Rata Die, the
+   Latin for "fixed date".
 
-The following table lists all available calendars and the attributes by which they are reachable:
+The following table lists all available calendars and the attributes by which
+they are reachable:
 
 +--------------+------------------+----------------------------------------------------------+-------------------+
 | Calendar     | Access attribute | Calendar class                                           | Module            |
@@ -195,7 +205,7 @@ Supported operations
 +===============================+==============================================+
 | ``date2 = date1 + timedelta`` | *date2* is ``timedelta`` days after          |
 |                               | *date1*. Reverse addition (``timedelta +     |
-|                               | date1``) is also allowed. (1) (2)            |
+|                               | date1``) is allowed. (1) (2)                 |
 +-------------------------------+----------------------------------------------+
 | ``date2 = date1 - timedelta`` | *date2* is ``timedelta`` days before         |
 |                               | *date1*. (1) (3)                             |
@@ -213,9 +223,9 @@ Supported operations
 Notes:
 
 (1)
-   A :exc:`ValueError` exception is raised if *timedelta* is not an integral number of days.
-   *timedelta* object with non-integral number of days must be added or subtracted from
-   :class:`DateTime` instances.
+   A :exc:`ValueError` exception is raised if *timedelta* is not an integral
+   number of days. *timedelta* object with non-integral number of days must be
+   added or subtracted from :class:`DateTime` instances.
 
 (2)
    If *timedelta* is negative, ``date2`` will be before ``date1``.
@@ -224,91 +234,136 @@ Notes:
    If *timedelta* is negative, ``date2`` will be after ``date1``.
 
 (4)
-   A *timedelta* instance with with an integral number of dyas is always created when
-   subtracting :class:`Date` instances.
+   The *timedelta* instance created when subtracting :class:`Date` instances
+   will always have an integral number of days, positive if ``date1`` is later
+   than ``date2``, negative otherwise.
 
 (5)
-   In other words, ``date1 < date2`` if and only if ``date1.day_count < date2.day_count``.
-   All other comparison operators (``<=``, ``>``, ``>=``, ``==`` and ``!=``)
-   behave similarly.
+   In other words, ``date1 < date2`` if and only if ``date1.day_count <
+   date2.day_count``. All other comparison operators (``<=``, ``>``, ``>=``,
+   ``==`` and ``!=``) behave similarly.
    
 (6)
    Comparison between a :class:`Date` object and an object of another class
-   return a :exc:`NotImplemented` exception, except for the equality and inequality
-   operators, which respectively return *False* and *True*.
+   raises a :exc:`TypeError` exception, unless the other object has a
+   ``day_count`` attribute, in which case ``NotImplemented`` is returned. This
+   allows a Date-like instance to perform reflected comparison if it is the
+   second operator. When the comparison is equality or inequality operators,
+   the value returned is always :const:`False` and :const:`True` respectively.
 
 
 :class:`Time` Objects
 ---------------------
 
-An indication of time, independent of any particular day. There might be a
-time correction, e.g. due to time zone or daylight saving time. This
-correction is expressed in fraction of a day and represent the time to be
-added to local time to get UTC. If there is a correction, the :class:`Time`
-object is said to be "aware" and it is used to represent a precise moment in
-time. An object without correction is said to be "naive", and its
-interpretation is left to the program that uses it.
+An indication of time, independent of any particular day, expressed as a
+fraction of day. There might be an indication of time difference to UTC, e.g.
+due to time zone or daylight saving time. Also this indication is expressed as
+fraction of a day and represents the time to be added to local time to get UTC.
+If there is this indication, the :class:`Time` object is said to be "aware" and
+it is used to represent a precise moment (regardless of the day). An object
+without indication is said to be "naive", and its interpretation is left to the
+program that uses it.
 
-There are two ways of creating a :class:`Time` instance:
+There are four :class:`Time` constructors:
 
 .. class:: Time(day_frac, *, time_to_utc=None)
 
-   Return an object that represent a moment in a day as a fraction of the
-   whole day, given in the ``day_frac`` argument. If needed, a correction to
-   this time, for whatever political, algorithmic or geographic need (e.g.
-   time zone) can be given (again as a fraction of a day) and stored in the
-   ``time_to_utc`` argument, which must be explicitly named.
+   Return an object that represents a moment in a day as a fraction of the
+   whole day, given in the ``day_frac`` argument. If needed, it is possible
+   to assign to the instance an indication of the time to be added to get UTC,
+   for whatever political, algorithmic or geographic need (e.g. time zone).
+   This indication is given in the ``time_to_utc`` argument, which must be
+   explicitly named.
 
    The ``day_frac`` and ``time_to_utc`` arguments can be anything that can
-   be passed to the :class:`fractions.Fraction` constructor, i.e. an
-   integer, a float, another Fraction, a Decimal number or a string
-   representing an integer, a float or a fraction. It is also possible to
-   use a 2-value tuple with integer values. This tuple represents the
-   numerator and denominator of a fraction that will be passed to the
-   :class:`fractions.Fraction` constructor. ``time_to_utc`` can also be
-   any object that has a ``time_to_utc`` method that returns a
-   :class:`fractions.Fraction` representing the correction.
+   be passed to the :class:`fractions.Fraction` constructor, i.e. an integer, a
+   float, another Fraction, a Decimal number or a string representing an
+   integer, a float or a fraction. In addition, it is also possible to use a
+   2-value tuple with integer values. This tuple represents the numerator and
+   denominator of a fraction that will be passed to the
+   :class:`fractions.Fraction` constructor.
 
-   The resulting value for ``day_frac`` must be equal or greater than 0 and
-   less than 1. The resulting value for ``time_to_utc`` must be greater than
-   -1 and less than 1. A :exc:`ValueError` exception is raised if the
-   resulting value is outside these ranges. A :exc:`TypeError` exception
-   is raised if the argument type is not one of the accepted types or the
-   tuple argument does not have two values. A :exc:`ZeroDivisionError`
-   exception is raised if denominator is 0.
+   The ``day_frac`` argument is stored in a read-only attribute with the same
+   name. In addition to the types listed above, the ``time_to_utc`` argument
+   can also be an object that has a ``time_to_utc`` method returning a
+   :class:`fractions.Fraction` value.
+
+   When a :class:`Time` instance is created giving an indication of time to
+   UTC, one of the two following cases can happen:
+
+   - ``time_to_utc`` is a fractional value, expressed in one of the
+     possibilities above. This value is stored in the ``to_utc`` attribute. The
+     ``to_utc_obj`` attribute is set to ``None``.
+
+   - ``time_to_utc`` is an object that has a ``time_to_utc`` method. This
+     method is called and its value is stored in the ``to_utc`` read-only
+     attribute. The object itself is stored in the ``to_utc_obj`` attribute for
+     further reference. Note that the value is read only once. This mechanism
+     is such that e.g. a time zone object can be stored with the :class:`Time`
+     instance.
+
+   In any case, the resulting value for ``day_frac`` must be equal or greater
+   than 0 and less than 1. The resulting value for ``to_utc`` must be greater
+   than -1 and less than 1. A :exc:`ValueError` exception is raised if the
+   resulting value are outside these ranges. A :exc:`TypeError` exception is
+   raised if the argument type is not one of the accepted types or the tuple
+   argument does not have two values. A :exc:`ZeroDivisionError` exception is
+   raised if the second value (denominator) of a tuple argument is 0.
 
 .. classmethod:: Time.now(time_to_utc = None)
 
-   Return a :class:`Time` object that represents the current moment in the
-   day. It is possible to add a correction to this time.
+   Return an aware :class:`Time` object that represents the current time.
+   Without argument, the time represented in ``day_frac`` will be local
+   standard time, ``to_utc`` will be set to the difference between UTC and
+   local standard time, and ``to_utc_obj`` will be set to ``None``. If
+   ``time_to_utc`` is given, the represented time will be the current time at
+   its time difference from UTC. ``time_to_utc`` will be treated as in the
+   default constructor.
 
-   See default creator for accepted values of the ``time_to_utc`` argument.
+.. classmethod:: Time.localnow()
+
+   Return a naive :class:`Time` object that represents the current local
+   standard time.
+
+.. classmethod:: Time.utcnow()
+
+   Return a naive :class:`Time` object that represents the current standard
+   time at UTC.
+
 
 :class:`Time` instances are immutable, so they can be used as dictionary keys.
-They can also be pickled and unpickled. In boolean contexts, all :class:`Time`
-instances are considered to be true.
+They can also be pickled (provided the ``to_utc_obj`` attribute is a pickable
+object) and unpickled. In boolean contexts, all :class:`Time` instances are
+considered to be true.
 
-:class:`Time` instances have two attributes:
+:class:`Time` instances have three read-only attributes: an
+:exc:`AttributeError` exception is raised when trying to change any of them.
 
 .. attribute:: Time.day_frac
 
-   A  Python :class:`fractions.Fraction` that represents the part of the day
-   after midnight. This attribute is read-only: an :exc:`AttributeError`
-   exception is raised when trying to change it.
+   A Python :class:`fractions.Fraction` that represents the part of the day
+   after midnight. The value is given as a fraction of a day.
 
-.. attribute:: Time.time_to_utc
+.. attribute:: Time.to_utc
 
-   If not ``None``, this attribute is a Python :class:`fractions.Fraction`
-   that represents the fraction of a day that must be added to current time
-   to get UTC. This attribute is read-only: an :exc:`AttributeError`
-   exception is raised when trying to change it.
+   If not ``None``, this attribute is a Python :class:`fractions.Fraction` that
+   represents the fraction of a day that must be added to current time to get
+   UTC. The value is given as a fraction of a day.
+
+.. attribute:: Time.to_utc_obj
+
+   This attribute is used to store the object passed as ``time_to_utc`` in any
+   of the relevant constructors. This object does not contribute to the
+   semantics of the :class:`Time` object.
+
 
 :class:`Time` has two instance methods:
 
 .. method:: time.__str__()
 
-   Return the string ``<fraction> of a day``, where *fraction* is the value of the
-   ``day_frac`` attribute. Time correction, if present, is represented as well:
+   Return the string ``<fraction> of a day``, where *fraction* is the value of
+   the ``day_frac`` attribute. Time correction, if present, is represented as
+   well:
 
 .. doctest::
 
@@ -319,23 +374,27 @@ instances are considered to be true.
    >>> print(t2)
    1/8 of a day, -1/6 of a day to UTC
 
-.. method:: time.move(new_time_to_utc)
+.. method:: time.at_to_utc(new_time_to_utc)
+
+change transfer relocate shift move
 
    Applicable only to aware instances, return another :class:`Time` instance
-   that identifies the same time but has the new correction
-   ``new_time_to_utc``. If called on a naive instance, a :exc:`TypeError`
-   exception is raised. Example:
+   that identifies the same time, with the new indication of temporal distance
+   from UTC passed in ``new_time_to_utc``. This argument is treated as in the
+   default creator. If called on a naive instance, a :exc:`TypeError` exception
+   is raised. Example:
 
 .. doctest::
 
    >>> t1 = Time(0.25, time_to_utc=-0.5)
    >>> print(t1)
    1/4 of a day, -1/2 to UTC
-   >>> t2 = t1.move(0.25)
+   >>> t2 = t1.at_to_utc(0.25)
    >>> print(t2)
    0/1 of a day, 1/4 to UTC
 
-The following table lists all available time representations and the attributes by which they are reachable:
+The following table lists all available time representations and the attributes
+by which they are reachable:
 
 +----------------+----------------+------------------------------------------------+--------------------+
 | Representation | Attribute      | Time representation class                      | Module             |
@@ -354,7 +413,7 @@ Supported operations
 +===============================+==============================================+
 | ``time2 = time1 + timedelta`` | *time2* is ``timedelta`` time after          |
 |                               | *time1*. Reverse addition (``timedelta +     |
-|                               | time1``) is also allowed. (1) (2)            |
+|                               | time1``) is allowed. (1) (2)                 |
 +-------------------------------+----------------------------------------------+
 | ``time2 = time1 - timedelta`` | *time2* is ``timedelta`` time before         |
 |                               | *time1*. (1) (3)                             |
@@ -375,8 +434,9 @@ Notes:
 (1)
    The result of this operation will always be a valid :class:`Time` instance.
    If overflow or underflow occur, the full day part will be truncated so that
-   only the fractional part will remain. If ``time1`` has a correction, this
-   will be copied to ``time2``, so naivety is maintained.
+   only the fractional part will remain. Naivety is maintained: if ``time1``
+   has a correction, this will be copied to ``time2``, including, if populated,
+   the ``to_utc_obj`` object.
 
 (2)
    If *timedelta* is negative, ``time2`` will be before ``time1``.
@@ -387,10 +447,11 @@ Notes:
 (4)
    The *timedelta* object created when subtracting two :class:`Time` instances
    will always represent a fractional part of a day, either positive or
-   negative. ``time1`` and ``time2`` must have the same naivety; if they don't, a
-   :exc:`ValueError` exception is raised. If they are aware, correction of
+   negative. ``time1`` and ``time2`` must have the same naivety; if they don't,
+   a :exc:`ValueError` exception is raised. If they are aware, correction of
    both instances will be taken into account to generate the result. Result
-   will always be more than -1 and less than 1.
+   will be more than -1 and less than 0 if ``time1`` is after than ``time2``,
+   or between 0 and 1 if ``time1`` is before than ``time2``.
 
 (5)
    All other comparison operators (``<=``, ``>``, ``>=``, ``==`` and ``!=``)
@@ -399,11 +460,18 @@ Notes:
 
 (6)
    Comparison between a :class:`Time` object and an object of another class
-   return a :exc:`NotImplemented` exception, except for the equality and inequality
-   operators, which respectively return *False* and *True*.
+   raises a :exc:`TypeError` exception, unless the  :class:`Time` instances is
+   naive and the other object has a ``day_frac`` attribute, or the
+   :class:`Time` instances is aware and the other object has both ``day_frac``
+   and ``to_utc`` attributes, in which case ``NotImplemented`` is returned.
+   This allows a Time-like instance to perform reflected comparison if it is
+   the second operator. When the comparison is equality or inequality
+   operators, the value returned is always :const:`False` and :const:`True`
+   respectively.
 
 
 .. rubric:: Footnotes
 
-.. [#many] Well, this should be read as "will exist", since current version(|release|) only has two of them.
+.. [#many] Well, this should be read as "will exist", since current version
+           (|release|) only has two of them.
 
