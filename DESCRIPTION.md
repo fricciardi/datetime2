@@ -1,17 +1,18 @@
 datetime2
 =========
 
-The `datetime2 <http://pypi.python.org/pypi/datetime2>`_ module provides date
+The [datetime2](http://pypi.python.org/pypi/datetime2) module provides date
 and time classes to Python.
 
-It will enhance the standard `datetime <http://docs.python.org/py3k/library/datetime.html>`_
+It will enhance the standard [datetime](http://docs.python.org/py3k/library/datetime.html)
 module, adding the capability of constructing and representing date and time in
 many formats and removing a few limits that the original package has.
 
-Code is hosted at `GitHub <http://github.com/fricciardi/datetime2>`_: the
-`wiki pages <https://github.com/fricciardi/datetime2/wiki>`_ host development
+Code is hosted at [GitHub](http://github.com/fricciardi/datetime2): the
+[wiki pages](https://github.com/fricciardi/datetime2/wiki) host development
 discussions. *datetime2* is a one-man, free-time work. Although I am deeply
-committed in completing the project, do not expect regular updates.
+committed in completing the project, do not expect regular updates (and indeed
+there weren't for two years!)
 
 Project objectives
 ==================
@@ -38,12 +39,10 @@ License
 
 Datetime2 is distributed under the terms of the new BSD license. You are free
 to use it for commercial or non-commercial projects with little or no
-restriction, all we ask is that:
+restriction, all I ask is that:
 
-    Redistributions of the code, in whole or part, retain the original
-    copyright notice and license text. You do not claim our endorsement
-    of any derived product.
+> Redistributions of the code, in whole or part, retain the original
+> copyright notice and license text. You do not claim my endorsement
+> of any derived product.
 
 For a complete text of the license see the LICENSE.txt file in the source distribution.
-
-
