@@ -1,5 +1,4 @@
 # datetime2 package main file
-# TODO: change copytirht dates in all license headers
 
 # Copyright (c) 2011-2018 Francesco Ricciardi
 #

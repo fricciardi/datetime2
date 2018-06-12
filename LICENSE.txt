@@ -1,4 +1,4 @@
-Copyright (c) 2011-2012 Francesco Ricciardi
+Copyright (c) 2011-2018 Francesco Ricciardi
 
 All rights reserved.
 

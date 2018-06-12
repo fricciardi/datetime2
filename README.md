@@ -1,6 +1,12 @@
 datetime2
 =========
 
+<p align="center">
+    <a href="https://opensource.org/licenses/BSD-3-Clause">
+        <img src="https://img.shields.io/badge/License-BSD-green.svg" alt="LICENSE">
+    </a>
+</p>
+
 The *datetime2* module provides date and time classes to Python. It will enhance the 
 standard [datetime](http://docs.python.org/py3k/library/datetime.html) module, 
 adding the capability of constructing and representing date and time in many formats

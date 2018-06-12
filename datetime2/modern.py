@@ -1,6 +1,6 @@
 # ISO calendar in calendars package
 
-# Copyright (c) 2013 Francesco Ricciardi
+# Copyright (c) 2013-2018 Francesco Ricciardi
 #
 # All rights reserved.
 #
