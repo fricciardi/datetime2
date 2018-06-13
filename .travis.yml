@@ -15,4 +15,4 @@ install: "pip install ."
 
 # command to run tests
 script:
-  - if [[ $TRAVIS_PYTHON_VERSION <= 3.4 ]]; then py.test; else pytest; fi
+  - if [[ $TRAVIS_PYTHON_VERSION < 3.5 ]]; then py.test; else pytest; fi
