@@ -22,3 +22,6 @@ If you are looking for more information, check the following:
 
 * [wiki pages](https://github.com/fricciardi/datetime2/wiki), for further
   information on development and documentation.
+  
+Please note that Python 2.x is not supproted because it does not have keyword only arguments,
+which instead are used in a few functions and methods.
