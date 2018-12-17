@@ -2,6 +2,9 @@ datetime2
 =========
 
 <p align="center">
+    <a href="https://travis-ci.org/fricciardi/datetime2 ">
+        <img src="https://travis-ci.org/fricciardi/datetime2.svg?branch=master" alt="Travis Build Status">
+    </a>
     <a href="https://opensource.org/licenses/BSD-3-Clause">
         <img src="https://img.shields.io/badge/License-BSD-green.svg" alt="LICENSE">
     </a>

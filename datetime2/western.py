@@ -234,7 +234,6 @@ class WesternTime:
         hour = int(hour_fraction)
         minute = int((hour_fraction - hour) * 60)
         second = (hour_fraction - hour - Fraction(minute, 60)) * 3600
-        print(hour, minute, second)
         western = cls(hour, minute, second)
         western._day_frac = hour_fraction / 24
         return western

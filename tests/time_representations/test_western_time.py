@@ -293,9 +293,9 @@ class TestWestern():
         with pytest.raises(AttributeError):
             western.hour = 3
         with pytest.raises(AttributeError):
-            western.hour = 3
+            western.minute = 3
         with pytest.raises(AttributeError):
-            western.hour = 3
+            western.second = 3
 
     def test_300_compare(self):
         western1 = WesternTime(2, 3, 4)

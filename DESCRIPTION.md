@@ -27,9 +27,9 @@ Project objectives
 * Implementation of the part of the Unicode Locale Database concerned with
   dates and times.
 * Interface with other Python modules or inclusion of their
-  functionalities in its submodules.
+  functionalities in submodules.
 
-These objectives are very long term ones, which I am setting because it is
+These objectives are very long term ones, which I am setting because I think it is
 important to establish a direction for the project. Do not expect to see them
 implemented in initial versions of the module, even if you will be able to see
 traces of them early.

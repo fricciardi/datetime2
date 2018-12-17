@@ -29,10 +29,10 @@ setuptools.setup(
           'Operating System :: OS Independent',
           'Programming Language :: Python :: 3.6',
           'Topic :: Scientific/Engineering',
-          'Topic :: Software Development :: Libraries'
+          'Topic :: Software Development :: Libraries :: Python Modules'
           ],
 
-    packages=setuptools.find_packages(exclude=['docs*', 'tests*']),
+    packages=setuptools.find_packages(exclude=['docs*']),
 
     platforms=['Platform independent']
     )
