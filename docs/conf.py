@@ -177,10 +177,10 @@ htmlhelp_basename = 'datetime2doc'
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
-latex_documents = [
-  ('datetime2_', 'datetime2.tex', u'datetime2 Documentation',
-   u'Francesco Ricciardi', 'manual'),
-]
+# latex_documents = [
+#   ('datetime2_', 'datetime2.tex', u'datetime2 Documentation',
+#    u'Francesco Ricciardi', 'manual'),
+# ]
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
@@ -210,15 +210,15 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    ('datetime2_', 'datetime2', u'datetime2 Documentation',
-     [u'Francesco Ricciardi'], 1)
-]
+# man_pages = [
+#     ('datetime2_', 'datetime2', u'datetime2 Documentation',
+#      [u'Francesco Ricciardi'], 1)
+# ]
 
 
 # -- Options for intersphinx ---------------------------------------------------
 
-intersphinx_mapping = {'python': ('http://docs.python.org/3.5', None)}
+intersphinx_mapping = {'python': ('http://docs.python.org/3.7', None)}
 
 
 # -- Options for doctest -------------------------------------------------------
