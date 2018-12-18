@@ -18,3 +18,13 @@ install: "pip install ."
 # command to run tests
 script:
   - pytest
+
+deploy:
+  - provider: pypi
+    server: https://test.pypi.org/legacy/
+    user: francescor
+    password:
+      secure: bpC95LznFuyj03p3PXYR96DV04IbK9Wg+uEY50O//j7sWvzBQMvNRvwro6C9Bps50IIzun9Xct+whOIyEZ6oqWe3sciNasZlDGKek1wO4xsky9zZfudMiHw8oWOICb7hfi1T1HiIFNyGLCBgVYkBxar60HZpJC/I7oVT/a/I9s4AHkWbEzGhIYVX6r4Ygt5cKyw0FxoawFJg3VJeB7pNyyDVHdQJvi7cTgJZs5QQUFMzMssuMeDLB4SDen2nsivjy778On0EhtxbRc/GjbwGfa761UV9GwQEtd+KYMbZVW6c4Mr/GV1rKv4u3McUQgo/yPEkiklxEXM97Fflf5D4KAA5V23MFtxEKh3ork+ric9X9ILHTPxgsytJ16Ej8D3n39iLffdt5zmUS8Ww+FfC9vRrGwN5yASiT2jBJpPWuN1cY3niTn9Zf/1q6LUQM8PPjYzQGX1He2R2/1bNzJRtdzyp6QytWUUk0AZzhcAQ2oNsWnce0+DJuQzHxD5qzk9yFAxxeWOko5feLDF/XNC7hYwwTtKdzczg+QER9cxFUQABKOdnkXMbBVnjDQWQz8KUbJx2NOrvACZhAuLb7yxgougEMhWWB86MQZ7ACnd3BRrGulNjwvONF0YKX1fWTNmw9S7umLb6eg5T2V+sETQzJpR5ymeSLhBmusT73Phh9Ys=
+    skip_existing: true
+    on:
+      condition: $TRAVIS_BRANCH =~ ^[0-9]+\.[0-9]+\.[0-9]+dev[0-9]*$
