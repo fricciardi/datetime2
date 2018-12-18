@@ -1,14 +1,10 @@
 datetime2
 =========
 
-<p align="center">
-    <a href="https://travis-ci.org/fricciardi/datetime2 ">
-        <img src="https://travis-ci.org/fricciardi/datetime2.svg?branch=master" alt="Travis Build Status">
-    </a>
-    <a href="https://opensource.org/licenses/BSD-3-Clause">
-        <img src="https://img.shields.io/badge/License-BSD-green.svg" alt="LICENSE">
-    </a>
-</p>
+[![Build Status](https://travis-ci.org/fricciardi/datetime2.svg?branch=master)](https://travis-ci.org/fricciardi/datetime2)
+[![Documentation Status](https://readthedocs.org/projects/datetime2/badge/?version=latest)](https://datetime2.readthedocs.io/en/latest/?badge=latest)
+[![License](https://img.shields.io/badge/License-BSD-green.svg)](https://opensource.org/licenses/BSD-3-Clause)
+
 
 The *datetime2* module provides date and time classes to Python. It will enhance the 
 standard [datetime](http://docs.python.org/py3k/library/datetime.html) module, 

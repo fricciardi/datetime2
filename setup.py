@@ -4,7 +4,7 @@ from os import path
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the relevant file
-with open(path.join(here, 'DESCRIPTION.md')) as f:
+with open(path.join(here, 'DESCRIPTION.rst')) as f:
     long_description = f.read()
 
 setuptools.setup(
@@ -13,7 +13,7 @@ setuptools.setup(
 
     description='New date and time classes',
     long_description=long_description,
-    long_description_content_type="text/markdown",
+    long_description_content_type="text/x-rst",
 
     url='https://github.com/fricciardi/datetime2',
 
