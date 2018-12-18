@@ -3,15 +3,13 @@ language: python
 
 python:
 # Python 2.* is no longer supported because it does not have keyword only parameters, used in a few functions and methods
-  - "3.2"
-  - "3.3"
-  - "3.4"
   - "3.5"
   - "3.6"
+  - "3.7"
 
 # command to install dependencies
 install: "pip install ."
 
 # command to run tests
 script:
-  - if [[ $TRAVIS_PYTHON_VERSION < 3.5 ]]; then py.test; else pytest; fi
+  - pytest
