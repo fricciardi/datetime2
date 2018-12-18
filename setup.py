@@ -9,7 +9,7 @@ with open(path.join(here, 'DESCRIPTION.rst')) as f:
 
 setuptools.setup(
     name='datetime2',
-    version='0.7.dev3',
+    version='0.7.1',
 
     description='New date and time classes',
     long_description=long_description,

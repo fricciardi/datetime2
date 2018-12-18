@@ -1,12 +1,23 @@
 datetime2
 =========
 
-The [datetime2](http://pypi.python.org/pypi/datetime2) module provides date
+.. image:: https://travis-ci.org/fricciardi/datetime2.svg?branch=master
+   :target: https://travis-ci.org/fricciardi/datetime2
+
+.. image:: https://readthedocs.org/projects/datetime2/badge/?version=stable
+   :target: https://datetime2.readthedocs.io/en/stable/?badge=stable
+
+.. image:: https://img.shields.io/badge/License-BSD-green.svg
+   :target: https://opensource.org/licenses/BSD-3-Clause
+
+The [datetime2](http://pypi.org/project/datetime2) module provides date
 and time classes to Python.
 
-It will enhance the standard [datetime](http://docs.python.org/py3k/library/datetime.html)
+It will enhance the standard [datetime](https://docs.python.org/3.7/library/datetime.html)
 module, adding the capability of constructing and representing date and time in
 many formats and removing a few limits that the original package has.
+
+Documentation is hosted at [ReadtheDocs](https://datetime2.readthedocs.io/en/stable/?badge=stable).
 
 Code is hosted at [GitHub](http://github.com/fricciardi/datetime2): the
 [wiki pages](https://github.com/fricciardi/datetime2/wiki) host development
