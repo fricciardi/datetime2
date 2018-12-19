@@ -28,7 +28,7 @@ deploy:
       secure: n9xBi9Jeovi7alo843dnDRQX3bFORmjkYOo0Jqx8q/Pp831fydVmvhsluUlLGWObP05LeIZmkFo6kNvAx93CVQmcvvUx0leowifC5dm1xgw5kjTMjSosDURcEc7NhoeoAxzQ69fa4aLr8yYX8VLckRxl0PY4/fOc5/kbBAUQQmwnWvorEx/Gxu57bMkVwyG7MiEh/J9QwABPJpKTK4PciaXktEGLHOyArEtKXsGw3NJUelUgpE1rxNKriZazStZKKmFgcgqFKl7CcYqgK4G6AzE+5wJA/DDr0Vc73DbS5CuxhuOUDYt7KthTxGyr863FE2qINVlbcqzweCczXuZKNa7uNkTv7sK+w63sM1Lg3xVBXo2FB9QlO4OBkJMdOnJYbxAU+P0U1BUNQNBsI9P3QoIQsjpJJwOdbMUiQEA8UHe4jgIwanXzbrMfKibg3eybXkbhfbEntjWJ3q/ZBsM+L4FLArNrbyDqLZ62+d+4ABQfU2a0LAJvCvCHJST6NYN3iBtsIwWOmwBhGD3jPmi+ULyedwcfNwIrP7isQZ4K4xOQ31Mqh3L+Xa2wPs3JrItp41MNnuIo2xamiWB2bFSAA0SX8DGvLqUVYGlTlMaujTInj8pYQMlUy6CZvuMcc3ghHazMRpQu4vESX8t3CMSaoxznrwXULEqSGdLrY9Y7oWA=
     distributions: "sdist bdist_wheel"
     on:
-      condition: $TRAVIS_BRANCH =~ ^testpypi[0-9]+$
+      condition: $TRAVIS_TAG =~ ^testpypi[0-9]+$
 
 #    on:
 #      condition: $TRAVIS_BRANCH =~ ^[0-9]+\.[0-9]+\.[0-9]+dev[0-9]*$
