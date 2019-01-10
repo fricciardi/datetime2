@@ -26,6 +26,6 @@ deploy:
     password:
       secure: g68yE707nc4TAhg096Yeq56ah0oliB7nZ5sPGU6F0mAGIjracpRNtTJpoRS/5RevLEe08+m+u/vrPgEBD45w/taSWxzfSnL0trSooVuG0XmGV+EwgQg0COgH4JM3/HNfOWaUttKHj+J7JJEFtsSM9+J4EzIre7gxEZJR92s5g4Pp4jXRqsyPzed/N5j3REMYhL6aoWFShiPLf+uYU25+lyNaA7hw3QNE1K+pMOW+XD35N3dQs8uEP9SQCoeBrwlV1jR97DOtiWX004ta7+zhhKr2qLfomqRDdRsM+vKI6JKi2HaIWOucbu86VdsZE1dTIkZ7PSqceWwo1ebLnZf5b+ctkoAfPSRYDagMI0D2WLpBBmOE8TdvwgJhYlbY2yla100bY97ZewhKCICkTMpjdzZw2rHayyNymZ3YpNafCJZ0cS64uj0H1OtCvMn7Ajjk5xYsXUmjZdA3nuZX/7yp3MUm2Y0hRA75mr2hBQa5a7KtuCvhSK48j6shuhjjLXSVT4b+nOQ5b0nURZZWXLk5XFCXdADdzEQm84GTw1go9e6eT8fCk94b9qwu2mKIGv4pB8cRiPfvnrGnfZFHxgiGS/tWRWR8Yx00oCvHx+dtZtGoHwTlMGf/B5sTO3N2ywTJcHHnJbEb3JF30JXzqDEkYwzWBBIW4TtSUDq31G5rI3k=
     distributions: "sdist bdist_wheel"
-#    skip_existing: true
+    skip_existing: true
 #    on:
 #      condition: $TRAVIS_TAG =~ ^testpypi[0-9]+$
