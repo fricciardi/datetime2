@@ -1,5 +1,5 @@
 import setuptools
-from os import path
+from os import environ, path
 
 here = path.abspath(path.dirname(__file__))
 
@@ -9,7 +9,7 @@ with open(path.join(here, 'DESCRIPTION.rst')) as f:
 
 setuptools.setup(
     name='datetime2',
-    version='0.7.2dev1',
+    version=f"{environ['TRAVIS_TAG']}",
 
     description='New date and time classes',
     long_description=long_description,
