@@ -28,4 +28,4 @@ deploy:
     python: 3.7
     on:
       condition: $TRAVIS_TAG = *dev*
-      tag: true
+      tags: true
