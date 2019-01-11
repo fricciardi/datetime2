@@ -9,7 +9,7 @@ with open(path.join(here, 'DESCRIPTION.rst')) as f:
 
 setuptools.setup(
     name='datetime2',
-    version=f"{environ['TRAVIS_TAG']}",
+    version=environ['TRAVIS_TAG'],
 
     description='New date and time classes',
     long_description=long_description,
