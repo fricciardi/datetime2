@@ -17,7 +17,6 @@ install: "pip install ."
 # command to run tests
 script:
   - pytest
-  - "echo pippo$TRAVIS_TAG"
 
 deploy:
   - provider: pypi
@@ -28,5 +27,5 @@ deploy:
     distributions: "sdist bdist_wheel"
     python: 3.7
     on:
-      condition: $TRAVIS_TAG =~ ^[0-9]+\.([0-9]+\.)*dev[0-9]*$
+      condition: $TRAVIS_TAG = *dev*
       tag: true
