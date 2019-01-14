@@ -1,6 +1,6 @@
 # datetime2 package main file
 
-# Copyright (c) 2011-2018 Francesco Ricciardi
+# Copyright (c) 2011-2019 Francesco Ricciardi
 #
 # All rights reserved.
 #

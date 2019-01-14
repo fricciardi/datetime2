@@ -1,6 +1,6 @@
 # tests for Gregorian calendar
 
-# Copyright (c) 2012 Francesco Ricciardi
+# Copyright (c) 2012-2019 Francesco Ricciardi
 #
 # All rights reserved.
 #
