@@ -120,15 +120,15 @@ class TestDate:
 
         # Reverse addition between TimeDelta and Date
         # test with zero, negative and positive dates
-        assert a + zero == Date(0)
-        assert a + one == Date(1)
-        assert a + minusone == Date(-1)
-        assert b + zero == Date(-3)
-        assert b + one == Date(-2)
-        assert b + minusone == Date(-4)
-        assert c + zero == Date(5)
-        assert c + one == Date(6)
-        assert c + minusone == Date(4)
+        assert zero + a == Date(0)
+        assert one + a == Date(1)
+        assert minusone + a == Date(-1)
+        assert zero + b == Date(-3)
+        assert one + b == Date(-2)
+        assert minusone + b == Date(-4)
+        assert zero + c == Date(5)
+        assert one + c == Date(6)
+        assert minusone + c == Date(4)
 
         # subtraction between Date and TimeDelta, reverse is not defined
         # test with zero, negative and positive dates
@@ -141,6 +141,18 @@ class TestDate:
         assert c - zero == Date(5)
         assert c - one == Date(4)
         assert c - minusone == Date(6)
+
+        # subtraction between two Date's, reverse is not defined
+        # test with zero, negative and positive dates
+        assert a - a == TimeDelta(0)
+        assert a - b == TimeDelta(3)
+        assert a - c == TimeDelta(-5)
+        assert b - a == TimeDelta(-3)
+        assert b - b == TimeDelta(0)
+        assert b - c == TimeDelta(-8)
+        assert c - a == TimeDelta(5)
+        assert c - b == TimeDelta(8)
+        assert c - c == TimeDelta(0)
 
     def test_310_disallowed_operations(self):
         a = Date(42)
@@ -165,7 +177,6 @@ class TestDate:
                 obj - a
 
         # Reverse operations
-        assert TimeDelta(2) + a == Date(44)
         with pytest.raises(TypeError):
             TimeDelta(2) - a
 
@@ -254,6 +265,17 @@ class TestDate:
                 d <= par
             with pytest.raises(TypeError):
                 d >= par
+
+        class DateLike:
+            def __init__(self):
+                self.day_count = 42
+
+        # NotImplemented returned if other object has a day_count attribute
+        dl = DateLike()
+        assert d < dl == NotImplemented
+        assert d <= dl == NotImplemented
+        assert d > dl == NotImplemented
+        assert d >= dl == NotImplemented
 
     def test_340_hash_equality(self):
         "Date instances are immutable."

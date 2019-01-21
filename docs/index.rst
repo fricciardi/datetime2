@@ -16,15 +16,21 @@
    from fractions import Fraction
    from datetime2 import Date
 
+.. toctree::
+   :hidden:
 
-The :mod:`datetime2` module is intended to be an enhancement of the
-:mod:`datetime` module. Its most visible feature is the ability to have
-multiple representation of the same date or time object. There are a few
-representations already available (see :ref:`Available date and time
-representations<list-of-calendars>`), but others can be :ref:`added at run
-time<interface>`.
+   calendars
+   timeofday
+   interface
 
-Each representation can be reached via the attribute paradigm, e.g.:
+
+The driving idea in the :mod:`datetime2` module is to detach operations
+on date or time from their representation in different cultures. After
+all, a day in history, or in future, is the same independently from the
+way it is represented, and the same is true also for time.
+
+The example below shows how a precise date or time can have different
+representations, which are accessed as attributes of the object:
 
 .. doctest::
 
@@ -38,38 +44,83 @@ Each representation can be reached via the attribute paradigm, e.g.:
    06:00:00
    >>> print(t1.internet)
    @250
-   >>> t2 = Time(0.75, time_to_utc=-Fraction(1, 6))
-   >>> print(t2.western)
-   18:00:00 -04
-   >>> print(t2.internet)
-   @583
 
-Representations do not consume memory unless they are effectively used. This is
-especially important for calendars, where many representation exists [#many]_ .
+Dates are defined counting the days elapsed from December 31st of
+year 0, while time is given as a fraction of a day. This very simple
+definition helps implementing precise operations on objects and
+makes easy to convert between the different representations.
 
-Some long term objectives of the :mod:`datetime2` module are:
- * internationalization;
- * implementation of the part of the Unicode Locale Database concerned with
-   dates and times;
- * interface with other Python modules or inclusion of their functionalities in
-   submodules.
+However, creating a date or time object giving a day count or a
+fraction of a day is not friendly. Again using the attribute
+paradigm, it is possbile to create date or time objects:
+
+.. doctest::
+
+   >>> d1 = Date.gregorian(2013, 4, 18)
+   >>> d1
+   datetime2.Date(734976)
+   >>> t1 = Time.western(17, 16, 28)
+   >>> t1
+   datetime2.Time('15547/21600')
+
+Users are not restricted in accessing an object with the same
+representation in which it was created:
+
+.. doctest::
+
+   >>> d = Date.gregorian(2013, 4, 22)
+   >>> print(d.iso)
+   2013-W17-01
+   >>> t = Time.western(18, 0, 0)
+   >>> print(t.internet)
+   @750
+
+Any available representation can be used to create a new object, or
+to show the date or time with a precise representation. There are a
+few representations already available, listed below. Another feature
+of the :mod:`datetime2` module is the ability to add other
+representations at run time. Representations do not consume memory
+unless they are effectively used. This is especially important for
+calendars, where many representation exists [#many]_ .
+
+Currently (version |release|) the following calendars and time representation
+are available.
+
+Calendars:
+
+.. hlist::
+
+  * :ref:`gregorian-calendar`
+  * :ref:`iso-calendar`
+
+Time representation:
+
+.. hlist::
+
+  * :ref:`western-time`
+  * :ref:`internet-time`
 
 
-.. toctree::
-   :hidden:
 
-   interface
-   calendars
-   timeofday
+.. seealso::
 
-Overview
---------
+   Module :mod:`datetime`
+      Basic date and time types.
 
-The driving idea in the :mod:`datetime2` is to detach operations on date or
-time from their representation in different cultures. After all, a day in
-history, or in future, is the same independently from the way it is
-represented, and the same is true also for time. Indeed, the four base classes
-of :mod:`datetime2` have a very simple definition of day and time.
+   Module :mod:`calendar`
+      General calendar related functions.
+
+   Module :mod:`time`
+      Time access and conversions.
+
+
+
+Base classes
+============
+
+The heart of the :mod:`datetime2` module is made of four base classes,
+each having a very simple definition. All these base classes implement
+operations for date and time independently of the way they are created.
 
 This is a brief description of these four classes:
 
@@ -116,38 +167,6 @@ This is a brief description of these four classes:
 
 
 
-.. _list-of-calendars:
-
-Currently (version |release|) the following calendars and time representation
-are available.
-
-Calendars:
-
-.. hlist::
-
-  * :ref:`gregorian-calendar`
-  * :ref:`iso-calendar`
-
-Tiem representation:
-
-.. hlist::
-
-  * :ref:`western-time`
-  * :ref:`internet-time`
-
-
-.. seealso::
-
-   Module :mod:`datetime`
-      Basic date and time types.
-
-   Module :mod:`calendar`
-      General calendar related functions.
-
-   Module :mod:`time`
-      Time access and conversions.
-
-
 :class:`Date` Objects
 ---------------------
 
@@ -163,8 +182,9 @@ There are two ways of creating a :class:`Date` instance:
 
    Return an object that represent a date which is ``day_count - 1`` days
    after January 1 of year 1 of the current Gregorian calendar. The argument
-   is required and must be an integer. There is no restriction on its
-   numeric value.
+   is required and must be an integer; there is no restriction on its
+   numeric value. Using any other type of parameter, a
+   :exc:`TypeError` exception is raised.
 
 .. classmethod:: Date.today()
 
@@ -252,9 +272,9 @@ Notes:
    Comparison between a :class:`Date` object and an object of another class
    raises a :exc:`TypeError` exception, unless the other object has a
    ``day_count`` attribute, in which case ``NotImplemented`` is returned. This
-   allows a Date-like instance to perform reflected comparison if it is the
-   second operator. When the comparison is equality or inequality operators,
-   the value returned is always :const:`False` and :const:`True` respectively.
+   allows a Date-like instance to implement reflected comparison, if wanted.
+   When the comparison is equality or inequality operator, the value returned
+   is always :const:`False` and :const:`True` respectively.
 
 
 :class:`Time` Objects
