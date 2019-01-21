@@ -65,7 +65,10 @@ class TimeDelta:
         
     def __repr__(self):
         return "TimeDelta({})".format(self.days)
-    
+
+    def __eq__(self, other):
+        return self._days == other._days
+
     @property
     def days(self):
         return self._days
@@ -104,7 +107,7 @@ class Date:
         if isinstance(other, TimeDelta):
             if other.days != floor(other.days):
                 raise ValueError("Date object cannot be added to non integral TimeDelta.")
-            return Date(self.day_count + floor(other.days))
+            return Date(self.day_count + floor(other.days)) # this way we ensure day count is integer
         else:
             return NotImplemented
         
@@ -127,8 +130,10 @@ class Date:
     def __gt__(self, other):
         if isinstance(other, Date):
             return self.day_count > other.day_count
-        else:
+        elif hasattr(other, 'day_count'):
             return NotImplemented
+        else:
+            raise TypeError(f"You cannot compare '{str(type(self))}' with '{str(type(other))}'.")
 
     # hash value
     def __hash__(self):
