@@ -45,14 +45,15 @@ representations, which are accessed as attributes of the object:
    >>> print(t1.internet)
    @250
 
-Dates are defined counting the days elapsed from December 31:sup:`st` of
+Dates are defined counting the days elapsed from December 31\ :sup:`st` of
 year 0, while time is given as a fraction of a day (in this case as a float).
 This very simple definition helps implementing precise operations on objects and
 makes easy to convert between the different representations.
 
 However, creation of a date or time object giving a day count or a
-fraction of a day is not friendly. Again using the attribute
-paradigm, it is possbile to create date or time objects:
+fraction of a day is not friendly. This is why, again using the attribute
+paradigm, the :mod:`datetime2` module makes it possbile to create date or
+time objects in a more compehensible way:
 
 .. doctest::
 
@@ -71,9 +72,9 @@ representation in which it was created:
    >>> d = Date.gregorian(2013, 4, 22)
    >>> print(d.iso)
    2013-W17-01
-   >>> t = Time.western(18, 0, 0)
+   >>> t = Time.western(16, 15, 0)
    >>> print(t.internet)
-   @750
+   @67
 
 Any available representation can be used to create a new object, or
 to show the date or time with a precise representation. There are a
@@ -114,7 +115,6 @@ Time representation:
       Time access and conversions.
 
 
-
 Base classes
 ============
 
@@ -128,7 +128,7 @@ This is a brief description of these four classes:
    :noindex:
 
    An idealized date, with no notion of time or time zone. A date is defined
-   counting the number of days elapsed from what would have been January 1:sup:`st`
+   counting the number of days elapsed from what would have been January 1\ :sup:`st`
    of year 1 on the Gregorian calendar. The only attribute of this class is:
    :attr:`day_count`.
 

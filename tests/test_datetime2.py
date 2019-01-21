@@ -272,10 +272,10 @@ class TestDate:
 
         # NotImplemented returned if other object has a day_count attribute
         dl = DateLike()
-        assert d < dl == NotImplemented
-        assert d <= dl == NotImplemented
-        assert d > dl == NotImplemented
-        assert d >= dl == NotImplemented
+        assert (d < dl) == NotImplemented
+        assert (d <= dl) == NotImplemented
+        assert (d > dl) == NotImplemented
+        assert (d >= dl) == NotImplemented
 
     def test_340_hash_equality(self):
         "Date instances are immutable."
