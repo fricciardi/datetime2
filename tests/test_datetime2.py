@@ -266,18 +266,39 @@ class TestDate:
             with pytest.raises(TypeError):
                 d >= par
 
+        # Check reverse comparison mechanism
         class DateLike:
             def __init__(self):
                 self.day_count = 42
 
-        # NotImplemented returned if other object has a day_count attribute
+            def __lt__(self, other):
+                return self.day_count < other.day_count
+
+            def __le__(self, other):
+                return self.day_count <= other.day_count
+
+            def __gt__(self, other):
+                return self.day_count > other.day_count
+
+            def __ge__(self, other):
+                return self.day_count >=other.day_count
+
         dl = DateLike()
-        res = (d < dl)
-        assert res == NotImplemented
-#        assert (d < dl) == NotImplemented
-        assert (d <= dl) == NotImplemented
-        assert (d > dl) == NotImplemented
-        assert (d >= dl) == NotImplemented
+        d3 = Date(3)
+        d42 = Date(42)
+        d55 = Date(55)
+        assert d3 < dl
+        assert not (d42 < dl)
+        assert not (d55 < dl)
+        assert d3 <= dl
+        assert d42 <= dl
+        assert not (d55 <= dl)
+        assert not (d3 > dl)
+        assert not (d42 > dl)
+        assert d55 > dl
+        assert not (d3 >= dl)
+        assert d42 >= dl
+        assert d55 >= dl
 
     def test_340_hash_equality(self):
         "Date instances are immutable."
