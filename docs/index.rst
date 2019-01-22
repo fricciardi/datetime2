@@ -53,7 +53,7 @@ makes easy to convert between the different representations.
 However, creation of a date or time object giving a day count or a
 fraction of a day is not friendly. This is why, again using the attribute
 paradigm, the :mod:`datetime2` module makes it possbile to create date or
-time objects in a more compehensible way:
+time objects in a more comprehensible way:
 
 .. doctest::
 
@@ -119,47 +119,8 @@ Base classes
 ============
 
 The heart of the :mod:`datetime2` module is made of four base classes,
-each having a very simple definition. All these base classes implement
+each having a very simple definition. All base classes implement
 operations for date and time independently of the way they are created.
-
-This is a brief description of these four classes:
-
-.. class:: Date
-   :noindex:
-
-   An idealized date, with no notion of time or time zone. A date is defined
-   counting the number of days elapsed from what would have been January 1\ :sup:`st`
-   of year 1 on the Gregorian calendar. The only attribute of this class is:
-   :attr:`day_count`.
-
-
-.. class:: Time
-   :noindex:
-
-   An indication of time, independent of any particular day. There might be a
-   time correction, e.g. due to time zone or daylight saving time. Time and
-   correction are stored as fraction of a day, using a Python
-   :class:`fractions.Fraction`. Attributes of this class are: :attr:`day_frac`,
-   :attr:`time_to_utc`.
-
-
-.. class:: DateTime
-   :noindex:
-
-   A precise moment in time. There might be a time correction, e.g. due to time
-   zone or daylight saving time. This class has not been implemented yet, but
-   will interface with calendars and time representations used by the two
-   classes above.
-
-
-.. class:: TimeDelta
-   :noindex:
-
-   A duration expressing the difference between two :class:`Date`,
-   :class:`Time`, or :class:`DateTime` instances. This difference is stored in
-   a single Python :class:`fractions.Fraction`. The only attribute of this
-   class is: :attr:`days`. The current implementation of this class is just a
-   stub.
 
 :mod:`datetime2` class names use the CapitalizedWords convention required by
 :pep:`8`, so they differ from the names of their similar counterparts in
