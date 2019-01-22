@@ -272,7 +272,9 @@ class TestDate:
 
         # NotImplemented returned if other object has a day_count attribute
         dl = DateLike()
-        assert (d < dl) == NotImplemented
+        res = (d < dl)
+        assert res == NotImplemented
+#        assert (d < dl) == NotImplemented
         assert (d <= dl) == NotImplemented
         assert (d > dl) == NotImplemented
         assert (d >= dl) == NotImplemented
