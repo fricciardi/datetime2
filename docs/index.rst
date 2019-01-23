@@ -71,10 +71,10 @@ representation in which it was created:
 
    >>> d = Date.gregorian(2013, 4, 22)
    >>> print(d.iso)
-   2013-W17-01
+   2013-W17-1
    >>> t = Time.western(16, 15, 0)
    >>> print(t.internet)
-   @67
+   @677
 
 Any available representation can be used to create a new object, or
 to show the date or time with a precise representation. There are a
@@ -241,6 +241,10 @@ Notes:
 :class:`Time` Objects
 ---------------------
 
+.. warning:: This version of the documentation already includes time correction.
+             However, this part of the documentation is not stable and may change at any time.
+             Additionally, no implementation nor test code has been written for it.
+
 An indication of time, independent of any particular day, expressed as a
 fraction of day. There might be an indication of time difference to UTC, e.g.
 due to time zone or daylight saving time. Also this indication is expressed as
@@ -301,10 +305,11 @@ There are four :class:`Time` constructors:
    Return an aware :class:`Time` object that represents the current time.
    Without argument, the time represented in ``day_frac`` will be local
    standard time, ``to_utc`` will be set to the difference between UTC and
-   local standard time, and ``to_utc_obj`` will be set to ``None``. If
-   ``time_to_utc`` is given, the represented time will be the current time at
-   its time difference from UTC. ``time_to_utc`` will be treated as in the
-   default constructor.
+   local standard time, and ``to_utc_obj`` will be set to ``None``.
+
+   If ``time_to_utc`` is given, the returned object will be the current time
+   at the given time difference from UTC. ``time_to_utc`` will be treated as
+   in the default constructor.
 
 .. classmethod:: Time.localnow()
 
@@ -314,7 +319,7 @@ There are four :class:`Time` constructors:
 .. classmethod:: Time.utcnow()
 
    Return a naive :class:`Time` object that represents the current standard
-   time at UTC.
+   UTC.
 
 
 :class:`Time` instances are immutable, so they can be used as dictionary keys.
@@ -361,8 +366,6 @@ considered to be true.
    1/8 of a day, -1/6 of a day to UTC
 
 .. method:: time.at_to_utc(new_time_to_utc)
-
-change transfer relocate shift move
 
    Applicable only to aware instances, return another :class:`Time` instance
    that identifies the same time, with the new indication of temporal distance
