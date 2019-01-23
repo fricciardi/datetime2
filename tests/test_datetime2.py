@@ -234,6 +234,40 @@ class TestDate:
         assert not (d1 >= d3)
         assert not (d3 <= d1)
 
+        # Reverse comparison mechanism
+        class DateLike:
+            def __init__(self):
+                self.day_count = 42
+
+            def __lt__(self, other):
+                return self.day_count < other.day_count
+
+            def __le__(self, other):
+                return self.day_count <= other.day_count
+
+            def __gt__(self, other):
+                return self.day_count > other.day_count
+
+            def __ge__(self, other):
+                return self.day_count >= other.day_count
+
+        dl = DateLike()
+        d4 = Date(4)
+        d42 = Date(42)
+        d55 = Date(55)
+        assert d4 < dl
+        assert not (d42 < dl)
+        assert not (d55 < dl)
+        assert d4 <= dl
+        assert d42 <= dl
+        assert not (d55 <= dl)
+        assert not (d4 > dl)
+        assert not (d42 > dl)
+        assert d55 > dl
+        assert not (d4 >= dl)
+        assert d42 >= dl
+        assert d55 >= dl
+
     def test_330_comparison_with_invalid_types(self):
         class SomeClass:
             pass
@@ -265,40 +299,6 @@ class TestDate:
                 d <= par
             with pytest.raises(TypeError):
                 d >= par
-
-        # Check reverse comparison mechanism
-        class DateLike:
-            def __init__(self):
-                self.day_count = 42
-
-            def __lt__(self, other):
-                return self.day_count < other.day_count
-
-            def __le__(self, other):
-                return self.day_count <= other.day_count
-
-            def __gt__(self, other):
-                return self.day_count > other.day_count
-
-            def __ge__(self, other):
-                return self.day_count >=other.day_count
-
-        dl = DateLike()
-        d3 = Date(3)
-        d42 = Date(42)
-        d55 = Date(55)
-        assert d3 < dl
-        assert not (d42 < dl)
-        assert not (d55 < dl)
-        assert d3 <= dl
-        assert d42 <= dl
-        assert not (d55 <= dl)
-        assert not (d3 > dl)
-        assert not (d42 > dl)
-        assert d55 > dl
-        assert not (d3 >= dl)
-        assert d42 >= dl
-        assert d55 >= dl
 
     def test_340_hash_equality(self):
         "Date instances are immutable."
@@ -414,9 +414,7 @@ class TestTime:
         for par in ( (1000, 1), (4, 2), (2, 2), (-1, -1), (-1, 1000000), (-3, 3), (1000000, -2)):
             with pytest.raises(ValueError):
                 Time(par)
-        for den in (2, -2, -10000):
-            with pytest.raises(ValueError):
-                Time((2, den))
+        # tuple argument should not have 0 as denominator
         with pytest.raises(ZeroDivisionError):
             Time((2, 0))
 
@@ -457,6 +455,7 @@ class TestTime:
         b = Time(0.25)
         c = Time(0.75)
         zero = TimeDelta(0)
+        # please remember that TimeDelta is in days
         plus_half = TimeDelta(0.5)
         minus_half = TimeDelta(-1.5)
         integer = TimeDelta(3)
@@ -470,7 +469,7 @@ class TestTime:
         assert b + zero == Time(0.25)
         assert b + plus_half == Time(0.75)
         assert b + minus_half == Time(0.75)
-        assert b + integer  == Time(0.25)
+        assert b + integer == Time(0.25)
         assert c + zero == Time(0.75)
         assert c + plus_half == Time(0.25)
         assert c + minus_half == Time(0.25)
@@ -522,7 +521,6 @@ class TestTime:
                 obj - a
 
         # Reverse operations
-        assert TimeDelta(-0.25) + a == Time(0.5)
         with pytest.raises(TypeError):
             TimeDelta(-0.25) - a
 
@@ -579,6 +577,40 @@ class TestTime:
         assert not (t3 < t1)
         assert not (t1 >= t3)
         assert not (t3 <= t1)
+
+        # Reverse comparison mechanism
+        class TimeLike:
+            def __init__(self):
+                self.day_frac = Fraction(3, 4)
+
+            def __lt__(self, other):
+                return self.day_frac < other.day_frac
+
+            def __le__(self, other):
+                return self.day_frac <= other.day_frac
+
+            def __gt__(self, other):
+                return self.day_frac > other.day_frac
+
+            def __ge__(self, other):
+                return self.day_frac >= other.day_frac
+
+        tl = TimeLike()
+        t12 = Time((1, 2))
+        t34 = Date("3/4")
+        t45 = Date((4, 5))
+        assert t12 < tl
+        assert not (t34 < tl)
+        assert not (t45 < tl)
+        assert t12 <= tl
+        assert t34 <= tl
+        assert not (t45 <= tl)
+        assert not (t12 > tl)
+        assert not (t34 > tl)
+        assert t45 > tl
+        assert not (t12 >= tl)
+        assert t34 >= tl
+        assert t45 >= tl
 
     def test_330_comparison_with_invalid_types(self):
         class SomeClass:
