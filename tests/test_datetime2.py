@@ -597,8 +597,8 @@ class TestTime:
 
         tl = TimeLike()
         t12 = Time((1, 2))
-        t34 = Date("3/4")
-        t45 = Date((4, 5))
+        t34 = Time("3/4")
+        t45 = Time((4, 5))
         assert t12 < tl
         assert not (t34 < tl)
         assert not (t45 < tl)
