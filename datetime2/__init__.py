@@ -219,7 +219,6 @@ Date.register_new_calendar('iso', modern.IsoCalendar)
 #
 ##############################################################################
 
-@total_ordering
 class Time:
     def __init__(self, day_frac, *, correction=None):
         self.correction = correction  # for the time being
@@ -269,15 +268,44 @@ class Time:
         else:
             return NotImplemented
 
-    # Comparison operators (total_ordering builds all other operators)
+    # Comparison operators
     def __eq__(self, other):
         return isinstance(other, Time) and self.day_frac == other.day_frac
+
+    def __ne__(self, other):
+        return not isinstance(other, Time) or self.day_frac != other.day_frac
 
     def __gt__(self, other):
         if isinstance(other, Time):
             return self.day_frac > other.day_frac
-        else:
+        elif hasattr(other, 'day_frac'):
             return NotImplemented
+        else:
+            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
+
+    def __ge__(self, other):
+        if isinstance(other, Time):
+            return self.day_frac >= other.day_frac
+        elif hasattr(other, 'day_frac'):
+            return NotImplemented
+        else:
+            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
+
+    def __lt__(self, other):
+        if isinstance(other, Time):
+            return self.day_frac < other.day_frac
+        elif hasattr(other, 'day_frac'):
+            return NotImplemented
+        else:
+            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
+
+    def __le__(self, other):
+        if isinstance(other, Time):
+            return self.day_frac <= other.day_frac
+        elif hasattr(other, 'day_frac'):
+            return NotImplemented
+        else:
+            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
 
     # hash value
     def __hash__(self):
