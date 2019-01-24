@@ -141,6 +141,8 @@ has a non-default constructor that takes as argument also thousands of weeks:
    ...
    >>> Date.register_new_calendar('week_count', SimpleWeekCalendar)
    >>> d1 = Date.week_count(1, 1)
+   >>> d1
+   datetime2.Date(1)
    >>> str(d1.gregorian)
    '0001-01-01'
    >>> d2 = Date.gregorian(2013, 4, 26)
@@ -150,22 +152,28 @@ has a non-default constructor that takes as argument also thousands of weeks:
    >>> d2 == d3
    True
 
-The requirements that must be satisfied to define a custom :class:`Date`
-calendar are:
+AS can be seen in the example, the new interface class (this is true also
+for all the alreay available interface classes) doesn't need to know about
+the way a :class:`Date` object work. All it need to define is:
 
-* The new calendar class must define the non-default constructor
-  ``from_rata_die``, that creates a calendar instance using the day count
-  defined in the :class:`Date` class as argument.
-* The new calendar class must have the method ``to_rata_die`` to convert the
-  given calendar instance to rata die.
+* The non-default constructor ``from_rata_die``, that creates an instance of
+  the calendar using the day count.
+* The method ``to_rata_die`` to return a day count corresponding to the
+  given date in the calendar.
 * All other non-default constructors and all methods returning a calendar
   instance must use the default constructor to return the new calendar
   instance.
 
-The following tables lists the name required for each base class:
+Once the new interface class is ready, the call of a registration function
+does the magic. All it needs is the name of the access attribute to be used
+for the interface class and, of course, the interface class itself.
+
+Each base class have a specific registration function. Required methods also
+have names depending on the base cass they are registered to. The following
+table lists all these names:
 
 +-------------------------+---------------------------+---------------------------+---------------------------+---------------------------+
-|                         | :class:`Date`             | :class:`Time`             | :class:`DateTime`         | :class:`TimeDelta`        |
+| Base class              | :class:`Date`             | :class:`Time`             | :class:`DateTime`         | :class:`TimeDelta`        |
 +=========================+===========================+===========================+===========================+===========================+
 | Registration function   | ``register_new_calendar`` | ``register_new_time``     | TBD                       | TBD                       |
 +-------------------------+---------------------------+---------------------------+---------------------------+---------------------------+
@@ -174,15 +182,15 @@ The following tables lists the name required for each base class:
 | Conversion method       | ``to_rata_die``           | ``to_day_frac``           | TBD                       | TBD                       |
 +-------------------------+---------------------------+---------------------------+---------------------------+---------------------------+
 
-All registration methods have the same structure:
+The generic definition of the registration method is:
 
 .. function:: registration_method(access_attribute, InterfaceClass)
 
-   Register the class ``InterfaceClass`` to the corresponding
-   :mod:`datetime2` base class, accessing it with the ``access_attribute``
-   attribute. If ``access_attribute`` is already defined, an
-   :exc:`AttributeError` exception is raised. If ``access_attribute`` is
-   not a valid identifier, a :exc:`ValueError` exception is raised.
+   Register the class ``InterfaceClass`` to the corresponding :mod:`datetime2`
+   base class, accessing it with the ``access_attribute`` attribute. If
+   ``access_attribute`` is already defined, an :exc:`AttributeError` exception
+   is raised. If ``access_attribute`` isn't a valid identifier, a
+   :exc:`ValueError` exception is raised.
 
    ``InterfaceClass`` must have the non-default constructor and conversion
    method listed above, otherwise a :exc:`TypeError` exception is raised.
@@ -191,20 +199,23 @@ All registration methods have the same structure:
 Inner workings
 """"""""""""""
 
-In order to obtain this mechanism, two operations are performed when an
-interface class is registered to a base class:
+At registration time, some magic needs to be performed to obtain the wanted
+results:
 
-* A new class in created on the fly, so that the new class returns a base
-  class instance when constructor is called, and not an interface class
-  instance. This new class inherits from the interface class, but returns
-  base class instances.
-* A new attribute is added to the base class. This attribute is special:
-  depending on whether it is called on the base class or on a base class
-  instance, it returns or creates the modified interface class instance.
+* A new class in created on the fly, inheriting from the interface class.
+  The new class changes the default constructor so it returns a base
+  class instance when called. Since all other constructors use the default
+  one (see the requirements above), all constructors of the new class return
+  a base class instance.
+* A new attribute is added to the base class. This attribute is special
+  because its semantic depend on whether it is called on the base class or
+  on a base class instance. In the former case, it creates a new base class
+  instance. In the latter case, it uses the methods corresponding to the
+  registered interface class.
 
-This is an exploit of the standard attribute lookup mechanisms, obtained
-implementing a context-dependent attribute retrieval, well described in
-`Descriptor HowTo Guide <http://docs.python.org/3.4/howto/descriptor.html>`_:
+The latter is obtained by exploiting the standard attribute lookup
+mechanisms, implementing a context-dependent attribute retrieval. This is
+well described in `Descriptor HowTo Guide <http://docs.python.org/3.4/howto/descriptor.html>`_:
 
 * If the attribute is retrieved directly from the class (e.g. as in
   ``Date.week_count(1, 1)``), the modified interface class (contained in
@@ -215,14 +226,14 @@ implementing a context-dependent attribute retrieval, well described in
 * If the attribute is retrieved from a base class instance, there are two
   cases:
 
-  * The instance already has the attribute, which is retrieved normally.
-    Note that this attribute is an instance of the modified interface class,
-    not of the original one.
   * The instance does not have the attribute: the attribute lookup mechanism
     looks for it in the corresponding :class:`Date` class definition, where
     it is found since it was created at registration time. The attribute is
     created and added to the instance by monkey patching, so the next time
-    it is returned as indicated above.
+    the interface class instance is returned as indicated below.
+  * The instance already has the attribute, which is retrieved normally.
+    Note that this attribute is an instance of the modified interface class,
+    not of the original one.
 
 This quite complex implementation has a few advantages:
 
@@ -233,5 +244,4 @@ This quite complex implementation has a few advantages:
 * The registration mechanism is common to built-in and custom calendars.
 * Interface classes are completely independent from each other and from
   their use in base classes.
-
 
