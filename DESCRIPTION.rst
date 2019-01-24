@@ -53,8 +53,8 @@ Datetime2 is distributed under the terms of the new BSD license. You are free
 to use it for commercial or non-commercial projects with little or no
 restriction, all I ask is that:
 
-> Redistributions of the code, in whole or part, retain the original
-> copyright notice and license text. You do not claim my endorsement
-> of any derived product.
+  Redistributions of the code, in whole or part, retain the original
+  copyright notice and license text. You do not claim my endorsement
+  of any derived product.
 
 For a complete text of the license see the LICENSE.txt file in the source distribution.

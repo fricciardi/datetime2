@@ -1,3 +1,5 @@
+.. _all-time-representations:
+
 Time of day
 ===========
 

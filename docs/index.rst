@@ -27,7 +27,7 @@
 Development of the :mod:`datetime2` module starts from the idea that a
 day in history or in future is the same independently from the way it
 is represented in different cultures. The module, indeed, detaches
-operations on dates from the representation, chosing for the base class
+operations on dates from their representation, chosing for the base class
 a very simple definition. In the example below a :class:`Date` object
 is created, and it is then printed in two different representations:
 
@@ -61,7 +61,7 @@ fraction).
 
 Using very simple definitions helps implementing precise operations on date
 or time objects and makes it easy to convert between the different
-representations. However, the simple defiitions create an additional effort
+representations. However, the simple definitions create an additional effort
 when creating an object, because conversion from "normal" dates to day count
 or "normal" time to day fraction would be required.
 
@@ -82,18 +82,16 @@ date or time objects in a more comprehensible way:
    @677
 
 Note also that users are not restricted in accessing an object with the same
-representation in which it was created.
-
-Any available representation can be used to create a new object, or
-to show the date or time with a precise representation. There are a
-few representations already available, listed below.
+representation in which it was created. Any available representation can be
+used to create a new object, or to show the date or time with a precise
+representation. There are a few representations already available, listed below.
 
 Another feature of the :mod:`datetime2` module is the ability to add other
 representations at run time. Representations do not consume memory
 unless they are effectively used. This is especially important for
 calendars, where many representation exists [#many]_ .
 
-Currently (version |release|) the following calendars and time representation
+Currently (version |release|) the following calendars and time representations
 are available.
 
 Calendars:

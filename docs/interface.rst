@@ -11,7 +11,7 @@
 
 Interface
 ^^^^^^^^^
-Base classes of the :mod:`datetime2` module have all little if no practical
+Base classes of the :mod:`datetime2` module have little if no practical
 use as they natively are: even if it stands out for its simplicity,
 rata die is not a common way of representing dates in the real world.
 Same consideration can be done about time as a fraction of a day.
@@ -33,7 +33,8 @@ base class:
    datetime2.Time('15547/21600')
 
 When used on a base class instance, the attribute allows to see the instance
-using with a specific representation:
+using with a specific representation, or tu use methods defined for that
+specific representation:
 
 .. doctest::
 
@@ -49,6 +50,13 @@ using with a specific representation:
    '11:37:00'
    >>> t.western.minute
    37
+
+The atttribute gives access to what is called an "interface class". The
+interface class is the one that manages converting a specific representation
+(e.g. the Gregorian calendar) to the base class. The :ref:`all-calendars`
+chapter lists all available interface classes for calendars. The
+:ref:`all-time-representations` chapter lists all available interface
+classes for time.
 
 The real power of this paradigm is that we can create a base class instance
 with an access attribute and see its value with another access attribute,
@@ -70,19 +78,12 @@ different ways.
 A feature of :mod:`datetime2` is that any representations is computed
 only once, when first accessed.
 
-The atttribute gives access to what is called an "interface class". The
-interface class is the one that manages converting a specific representation
-(e.g. the Gregorian calendar) to the base class. The :ref:`all-calendars`
-chapter lists all available interface classes for calendars.
-
-Special attention is given when a methods referenced via an access
-attribute would normally return a new instance: examples are non-default
-constructors and *replace*-like methods. When these methods are invoked via
-an access attribute, the returned value is not an instance of the
-referenced class, but one of the base class. E.g.
-:meth:`GregorianCalendar.replace` returns a :class:`GregorianCalendar`
-instance, but when used via the :class:`Date` class this becomes a
-:class:`Date` instance:
+When called via the attribute mechanisms on the base
+class, constructors of the interface class do not return objects of
+that class, but objects of the base class. In the example below,
+:meth:`GregorianCalendar.year_day` and :meth:`GregorianCalendar.replace`
+would return a :class:`GregorianCalendar` instance, but when used via
+the :class:`Date` class this becomes a :class:`Date` instance:
 
 .. doctest::
 
@@ -97,8 +98,8 @@ instance, but when used via the :class:`Date` class this becomes a
    >>> str(d2.gregorian)
    '2013-07-31'
 
-As expected, static methods are unchanged even when invoked via access
-attribute:
+In any case, as expected, static methods of the interface classes are
+unchanged even when invoked via access attribute:
 
 .. doctest::
 
