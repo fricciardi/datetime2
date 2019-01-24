@@ -407,6 +407,14 @@ class TestGregorian():
         assert dic[greg1] == 2
         assert dic[greg2] == 2
 
+        greg3 = GregorianCalendar(200, 12, 31).replace(year = 2000)
+        assert hash(greg1) == hash(greg3)
+
+        dic[greg3] = 2
+        assert len(dic) == 1
+        assert dic[greg] == 2
+
+
     def test_330_bool(self):
         for test_row in gregorian_test_data:
             year = test_row[2][0]
@@ -580,7 +588,7 @@ class TestGregorian():
             assert greg.cformat('%a') == abbr_weekdays[wday - 1]
             assert greg.cformat('%A') == weekdays[wday - 1]
             assert greg.cformat('%b') == abbr_months[month - 1]
-            assert greg.cformat('%B') == months[month - 1]
+            assert greg.cformat('%B') == months[month - 1] 
 
     def test_550_cformat_week_number(self):
         for test_row in gregorian_test_data:

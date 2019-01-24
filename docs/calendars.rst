@@ -6,22 +6,24 @@ Calendars
    from datetime2.western import GregorianCalendar
    from datetime2.modern import IsoCalendar
 
-This chapter lists the calendars defined in the :mod:`datetime2` package.
-The classes defining each calendar are not depending on the
-:class:`~datetime2.Date` class.
+This chapter lists the calendars classes available in the :mod:`datetime2` package.
+Of course, they all conform to the rules listed in :ref:`customization`.
+
+As such, they all have the six standard comparison operators: ``<``, ``>``, ``==``,
+``>=``, ``<=``, and ``!=``, which return a meaningful result when comparing
+calendar objects of the same type. When comparing a calendar object with an
+object of a different type, the ``==`` and ``!=`` operators *always* consider
+them to be unequal, while the ``<``, ``>``, ``>=`` and ``<=`` operators raise
+a :exc:`TypeError` exception.
+
+Similarly all classes implement the ``from_rata_die`` contructor and the
+``to_rata_die`` method.
+
+Description of the comparison operators and interface methods is then omitted
+from the calendar class descriptions below.
 
 .. TODO: if we will be keeping all calendars on a page, a ToC here will be useful
 
-All calendars listed here define the six standard comparison operators:
-``<``, ``>``, ``==``, ``>=``, ``<=``, and ``!=``, which return a meaningful
-result when comparing calendar objects of the same type. When comparing a
-calendar object with an object of a different type, the ``==`` and ``!=``
-operators *always* consider them to be unequal, while the ``<``, ``>``,
-``>=`` and ``<=`` operators raise a :exc:`TypeError` exception.
-
-Also, all calendars listed here conform to the rules listed in
-:ref:`customization`. The descriptions below omit the comparison operators
-and the ``from_rata_die`` and ``to_rata_die`` methods.
 
 
 .. _gregorian-calendar:
@@ -35,8 +37,6 @@ day count in years of 365 or 366 days, each year is then divided in 12 months
 of 28 (or 29), 30 and 31 days.
 
 The default constructor for a Gregorian day is:
-
-.. module:: datetime2.western
 
 .. class:: GregorianCalendar(year, month, day)
 
@@ -69,10 +69,12 @@ A :class:`GregorianCalendar` object has three attributes:
 
 .. attribute:: GregorianCalendar.day
 
-   These attributes are read-only integer numbers. Month will be between 1 and
-   12, day will be between 1 and the number of days in the corresponding month.
+   These attributes are read-only integer numbers. There is no restriction on the
+   value of the year. Month will be between 1 and 12. Day will be between 1 and
+   the number of days in the corresponding month. These attributes are read-only:
+   an :exc:`AttributeError` exception is raised when trying to change any of them.
 
-Two static method have been implemented to give details of a Gregorian year:
+Two static method have been implemented to return details of a Gregorian year:
 
 .. staticmethod:: GregorianCalendar.is_leap_year(year)
 
