@@ -200,13 +200,10 @@ Notes:
    English names.
 
 (2)
-   Since this is a truncated representation, negative years will not have a sign.
+   Since this is a truncated representation, **negative years will not have a sign**.
 
 (3)
    Negative years will have a trailing ``'-'``.
-
-   .. versionadded:: 0.4
-      :meth:`cformat` was added in version 0.4.
 
 
 .. _iso-calendar:
@@ -348,11 +345,8 @@ Notes:
    This is not true for :mod:`datetime2`, which only returns English names.
 
 (2)
-   Since this is a truncated representation, negative years will not have a
-   sign.
+   Since this is a truncated representation, **negative years will not have a
+   sign**.
 
 (3)
    Negative years will have a trailing ``'-'``.
-
-   .. versionadded:: 0.4
-      :meth:`cformat` was added in version 0.4.

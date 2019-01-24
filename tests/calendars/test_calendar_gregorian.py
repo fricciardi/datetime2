@@ -412,8 +412,7 @@ class TestGregorian():
 
         dic[greg3] = 2
         assert len(dic) == 1
-        assert dic[greg] == 2
-
+        assert dic[greg3] == 2
 
     def test_330_bool(self):
         for test_row in gregorian_test_data:
@@ -588,7 +587,7 @@ class TestGregorian():
             assert greg.cformat('%a') == abbr_weekdays[wday - 1]
             assert greg.cformat('%A') == weekdays[wday - 1]
             assert greg.cformat('%b') == abbr_months[month - 1]
-            assert greg.cformat('%B') == months[month - 1] 
+            assert greg.cformat('%B') == months[month - 1]
 
     def test_550_cformat_week_number(self):
         for test_row in gregorian_test_data:

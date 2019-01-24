@@ -374,6 +374,13 @@ class TestISO():
         assert dic[iso1] == 2
         assert dic[iso2] == 2
 
+        iso3 = IsoCalendar(200, 12, 3).replace(year = 2000)
+        assert hash(iso1) == hash(iso3)
+
+        dic[iso3] = 2
+        assert len(dic) == 1
+        assert dic[iso3] == 2
+
     def test_330_bool(self):
         for test_row in iso_test_data:
             year = test_row[1]
