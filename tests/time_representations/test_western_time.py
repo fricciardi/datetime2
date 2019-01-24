@@ -365,7 +365,7 @@ class TestWestern():
         assert dic[western1] == 2
         assert dic[western2] == 2
 
-        western3 = WesternTime(1, 12, 13).replace(hour = 2000)
+        western3 = WesternTime(1, 12, 13).replace(hour = 11)
         assert hash(western1) == hash(western3)
 
         dic[western3] = 2
