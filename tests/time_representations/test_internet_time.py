@@ -217,6 +217,13 @@ class TestWestern():
         assert dic[internet1] == 2
         assert dic[internet2] == 2
 
+        internet3 = InternetTime(1, 12, 13).replace(hour = 2000)
+        assert hash(internet1) == hash(internet3)
+
+        dic[internet3] = 2
+        assert len(dic) == 1
+        assert dic[internet3] == 2
+
     def test_330_bool(self):
         for test_row in internet_time_test_data:
             beat = test_row[1]

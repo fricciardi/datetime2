@@ -6,28 +6,29 @@ Time of day
    from datetime2.western import WesternTime
    from datetime2.modern import InternetTime
 
-This chapter lists the time representations classes defined in the
-:mod:`datetime2` package. These classes are not depending on the
-:class:`~datetime2.Time` class. Note that these time representations
-do not have any notion of time correction like daylight saving time or
-time zone.
+This chapter lists the time representations classes available in the
+:mod:`datetime2` package. They all conform to the rules listed
+in :ref:`customization`. Note that these time representations do not
+have any notion of time correction like daylight saving time or time
+zone.
+
+As such, they all have the six standard comparison operators: ``<``, ``>``, ``==``,
+``>=``, ``<=``, and ``!=``, which return a meaningful result when comparing
+calendar objects of the same type. When comparing a calendar object with an
+object of a different type, the ``==`` and ``!=`` operators *always* consider
+them to be unequal, while the ``<``, ``>``, ``>=`` and ``<=`` operators raise
+a :exc:`TypeError` exception.
+
+Similarly all classes implement the ``from_day_frac`` contructor and the
+``to_day_frac`` method.
+
+Description of the comparison operators and interface methods is then omitted
+from the calendar class descriptions below.
 
 .. TODO: if we will be keeping all time representations on a page, a ToC here will be useful
 
-All time representations listed here define the six standard comparison
-operators: ``<``, ``>``, ``==``, ``>=``, ``<=``, and ``!=``, which return a
-meaningful result when comparing time representation objects of the same
-type. When comparing a time representation object with an object of a
-different type, the ``==`` and ``!=`` operators *always* consider them to be
-unequal, while the ``<``, ``>``, ``>=`` and ``<=`` operators raise a
-:exc:`TypeError` exception.
-
-Also, all time representations listed here conform to the rules listed in
-:ref:`customization`. The descriptions below omit the comparison operators
-and the ``from_day_frac`` and ``to_day_frac`` methods.
-
-In the following we will call a Python number anything that can be passed
-to a Fraction constructor, i.e. an integer, a float, another Fraction,
+In the following we will call a Python rational number anything that can be
+passed to a Fraction constructor, i.e. an integer, a float, another Fraction,
 a Decimal number or a string representing an integer, a float or a fraction.
 
 .. _western-time:

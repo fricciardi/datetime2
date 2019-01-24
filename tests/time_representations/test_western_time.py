@@ -365,6 +365,13 @@ class TestWestern():
         assert dic[western1] == 2
         assert dic[western2] == 2
 
+        western3 = WesternTime(1, 12, 13).replace(hour = 2000)
+        assert hash(western1) == hash(western3)
+
+        dic[western3] = 2
+        assert len(dic) == 1
+        assert dic[western3] == 2
+
     def test_330_bool(self):
         for test_row in western_time_test_data:
             hour = test_row[1][0]
