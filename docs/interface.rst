@@ -12,45 +12,42 @@
 Interface
 ^^^^^^^^^
 Base classes of the :mod:`datetime2` module have all little if no practical
-use as they natively are. E.g.: even if it stands out for its simplicity,
+use as they natively are: even if it stands out for its simplicity,
 rata die is not a common way of representing dates in the real world.
+Same consideration can be done about time as a fraction of a day.
 
 A mechanism based on attributes, here called "access" attributes, has been
 implemented to give access to a wide variety of calendars and time
-representations. A table in the description of each base class lists all
-currently available access attributes.
+representations.
 
-The access attribute can be used both on the base class and on a base class
-instance:
-
-* if called on the base class it creates a new instance of the base class
-  using the values provided by the interface class:
+When used on the base class, the attribute behaves as a constructor of the
+base class:
 
 .. doctest::
 
-   >>> d1 = Date.gregorian(2013, 4, 18)
-   >>> d1
+   >>> d = Date.gregorian(2013, 4, 18)
+   >>> d
    datetime2.Date(734976)
-   >>> t1 = Time.western(17, 16, 28)
-   >>> t1
+   >>> t = Time.western(17, 16, 28)
+   >>> t
    datetime2.Time('15547/21600')
 
-* if called on a base class instance, it allows to see the instance using
-  attributes and methods of the corresponding interface class:
+When used on a base class instance, the attribute allows to see the instance
+using with a specific representation:
 
 .. doctest::
 
-   >>> d2 = Date(1)
-   >>> str(d2.gregorian)
+   >>> d = Date(1)
+   >>> str(d.gregorian)
    '0001-01-01'
-   >>> d2.gregorian.month
+   >>> d.gregorian.month
    1
-   >>> d2.gregorian.weekday()
+   >>> d.gregorian.weekday()
    1
-   >>> t2 = Time(Fraction(697, 1440))
-   >>> str(t2.western)
+   >>> t = Time(Fraction(697, 1440))
+   >>> str(t.western)
    '11:37:00'
-   >>> t2.western.minute
+   >>> t.western.minute
    37
 
 The real power of this paradigm is that we can create a base class instance
@@ -70,8 +67,13 @@ different ways.
    >>> t.internet.beat
    Fraction(500, 1)
 
-A feature of :mod:`datetime2` is that all representations are
-computed only once, when first accessed.
+A feature of :mod:`datetime2` is that any representations is computed
+only once, when first accessed.
+
+The atttribute gives access to what is called an "interface class". The
+interface class is the one that manages converting a specific representation
+(e.g. the Gregorian calendar) to the base class. The :ref:`all-calendars`
+chapter lists all available interface classes for calendars.
 
 Special attention is given when a methods referenced via an access
 attribute would normally return a new instance: examples are non-default
