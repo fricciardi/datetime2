@@ -24,13 +24,12 @@
    interface
 
 
-The driving idea in the :mod:`datetime2` module is to detach operations
-on date or time from their representation in different cultures. After
-all, a day in history, or in future, is the same independently from the
-way it is represented, and the same is true also for time.
-
-The example below shows how a precise date or time can have different
-representations, which are accessed as attributes of the object:
+Development of the :mod:`datetime2` module starts from the idea that a
+day in history or in future is the same independently from the way it
+is represented in different cultures. The module, indeed, detaches
+operations on dates from the representation, chosing for the base class
+a very simple definition. In the example below a :class:`Date` object
+is created, and it is then printed in two different representations:
 
 .. doctest::
 
@@ -39,47 +38,57 @@ representations, which are accessed as attributes of the object:
    2096-09-05
    >>> print(d.iso)
    2096-W36-3
-   >>> t1 = Time(0.25)
-   >>> print(t1.western)
-   06:00:00
-   >>> print(t1.internet)
-   @250
 
-Dates are defined counting the days elapsed from December 31\ :sup:`st` of
-year 0, while time is given as a fraction of a day (in this case as a float).
-This very simple definition helps implementing precise operations on objects and
-makes easy to convert between the different representations.
+The example shows how different representations are accessed as
+attributes of the object. Dates are defined counting the days:
+January 1\ :sup:`st`, year 1 is day 1, January 2\ :sup:`nd` is
+day 2 and so on.
 
-However, creation of a date or time object giving a day count or a
-fraction of a day is not friendly. This is why, again using the attribute
-paradigm, the :mod:`datetime2` module makes it possbile to create date or
-time objects in a more comprehensible way:
+Similar thinking can be done for time:
 
 .. doctest::
 
-   >>> d1 = Date.gregorian(2013, 4, 18)
-   >>> d1
-   datetime2.Date(734976)
-   >>> t1 = Time.western(17, 16, 28)
-   >>> t1
-   datetime2.Time('15547/21600')
+   >>> t = Time(0.25)
+   >>> print(t.western)
+   06:00:00
+   >>> print(t.internet)
+   @250
 
-Users are not restricted in accessing an object with the same
-representation in which it was created:
+Also for time, object attributes allow to access different representations
+(Internet time just divides a day in 1,000 parts, called "beats"). Time is
+given as a fraction of the day (the example uses ``0.25`` as a perfect
+fraction).
+
+Using very simple definitions helps implementing precise operations on date
+or time objects and makes it easy to convert between the different
+representations. However, the simple defiitions create an additional effort
+when creating an object, because conversion from "normal" dates to day count
+or "normal" time to day fraction would be required.
+
+Not surprisingly, the :mod:`datetime2` module makes it possbile to create
+date or time objects in a more comprehensible way:
 
 .. doctest::
 
    >>> d = Date.gregorian(2013, 4, 22)
+   >>> print(d.gregorian)
+   2013-04-22
    >>> print(d.iso)
    2013-W17-1
    >>> t = Time.western(16, 15, 0)
+   >>> print(t.western)
+   16:15:00
    >>> print(t.internet)
    @677
 
+Note also that users are not restricted in accessing an object with the same
+representation in which it was created.
+
 Any available representation can be used to create a new object, or
 to show the date or time with a precise representation. There are a
-few representations already available, listed below. Another feature
-of the :mod:`datetime2` module is the ability to add other
+few representations already available, listed below.
+
+Another feature of the :mod:`datetime2` module is the ability to add other
 representations at run time. Representations do not consume memory
 unless they are effectively used. This is especially important for
 calendars, where many representation exists [#many]_ .
