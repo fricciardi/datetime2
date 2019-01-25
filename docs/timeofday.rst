@@ -54,7 +54,7 @@ There are four constructors for a western time. The default one is:
 
    * ``hour`` must be an integer and ``0 <= month <= 23``
    * ``minute`` must be an integer and ``0 <= minute <= 59``
-   * ``second`` must be a Python number; its value must be ``0 <= second < 60``
+   * ``second`` must be a Python rational number; its value must be ``0 <= second < 60``
 
    If an argument is not of the accepted type, a :exc:`TypeError` exception
    is raised. If an argument is outside its accepted range, a
@@ -66,7 +66,7 @@ The other three constructors are:
 
    Return an object that represents the moment of the day specified in
    hours, possibly fractional, elapsed from midnight. The argument must be a
-   Python number, otherwise a :exc:`TypeError` exception is raised. Its
+   Python rational number, otherwise a :exc:`TypeError` exception is raised. Its
    value must be greater or equal to 0 and less than 24, otherwise a
    :exc:`ValueError` exception is raised.
 
@@ -74,7 +74,7 @@ The other three constructors are:
 
    Return an object that represents the moment of the day specified in
    minutes, possibly fractional, elapsed from midnight. The argument must be
-   a Python number, otherwise a :exc:`TypeError` exception is raised. Its
+   a Python rational number, otherwise a :exc:`TypeError` exception is raised. Its
    value must be greater or equal to 0 and less than 1440, otherwise a
    :exc:`ValueError` exception is raised.
 
@@ -82,7 +82,7 @@ The other three constructors are:
 
    Return an object that represents the moment of the day specified in
    seconds, possibly fractional, elapsed from midnight. The argument must be
-   a Python number, otherwise a :exc:`TypeError` exception is raised. Its
+   a Python rational number, otherwise a :exc:`TypeError` exception is raised. Its
    value must be greater or equal to 0 and less than 86400, otherwise a
    :exc:`ValueError` exception is raised.
 
@@ -204,7 +204,7 @@ The default constructor for Internet time is:
 .. class:: InternetTime(beat)
 
    Return an object that represents the time in thousandths of a day. The
-   ``beat`` argument is required and must be Python number; its value must
+   ``beat`` argument is required and must be Python rational number; its value must
    be equal or greater than 0 and less than 1000. If the argument is not a
    Python number, a :exc:`TypeError` exception is raised. If the argument
    is outside its accepted range, a :exc:`ValueError` exception is raised.
