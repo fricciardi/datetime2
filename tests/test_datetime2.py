@@ -373,13 +373,28 @@ class TestDate:
 #############################################################################
 # Time tests
 #
+class DummyTZ:
+    def __init__(self, num, den):
+        self.num = num
+        self.den = den
+
+    def time_to_utc(self):
+        return Fraction(self.num, self.den)
+
 time_test_data = [
     [Fraction(0, 1), [0, Fraction(0), Decimal('0'), 0.0, '0', '0/33', (0, 5)]],
     [Fraction(1, 4), [Fraction(1, 4), Decimal('0.25'), 0.25, '0.25', '1/4', (2, 8)]]]
 # we are not going to test more values, because we don't want to test the Fraction constructor :-)
 
+to_utc_test_data = [
+    [Fraction(0, 1), [0, Fraction(0), Decimal('0'), 0.0, '0', '0/33', (0, 5), DummyTZ(0, -3)]],
+    [Fraction(1, 4), [Fraction(1, 4), Decimal('0.25'), 0.25, '0.25', '1/4', (2, 8), DummyTZ(3, 12)]],
+    [Fraction(1, -4), [Fraction(1, 4), Decimal('0.25'), 0.25, '0.25', '1/4', (2, 8), DummyTZ(-3, 12)]]]
+
 # but we want to test with a few strange values
 time_strange_test_data = (Fraction(123, 4567), 0.999999, '0.999999', '0.0000001', '5/456789', (123, 4567))
+to_utc_strange_test_data = [Fraction(123, 4567), 0.999999, '0.999999', '0.0000001', '5/456789', (123, 4567),
+                            Fraction(-123, 4567), -0.999999, '-0.999999', '-0.0000001', '-5/456789', (123, -4567)]
 
 class TestTime:
     def test_000_valid_argument_types(self):
@@ -388,10 +403,21 @@ class TestTime:
             for input_value in input_values:
                 assert Time(input_value).day_frac == day_frac
 
+    def test_002_valid_argument_types_to_utc(self):
+        "The to_utc argument can be anything that can be passed to the fractions.Fraction constructor."
+        for to_utc_frac, input_values in to_utc_test_data:
+            for input_value in input_values:
+                assert Time(input_value).to_utc == to_utc_frac
+
     def test_005_valid_argument_types_strange(self):
         "The day_frac argument can be anything that can be passed to the fractions.Fraction constructor."
         for input_value in time_strange_test_data:
             Time(input_value)
+
+    def test_007_valid_argument_types_strange_to_utc(self):
+        "The to_utc argument can be anything that can be passed to the fractions.Fraction constructor."
+        for input_value in to_utc_strange_test_data:
+            Time("0.3333", to_utc=input_value)
 
     def test_010_invalid_argument_types(self):
         "A TypeError exception is raised if the argument type is not one of the accepted types."

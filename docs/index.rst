@@ -248,13 +248,13 @@ Notes:
 :class:`Time` Objects
 ---------------------
 
-.. warning:: This version of the documentation already includes time correction.
-             However, this part of the documentation is not stable and may change at any time.
-             Additionally, no implementation nor test code has been written for it.
+.. warning:: This version of the documentation is under revision for the part
+             concerning the correction of local time for UTC. Code and tests about
+             this part are under development.
 
 An indication of time, independent of any particular day, expressed as a
 fraction of day. There might be an indication of time difference to UTC, e.g.
-due to time zone or daylight saving time. Also this indication is expressed as
+due to time zone or daylight saving time. This time difference is expressed as
 fraction of a day and represents the time to be added to local time to get UTC.
 If there is this indication, the :class:`Time` object is said to be "aware" and
 it is used to represent a precise moment (regardless of the day). An object

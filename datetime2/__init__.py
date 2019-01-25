@@ -220,8 +220,7 @@ Date.register_new_calendar('iso', modern.IsoCalendar)
 ##############################################################################
 
 class Time:
-    def __init__(self, day_frac, *, correction=None):
-        self.correction = correction  # for the time being
+    def __init__(self, day_frac, *, to_utc=None):
         try:
             if type(day_frac) == tuple:
                 if len(day_frac) == 2:
@@ -231,9 +230,30 @@ class Time:
             else:
                 self._day_frac = Fraction(day_frac)
         except ZeroDivisionError:
-            raise ZeroDivisionError("Time denominator cannot be zero.".format(str(day_frac)))
+            raise ZeroDivisionError("Time denominator cannot be zero.")
+        if to_utc.hasattr('time_to_utc'):
+            try:
+                to_utc_value = to_utc.time_to_utc()
+            except Exception as any_exc:
+                raise TypeError("Invalid object for 'to_utc' argument.") from any_exc
+            self._to_utc_obj = to_utc
+        else:
+            to_utc_value = to_utc
+            self._to_utc_obj = None
+        try:
+            if type(to_utc_value) == tuple:
+                if len(to_utc_value) == 2:
+                    self._to_utc = Fraction(*to_utc_value)
+                else:
+                    raise TypeError('Time to UTC tuple is invalid')
+            else:
+                self._to_utc = Fraction(to_utc_value)
+        except ZeroDivisionError:
+            raise ZeroDivisionError("Time to UTC denominator cannot be zero.")
         if self.day_frac < 0 or self.day_frac >= 1:
-            raise ValueError("resulting fraction is outside range valid for Time instances (0 <= value < 1): {}".format(float(self.day_frac)))
+            raise ValueError("Value for Time instances (0 <= value < 1): {}".format(float(self.day_frac)))
+        if self.to_utc <= -1 or self.to_utc >= 1:
+            raise ValueError("Value for time to UTC outside valid rage (-1 < value < 1): {}".format(float(self.to_utc)))
 
     @classmethod
     def now(cls):
@@ -243,6 +263,14 @@ class Time:
     @property
     def day_frac(self):
         return self._day_frac
+
+    @property
+    def to_utc(self):
+        return self._to_utc
+
+    @property
+    def to_utc_obj(self):
+        return self._to_utc_obj
 
     def __repr__(self):
         return "datetime2.{}('{}')".format(self.__class__.__name__, str(self.day_frac))
