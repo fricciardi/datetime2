@@ -389,7 +389,7 @@ time_test_data = [
 to_utc_test_data = [
     [Fraction(0, 1), [0, Fraction(0), Decimal('0'), 0.0, '0', '0/33', (0, 5), DummyTZ(0, -3)]],
     [Fraction(1, 4), [Fraction(1, 4), Decimal('0.25'), 0.25, '0.25', '1/4', (2, 8), DummyTZ(3, 12)]],
-    [Fraction(1, -4), [Fraction(1, 4), Decimal('0.25'), 0.25, '0.25', '1/4', (2, 8), DummyTZ(-3, 12)]]]
+    [Fraction(1, -4), [Fraction(-1, 4), Decimal('-0.25'), -0.25, '-0.25', '-1/4', (2, -8), DummyTZ(-3, 12)]]]
 
 # but we want to test with a few strange values
 time_strange_test_data = (Fraction(123, 4567), 0.999999, '0.999999', '0.0000001', '5/456789', (123, 4567))

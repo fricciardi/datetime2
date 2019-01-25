@@ -32,7 +32,6 @@ __author__ = 'Francesco Ricciardi <francescor2010 at yahoo.it>'
 import time
 from fractions import Fraction
 from math import floor
-from functools import total_ordering
 
 from datetime2 import western, modern
 
