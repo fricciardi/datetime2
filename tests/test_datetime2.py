@@ -431,6 +431,16 @@ class TestTime:
             with pytest.raises(TypeError):
                 Time(par)
 
+    def test_012_invalid_argument_types_to_utc(self):
+        "A TypeError exception is raised if the argument type is not one of the accepted types."
+        # exception with invalid parameter name
+        with pytest.raises(TypeError):
+            Time(1, foobar='barfoo')
+        # exception with non-numeric types
+        for par in (1j, (1,), [1], {1:1}, [], {}, None, (1,2,3)):
+            with pytest.raises(TypeError):
+                Time("0.4444", to_utc=par)
+
     def test_015_invalid_argument_values(self):
         "The resulting value must be equal or greater than 0 and less than 1."
         for par in (-0.00001, 1, 1.00000001, 10000, -10000):
@@ -443,6 +453,19 @@ class TestTime:
         # tuple argument should not have 0 as denominator
         with pytest.raises(ZeroDivisionError):
             Time((2, 0))
+
+    def test_017_invalid_argument_values_to_utc(self):
+        "The resulting value must be greater than -1 and less than 1."
+        for par in (-100, -1.00001, -1, 1, 1.00000001, 100):
+            with pytest.raises(ValueError):
+                Time("0.5555", to_utc=par)
+        # same for tuple argument
+        for par in ( (-100, 1), (-4, 3), (-2, 2), (2, 2), (4, 3), (100, 1) ):
+            with pytest.raises(ValueError):
+                Time("0.6666", to_utc=par)
+        # tuple argument should not have 0 as denominator
+        with pytest.raises(ZeroDivisionError):
+            Time("0.7777", to_utc=(3, 0))
 
     def test_020_now(self):
         "Return an object that represents the current moment in the day."
@@ -460,9 +483,9 @@ class TestTime:
             count += 1
         assert count < 3, "Unable to get at least one a correct Time.now()"
 
-    def test_100_write_attribute(self):
+    def test_100_write_attributes(self):
         "This attribute is read-only."
-        t = Time('0.12345')
+        t1 = Time('0.12345')
         with pytest.raises(AttributeError):
             t.day_frac = Fraction(3, 7)
 

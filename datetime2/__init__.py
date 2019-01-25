@@ -231,7 +231,7 @@ class Time:
                 self._day_frac = Fraction(day_frac)
         except ZeroDivisionError:
             raise ZeroDivisionError("Time denominator cannot be zero.")
-        if to_utc.hasattr('time_to_utc'):
+        if hasattr(to_utc, 'time_to_utc'):
             try:
                 to_utc_value = to_utc.time_to_utc()
             except Exception as any_exc:
