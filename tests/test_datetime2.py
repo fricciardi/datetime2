@@ -407,7 +407,7 @@ class TestTime:
         "The to_utc argument can be anything that can be passed to the fractions.Fraction constructor."
         for to_utc_frac, input_values in to_utc_test_data:
             for input_value in input_values:
-                assert Time(input_value).to_utc == to_utc_frac
+                assert Time("0.2222", to_utc=input_value).to_utc == to_utc_frac
 
     def test_005_valid_argument_types_strange(self):
         "The day_frac argument can be anything that can be passed to the fractions.Fraction constructor."
@@ -433,11 +433,16 @@ class TestTime:
 
     def test_012_invalid_argument_types_to_utc(self):
         "A TypeError exception is raised if the argument type is not one of the accepted types."
+        # this object has a time_to_utc attribute, but is isn't callable
+        class WrongObj:
+            def __init__(self):
+                self.time_to_utc = 'foo'
+
         # exception with invalid parameter name
         with pytest.raises(TypeError):
             Time(1, foobar='barfoo')
         # exception with non-numeric types
-        for par in (1j, (1,), [1], {1:1}, [], {}, None, (1,2,3)):
+        for par in (1j, (1,), [1], {1:1}, [], {}, None, (1,2,3), WrongObj()):
             with pytest.raises(TypeError):
                 Time("0.4444", to_utc=par)
 
@@ -487,7 +492,19 @@ class TestTime:
         "This attribute is read-only."
         t1 = Time('0.12345')
         with pytest.raises(AttributeError):
-            t.day_frac = Fraction(3, 7)
+            t1.day_frac = Fraction(3, 7)
+            t1.to_utc = Fraction(1, 11)
+            t1.to_utc_obj = object()
+        t2 = Time('0.6789', to_utc='-1/2')
+        with pytest.raises(AttributeError):
+            t2.day_frac = Fraction(3, 7)
+            t2.to_utc = Fraction(1, 11)
+            t2.to_utc_obj = object()
+        t3 = Time('0.0123', to_utc=DummyTZ(-2, 3))
+        with pytest.raises(AttributeError):
+            t3.day_frac = Fraction(3, 7)
+            t3.to_utc = Fraction(1, 11)
+            t3.to_utc_obj = object()
 
     def test_110_get_unknown_attribute(self):
         "Time instances have one attribute."
