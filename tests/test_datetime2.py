@@ -442,7 +442,7 @@ class TestTime:
         with pytest.raises(TypeError):
             Time(1, foobar='barfoo')
         # exception with non-numeric types
-        for par in (1j, (1,), [1], {1:1}, [], {}, None, (1,2,3), WrongObj()):
+        for par in (1j, (1,), [1], {1:1}, [], {}, (1,2,3), WrongObj()):
             with pytest.raises(TypeError):
                 Time("0.4444", to_utc=par)
 
@@ -812,6 +812,40 @@ class TestTime:
                 for new_utc_value in to_utc_strange_test_data:
                     second = first.relocate(new_utc_value)
                     assert first.day_frac + first.to_utc == second.day_frac + second.to_utc
+
+    def test_410_relocate_invalid_type(self):
+        "Return another Time instance that identifies the same time"
+        class WrongObj:
+            def __init__(self):
+                self.time_to_utc = 'foo'
+
+        t = Time('123/456', to_utc='-78/90')
+
+        # exception with invalid parameter name
+        with pytest.raises(TypeError):
+            t.replace()
+        with pytest.raises(TypeError):
+            t.replace(1, 2)
+        with pytest.raises(TypeError):
+            t.replace(foobar='barfoo')
+
+        # exception with non-numeric types
+        for par in (1j, (1,), [1], {1:1}, [], {}, None, (1,2,3), WrongObj()):
+            with pytest.raises(TypeError):
+                t.replace(par)
+
+    def test_420_relocate_invalid_values(self):
+        "Return another Time instance that identifies the same time"
+        for par in (-100, -1.00001, -1, 1, 1.00000001, 100):
+            with pytest.raises(ValueError):
+                Time("0.5555", to_utc=par)
+        # same for tuple argument
+        for par in ( (-100, 1), (-4, 3), (-2, 2), (2, 2), (4, 3), (100, 1) ):
+            with pytest.raises(ValueError):
+                Time("0.6666", to_utc=par)
+        # tuple argument should not have 0 as denominator
+        with pytest.raises(ZeroDivisionError):
+            Time("0.7777", to_utc=(3, 0))
 
     def test_500_repr(self):
         import datetime2
