@@ -53,7 +53,10 @@ def get_moment():
 def get_moment_complete():
     """Return local date and time as day_count, local time as day fraction, and,
     if possible, distance to UTC as fraction of a day."""
-    moment_ns = time.time_ns() # time in ns from epoch; note epoch is platform dependent
+    try:
+        moment_ns = time.time_ns() # time in ns from epoch; note epoch is platform dependent
+    except AttributeError:
+        moment_ns = int(time.time() * 1_000_000_000)  # time() returns a float in second
     # for the moment we are using time module's functions to get localtime
     #TODO: check if possible to implement something independent from time, e.g. tzlocal
     seconds, nanoseconds = divmod(moment_ns, 1_000_000_000)
