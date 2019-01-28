@@ -512,11 +512,11 @@ class TestTime:
         while count < 3:
             datetime_now = datetime.datetime.utcnow()
             datetime_frac_seconds = datetime_now.hour * 3600 + datetime_now.minute * 60 + datetime_now.second
-            time_now = Time.now(to_utc=DummyTZ(0, 0))
+            time_now = Time.now(to_utc=DummyTZ(0, 1))
             if int(time_now.day_frac * 86400) == datetime_frac_seconds:
                 break
             count += 1
-        assert count < 3, "Unable to get at least one a correct Time.now(to_utc=DummyTZ(0, 0))"
+        assert count < 3, "Unable to get at least one a correct Time.now(to_utc=DummyTZ(0, 1))"
         assert time_now.to_utc == 0
         assert time_now.to_utc_obj is not None
 
@@ -823,16 +823,16 @@ class TestTime:
 
         # exception with invalid parameter name
         with pytest.raises(TypeError):
-            t.replace()
+            t.relocate()
         with pytest.raises(TypeError):
-            t.replace(1, 2)
+            t.relocate(1, 2)
         with pytest.raises(TypeError):
-            t.replace(foobar='barfoo')
+            t.relocate(foobar='barfoo')
 
         # exception with non-numeric types
         for par in (1j, (1,), [1], {1:1}, [], {}, None, (1,2,3), WrongObj()):
             with pytest.raises(TypeError):
-                t.replace(par)
+                t.relocate(par)
 
     def test_420_relocate_invalid_values(self):
         "Return another Time instance that identifies the same time"

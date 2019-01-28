@@ -398,7 +398,12 @@ class Time:
                     real_to_utc_value = Fraction(new_to_utc_value)
             except ZeroDivisionError:
                 raise ZeroDivisionError("Time to UTC denominator cannot be zero.")
-            return self.__class__(self_at_utc - real_to_utc_value, to_utc=new_to_utc)
+            new_time = self_at_utc - real_to_utc_value
+            if new_time < 0:
+                new_time += 1
+            elif new_time >= 1:
+                new_time -= 1
+            return self.__class__(new_time, to_utc=new_to_utc)
 
     @classmethod
     def register_new_time(cls, attribute_name, time_repr_class):
