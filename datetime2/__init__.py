@@ -399,6 +399,7 @@ class Time:
             except ZeroDivisionError:
                 raise ZeroDivisionError("Time to UTC denominator cannot be zero.")
             new_time = self_at_utc - real_to_utc_value
+            print(self.day_frac, self.to_utc, new_to_utc_value)
             if new_time < 0:
                 new_time += 1
             elif new_time >= 1:
