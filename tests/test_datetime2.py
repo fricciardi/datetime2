@@ -811,7 +811,10 @@ class TestTime:
                 first = Time(time_input_values[0], to_utc=utc_input_values[0])
                 for new_utc_value in to_utc_strange_test_data:
                     second = first.relocate(new_utc_value)
-                    assert first.day_frac + first.to_utc == second.day_frac + second.to_utc
+                    diff = (first.day_frac + first.to_utc) - (second.day_frac + second.to_utc)
+                    # Note that for some of the test value we have an overflow/underflow,
+                    # so we must impement a precise test
+                    assert diff == int(diff)
 
     def test_410_relocate_invalid_type(self):
         "Return another Time instance that identifies the same time"
