@@ -475,7 +475,7 @@ class TestTime:
     def test_020_now(self):
         "Return an object that represents the current moment in the day."
         # for the time being, let's use the good old datetime module :-)
-        import datetime
+        import datetime, time
 
         # we must ensure that at least once in three times we get the same values in seconds
         count = 0
@@ -483,10 +483,78 @@ class TestTime:
             datetime_now = datetime.datetime.now()
             datetime_frac_seconds = datetime_now.hour * 3600 + datetime_now.minute * 60 + datetime_now.second
             time_now = Time.now()
-            if int(time_now.day_frac * 86400)  == datetime_frac_seconds:
+            if int(time_now.day_frac * 86400) == datetime_frac_seconds:
                 break
             count += 1
         assert count < 3, "Unable to get at least one a correct Time.now()"
+        assert int(time_now.to_utc) == time.timezone
+
+    def test_030_now_with_argument(self):
+        "Return an object that represents the current moment in the day."
+        # for the time being, let's use the good old datetime module :-)
+        import datetime
+
+        # we must ensure that at least once in three times we get the same values in seconds
+        count = 0
+        while count < 3:
+            datetime_now = datetime.datetime.utcnow()
+            datetime_frac_seconds = datetime_now.hour * 3600 + datetime_now.minute * 60 + datetime_now.second
+            time_now = Time.now(to_utc=0)
+            if int(time_now.day_frac * 86400) == datetime_frac_seconds:
+                break
+            count += 1
+        assert count < 3, "Unable to get at least one a correct Time.now(to_utc=0)"
+        assert time_now.to_utc == 0
+        assert time_now.to_utc_obj is None
+
+        # again but with class
+        count = 0
+        while count < 3:
+            datetime_now = datetime.datetime.utcnow()
+            datetime_frac_seconds = datetime_now.hour * 3600 + datetime_now.minute * 60 + datetime_now.second
+            time_now = Time.now(to_utc=DummyTZ(0, 0))
+            if int(time_now.day_frac * 86400) == datetime_frac_seconds:
+                break
+            count += 1
+        assert count < 3, "Unable to get at least one a correct Time.now(to_utc=DummyTZ(0, 0))"
+        assert time_now.to_utc == 0
+        assert time_now.to_utc_obj is not None
+
+    def test_040_localnow(self):
+        "Return an object that represents the current moment in the day."
+        # for the time being, let's use the good old datetime module :-)
+        import datetime
+
+        # we must ensure that at least once in three times we get the same values in seconds
+        count = 0
+        while count < 3:
+            datetime_now = datetime.datetime.now()
+            datetime_frac_seconds = datetime_now.hour * 3600 + datetime_now.minute * 60 + datetime_now.second
+            time_now = Time.localnow()
+            if int(time_now.day_frac * 86400) == datetime_frac_seconds:
+                break
+            count += 1
+        assert count < 3, "Unable to get at least one a correct Time.localnow()"
+        assert time_now.to_utc is None
+        assert time_now.to_utc_obj is None
+
+    def test_050_utcnow(self):
+        "Return an object that represents the current moment in the day."
+        # for the time being, let's use the good old datetime module :-)
+        import datetime
+
+        # we must ensure that at least once in three times we get the same values in seconds
+        count = 0
+        while count < 3:
+            datetime_now = datetime.datetime.utcnow()
+            datetime_frac_seconds = datetime_now.hour * 3600 + datetime_now.minute * 60 + datetime_now.second
+            time_now = Time.utcnow()
+            if int(time_now.day_frac * 86400) == datetime_frac_seconds:
+                break
+            count += 1
+        assert count < 3, "Unable to get at least one a correct Time.localnow()"
+        assert time_now.to_utc is None
+        assert time_now.to_utc_obj is None
 
     def test_100_write_attributes(self):
         "This attribute is read-only."

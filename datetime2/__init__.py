@@ -50,6 +50,20 @@ def get_moment():
     day_frac = Fraction(moment.tm_hour, 24) + Fraction(moment.tm_min, 1440) + Fraction(moment.tm_sec, 86400)
     return days_before_year + moment.tm_yday + day_frac
 
+def get_moment_complete():
+    """Return local date and time as day_count, local time as day fraction, and,
+    if possible, distance to UTC as fraction of a day."""
+    moment_ns = time.time_ns() # time in ns from epoch; note epoch is platform dependent
+    # for the moment we are using time module's functions to get localtime
+    #TODO: check if possible to implement something independent from time, e.g. tzlocal
+    seconds, nanoseconds = divmod(moment_ns, 1_000_000_000)
+    moment = time.localtime(seconds)
+    year = moment.tm_year
+    days_before_year = (year - 1) * 365 + (year - 1) // 4 - (year - 1) // 100 + (year - 1) // 400
+    day_count = days_before_year + moment.tm_yday
+    day_frac = Fraction(moment.tm_hour, 24) + Fraction(moment.tm_min, 1440) + Fraction(moment.tm_sec, 86400) + Fraction(nanoseconds, 86_400_000_000_000)
+    to_utc = -Fraction(moment.tm_gmtoff, 86400)
+    return day_count, day_frac, to_utc
 
 ##############################################################################
 #
@@ -230,34 +244,55 @@ class Time:
                 self._day_frac = Fraction(day_frac)
         except ZeroDivisionError:
             raise ZeroDivisionError("Time denominator cannot be zero.")
-        if hasattr(to_utc, 'time_to_utc'):
-            try:
-                to_utc_value = to_utc.time_to_utc()
-            except Exception as any_exc:
-                raise TypeError("Invalid object for 'to_utc' argument.") from any_exc
-            self._to_utc_obj = to_utc
+        if to_utc is None:
+            # naive instance
+            self._to_utc = self._to_utc_obj = None
         else:
-            to_utc_value = to_utc
-            self._to_utc_obj = None
-        try:
-            if type(to_utc_value) == tuple:
-                if len(to_utc_value) == 2:
-                    self._to_utc = Fraction(*to_utc_value)
-                else:
-                    raise TypeError('Time to UTC tuple is invalid')
+            # aware instance
+            if hasattr(to_utc, 'time_to_utc'):
+                try:
+                    to_utc_value = to_utc.time_to_utc()
+                except Exception as any_exc:
+                    raise TypeError("Invalid object for 'to_utc' argument.") from any_exc
+                self._to_utc_obj = to_utc
             else:
-                self._to_utc = Fraction(to_utc_value)
-        except ZeroDivisionError:
-            raise ZeroDivisionError("Time to UTC denominator cannot be zero.")
+                to_utc_value = to_utc
+                self._to_utc_obj = None
+            try:
+                if type(to_utc_value) == tuple:
+                    if len(to_utc_value) == 2:
+                        self._to_utc = Fraction(*to_utc_value)
+                    else:
+                        raise TypeError('Time to UTC tuple is invalid')
+                else:
+                    self._to_utc = Fraction(to_utc_value)
+            except ZeroDivisionError:
+                raise ZeroDivisionError("Time to UTC denominator cannot be zero.")
+            if self.to_utc <= -1 or self.to_utc >= 1:
+                raise ValueError("Value for time to UTC outside valid rage (-1 < value < 1): {}".format(float(self.to_utc)))
         if self.day_frac < 0 or self.day_frac >= 1:
             raise ValueError("Value for Time instances (0 <= value < 1): {}".format(float(self.day_frac)))
-        if self.to_utc <= -1 or self.to_utc >= 1:
-            raise ValueError("Value for time to UTC outside valid rage (-1 < value < 1): {}".format(float(self.to_utc)))
 
     @classmethod
-    def now(cls):
-        current_moment = get_moment()
-        return cls(current_moment - floor(current_moment))
+    def now(cls, to_utc=None):
+        current_moment = get_moment_complete()
+        if to_utc is None:
+            return cls(current_moment[1], to_utc=current_moment[2])
+        else:
+            return NotImplemented
+
+    @classmethod
+    def localnow(cls):
+        current_moment = get_moment_complete()
+        return cls(current_moment[1])
+
+    @classmethod
+    def utcnow(cls):
+        current_moment = get_moment_complete()
+        now = current_moment[1] + current_moment[2]
+        if now < 0:
+            now += 1
+        return cls(now)
 
     @property
     def day_frac(self):
