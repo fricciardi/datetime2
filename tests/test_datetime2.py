@@ -803,6 +803,16 @@ class TestTime:
             for input_value in input_values:
                 assert Time(input_value)
 
+    def test_400_relocate(self):
+        "Return another Time instance that identifies the same time"
+        # Im using a mix of values, then check that relocated instance is equal
+        for day_frac, time_input_values in time_test_data:
+            for to_utc_frac, utc_input_values in to_utc_test_data:
+                first = Time(time_input_values[0], to_utc=utc_input_values[0])
+                for new_utc_value in to_utc_strange_test_data:
+                    second = first.relocate(new_utc_value)
+                    assert first.day_frac + first.to_utc == second.day_frac + second.to_utc
+
     def test_500_repr(self):
         import datetime2
         for day_frac, input_values in time_test_data:

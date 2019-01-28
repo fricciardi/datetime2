@@ -276,10 +276,11 @@ class Time:
     @classmethod
     def now(cls, to_utc=None):
         current_moment = get_moment_complete()
+        local = cls(current_moment[1], to_utc=current_moment[2])
         if to_utc is None:
-            return cls(current_moment[1], to_utc=current_moment[2])
+            return local
         else:
-            return NotImplemented
+            return local.relocate(new_to_utc=to_utc)
 
     @classmethod
     def localnow(cls):
@@ -292,6 +293,8 @@ class Time:
         now = current_moment[1] + current_moment[2]
         if now < 0:
             now += 1
+        elif now >= 1:
+            now -= 1
         return cls(now)
 
     @property
@@ -372,6 +375,30 @@ class Time:
     # hash value
     def __hash__(self):
         return hash(self._day_frac)
+
+    def relocate(self, new_to_utc):
+        if self.to_utc is None:
+            raise TypeError("Cannot relocate a naive instance.")
+        else:
+            self_at_utc = self.day_frac + self.to_utc
+            if hasattr(new_to_utc, 'time_to_utc'):
+                try:
+                    new_to_utc_value = new_to_utc.time_to_utc()
+                except Exception as any_exc:
+                    raise TypeError("Invalid object for 'new_to_utc' argument.") from any_exc
+            else:
+                new_to_utc_value = new_to_utc
+            try:
+                if type(new_to_utc_value) == tuple:
+                    if len(new_to_utc_value) == 2:
+                        real_to_utc_value = Fraction(*new_to_utc_value)
+                    else:
+                        raise TypeError('New time to UTC tuple is invalid')
+                else:
+                    real_to_utc_value = Fraction(new_to_utc_value)
+            except ZeroDivisionError:
+                raise ZeroDivisionError("Time to UTC denominator cannot be zero.")
+            return self.__class__(self_at_utc - real_to_utc_value, new_to_utc)
 
     @classmethod
     def register_new_time(cls, attribute_name, time_repr_class):

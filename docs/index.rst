@@ -372,12 +372,12 @@ considered to be true.
    >>> print(t2)
    1/8 of a day, -1/6 of a day to UTC
 
-.. method:: time.at_to_utc(new_time_to_utc)
+.. method:: time.relocate(new_to_utc)
 
    Applicable only to aware instances, return another :class:`Time` instance
-   that identifies the same time, with the new indication of temporal distance
-   from UTC passed in ``new_time_to_utc``. This argument is treated as in the
-   default creator. If called on a naive instance, a :exc:`TypeError` exception
+   that identifies the same moment, but at a different time distance from UTC.
+   The ``new_time_to_utc`` argument has the same meaning as in the default
+   creator. If called on a naive instance, a :exc:`TypeError` exception
    is raised. Example:
 
 .. doctest::
