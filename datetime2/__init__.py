@@ -318,7 +318,10 @@ class Time:
         return "datetime2.{}('{}')".format(self.__class__.__name__, str(self.day_frac))
 
     def __str__(self):
-        return "{} of a day".format(str(self.day_frac))
+        if self.to_utc:
+            return "{} of a day, {} of a day to UTC".format(str(self.day_frac), str(self.to_utc))
+        else:
+            return "{} of a day".format(str(self.day_frac))
 
     def __add__(self, other):
         if isinstance(other, TimeDelta):

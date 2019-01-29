@@ -368,7 +368,7 @@ considered to be true.
    >>> t1 = Time((4, 12))
    >>> print(t1)
    1/3 of a day
-   >>> t2 = Time((3, 24), time_to_utc=(-4, 24))
+   >>> t2 = Time((3, 24), to_utc=(-4, 24))
    >>> print(t2)
    1/8 of a day, -1/6 of a day to UTC
 
@@ -382,12 +382,12 @@ considered to be true.
 
 .. doctest::
 
-   >>> t1 = Time(0.25, time_to_utc=-0.5)
+   >>> t1 = Time(0.25, to_utc=-0.5)
    >>> print(t1)
-   1/4 of a day, -1/2 to UTC
-   >>> t2 = t1.at_to_utc(0.25)
+   1/4 of a day, -1/2 of a day to UTC
+   >>> t2 = t1.relocate(0.25)
    >>> print(t2)
-   0/1 of a day, 1/4 to UTC
+   1/2 of a day, 1/4 of a day to UTC
 
 The following table lists all available time representations and the attributes
 by which they are reachable:
