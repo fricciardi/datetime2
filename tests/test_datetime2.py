@@ -239,6 +239,12 @@ class TestDate:
             def __init__(self):
                 self.day_count = 42
 
+            def __eq__(self, other):
+                return self.day_count == other.day_count
+
+            def __ne__(self, other):
+                return self.day_count != other.day_count
+
             def __lt__(self, other):
                 return self.day_count < other.day_count
 
@@ -255,6 +261,12 @@ class TestDate:
         d4 = Date(4)
         d42 = Date(42)
         d55 = Date(55)
+        assert not (d4 == dl)
+        assert d42 == dl
+        assert not (d55 == dl)
+        assert d4 != dl
+        assert not (d42 != dl)
+        assert d55 != dl
         assert d4 < dl
         assert not (d42 < dl)
         assert not (d55 < dl)
@@ -275,7 +287,7 @@ class TestDate:
         d = Date(1)
 
         # exception with non-numeric types
-        for par in ("1", (1,), [1], {1: 1}, (), [], {}, None):
+        for par in ("1", (1,), [1], {1: 1}, (), [], {}, None, SomeClass()):
             assert not (d == par)
             assert d != par
             with pytest.raises(TypeError):
@@ -287,8 +299,8 @@ class TestDate:
             with pytest.raises(TypeError):
                 d >= par
 
-        # exception with numeric types (all invalid) and other objects
-        for par in (1, 1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN, SomeClass()):
+        # exception with numeric types (all invalid)
+        for par in (1, 1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN):
             assert not (d == par)
             assert d != par
             with pytest.raises(TypeError):
@@ -639,9 +651,64 @@ class TestTime:
         assert c - minus_half == Time(0.25)
         assert c - integer == Time(0.75)
 
+    def test_302_valid_operations_to_utc(self):
+        a = Time(0, to_utc='1/3')
+        b = Time(0.25, to_utc='-1/4')
+        c = Time(0.75, to_utc='1/6')
+        zero = TimeDelta(0)
+        # note that TimeDelta is in days
+        plus_half = TimeDelta(0.5)
+        minus_half = TimeDelta(-1.5)
+        integer = TimeDelta(3)
+
+        # Addition between Time and TimeDelta
+        # test with zero, negative and positive dates
+        assert a + zero == Time(0, to_utc='1/3')
+        assert a + plus_half == Time(0.5, to_utc='1/3')
+        assert a + minus_half == Time(0.5, to_utc='1/3')
+        assert a + integer == Time(0, to_utc='1/3')
+        assert b + zero == Time(0.25, to_utc='-1/4')
+        assert b + plus_half == Time(0.75, to_utc='-1/4')
+        assert b + minus_half == Time(0.75, to_utc='-1/4')
+        assert b + integer == Time(0.25, to_utc='-1/4')
+        assert c + zero == Time(0.75, to_utc='1/6')
+        assert c + plus_half == Time(0.25, to_utc='1/6')
+        assert c + minus_half == Time(0.25, to_utc='1/6')
+        assert c + integer == Time(0.75, to_utc='1/6')
+
+        # Reversed addition between Time and TimeDelta
+        # test with zero, negative and positive dates
+        assert zero + a == Time(0, to_utc='1/3')
+        assert plus_half + a == Time(0.5, to_utc='1/3')
+        assert minus_half + a == Time(0.5, to_utc='1/3')
+        assert integer + a == Time(0, to_utc='1/3')
+        assert zero + b == Time(0.25, to_utc='-1/4')
+        assert plus_half + b == Time(0.75, to_utc='-1/4')
+        assert minus_half + b == Time(0.75, to_utc='-1/4')
+        assert integer + b  == Time(0.25, to_utc='-1/4')
+        assert zero + c == Time(0.75, to_utc='1/6')
+        assert plus_half + c == Time(0.25, to_utc='1/6')
+        assert minus_half + c == Time(0.25, to_utc='1/6')
+        assert integer + c == Time(0.75, to_utc='1/6')
+
+        # subtraction between Time and TimeDelta, reverse is not defined
+        # test with zero, negative and positive Times
+        assert a - zero == Time(0, to_utc='1/3')
+        assert a - plus_half == Time(0.5, to_utc='1/3')
+        assert a - minus_half == Time(0.5, to_utc='1/3')
+        assert a - integer == Time(0, to_utc='1/3')
+        assert b - zero == Time(0.25, to_utc='-1/4')
+        assert b - plus_half == Time(0.75, to_utc='-1/4')
+        assert b - minus_half == Time(0.75, to_utc='-1/4')
+        assert b - integer == Time(0.25, to_utc='-1/4')
+        assert c - zero == Time(0.75, to_utc='1/6')
+        assert c - plus_half == Time(0.25, to_utc='1/6')
+        assert c - minus_half == Time(0.25, to_utc='1/6')
+        assert c - integer == Time(0.75, to_utc='1/6')
+
     def test_310_disallowed_operations(self):
         a = Time('3/4')
-        b = Time('2/5')
+        b = Time('2/5', to_utc='1/8')
 
         # Add/sub int, float, string, complex, specials and containers should be illegal
         for obj in (10, 34.5, "abc", 1 + 2j, INF, NAN, {}, [], ()):
@@ -653,12 +720,22 @@ class TestTime:
                 obj + a
             with pytest.raises(TypeError):
                 obj - a
+            with pytest.raises(TypeError):
+                b + obj
+            with pytest.raises(TypeError):
+                b - obj
+            with pytest.raises(TypeError):
+                obj + b
+            with pytest.raises(TypeError):
+                obj - b
 
         # Reverse operations
         with pytest.raises(TypeError):
             TimeDelta(-0.25) - a
+        with pytest.raises(TypeError):
+            TimeDelta(-0.25) - b
 
-        for obj in (1, 1.1, b):
+        for obj in (1, 1.1, Time('2/5')):
             with pytest.raises(TypeError):
                 a * obj
             with pytest.raises(TypeError):
@@ -687,6 +764,40 @@ class TestTime:
                 a << obj
             with pytest.raises(TypeError):
                 obj << a
+            with pytest.raises(TypeError):
+                b * obj
+            with pytest.raises(TypeError):
+                obj * b
+            with pytest.raises(TypeError):
+                b / obj
+            with pytest.raises(TypeError):
+                obj / b
+            with pytest.raises(TypeError):
+                b // obj
+            with pytest.raises(TypeError):
+                obj // b
+            with pytest.raises(TypeError):
+                pow(b, obj)
+            with pytest.raises(TypeError):
+                pow(obj, b)
+            with pytest.raises(TypeError):
+                b ^ obj
+            with pytest.raises(TypeError):
+                obj ^ b
+            with pytest.raises(TypeError):
+                b >> obj
+            with pytest.raises(TypeError):
+                obj >> b
+            with pytest.raises(TypeError):
+                b << obj
+            with pytest.raises(TypeError):
+                obj << b
+
+        # operations mixing naive and aware instances
+        with pytest.raises(ValueError):
+            a - b
+        with pytest.raises(ValueError):
+            b - a
 
     def test_320_comparisons(self):
         t1 = Time("3/8")
@@ -717,6 +828,12 @@ class TestTime:
             def __init__(self):
                 self.day_frac = Fraction(3, 4)
 
+            def __eq__(self, other):
+                return self.day_frac == other.day_frac
+
+            def __ne__(self, other):
+                return self.day_frac != other.day_frac
+
             def __lt__(self, other):
                 return self.day_frac < other.day_frac
 
@@ -733,6 +850,95 @@ class TestTime:
         t12 = Time((1, 2))
         t34 = Time("3/4")
         t45 = Time((4, 5))
+        assert not (t12 == tl)
+        assert t34 == tl
+        assert not (t45 == tl)
+        assert t12 != tl
+        assert not (t34 != tl)
+        assert t45 != tl
+        assert t12 < tl
+        assert not (t34 < tl)
+        assert not (t45 < tl)
+        assert t12 <= tl
+        assert t34 <= tl
+        assert not (t45 <= tl)
+        assert not (t12 > tl)
+        assert not (t34 > tl)
+        assert t45 > tl
+        assert not (t12 >= tl)
+        assert t34 >= tl
+        assert t45 >= tl
+
+    def test_322_comparisons_to_utc(self):
+        t1 = Time("7/8", to_utc='5/6')  # These value have a lot of overflows and underflows
+        t2 = Time(0.375, to_utc=-(2,3))
+        assert t1 == t2
+        assert t1 <= t2
+        assert t1 >= t2
+        assert not (t1 != t2)
+        assert not (t1 < t2)
+        assert not(t1 > t2)
+
+        t3 = Time("1/2", to_utc=0.25)   # this is larger than t1
+        assert t1 < t3
+        assert t3 > t1
+        assert t1 <= t3
+        assert t3 >= t1
+        assert t1 != t3
+        assert t3 != t1
+        assert not (t1 == t3)
+        assert not (t3 == t1)
+        assert not (t1 > t3)
+        assert not (t3 < t1)
+        assert not (t1 >= t3)
+        assert not (t3 <= t1)
+        assert t2 < t3                # repeating the tests with an instance with negative to_utc
+        assert t3 > t2
+        assert t2 <= t3
+        assert t3 >= t2
+        assert t2 != t3
+        assert t3 != t2
+        assert not (t2 == t3)
+        assert not (t3 == t2)
+        assert not (t2 > t3)
+        assert not (t3 < t2)
+        assert not (t2 >= t3)
+        assert not (t3 <= t2)
+
+        # Reverse comparison mechanism
+        class TimeLike:
+            def __init__(self):
+                self.day_frac = Fraction(3, 4)
+
+            def __eq__(self, other):
+                return self.day_frac == other.day_frac
+
+            def __ne__(self, other):
+                return self.day_frac != other.day_frac
+
+            def __lt__(self, other):
+                return self.day_frac < other.day_frac
+
+            def __le__(self, other):
+                return self.day_frac <= other.day_frac
+
+            def __gt__(self, other):
+                return self.day_frac > other.day_frac
+
+            def __ge__(self, other):
+                return self.day_frac >= other.day_frac
+
+        tl = TimeLike()
+        # We need not implement naivety checks, which are delegated to the Time-like class, not under test
+        t12 = Time((1, 2), to_utc='-1/3')
+        t34 = Time("3/4", to_utc=0.25)
+        t45 = Time((4, 5), to_utc=(-1, 8))
+        assert not (t12 == tl)
+        assert t34 == tl
+        assert not (t45 == tl)
+        assert t12 != tl
+        assert not (t34 != tl)
+        assert t45 != tl
         assert t12 < tl
         assert not (t34 < tl)
         assert not (t45 < tl)
@@ -753,7 +959,7 @@ class TestTime:
         t = Time(0)
 
         # exception with non-numeric types
-        for par in ("1", (1,), [1], {1: 1}, (), [], {}, None):
+        for par in ("1", (1,), [1], {1: 1}, (), [], {}, None, SomeClass()):
             assert not (t == par)
             assert t != par
             with pytest.raises(TypeError):
@@ -766,7 +972,7 @@ class TestTime:
                 t >= par
 
         # exception with numeric types (all invalid) and other objects
-        for par in (1, 1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN, SomeClass()):
+        for par in (1, 1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN):
             assert not (t == par)
             assert t != par
             with pytest.raises(TypeError):

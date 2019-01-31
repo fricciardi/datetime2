@@ -342,15 +342,44 @@ class Time:
             return NotImplemented
 
     # Comparison operators
+    @staticmethod
+    def compute_new_time(this_instance, other_instance):
+        new_time = this_instance.day_frac + this_instance.to_utc - other_instance.to_utc
+        while new_time < 0:
+            new_time += 1
+        else:
+            while new_time >= 1:
+                new_time -= 1
+        return new_time
+
     def __eq__(self, other):
-        return isinstance(other, Time) and self.day_frac == other.day_frac
+        if isinstance(other, Time):
+            if self.to_utc is None:
+                return self.day_frac == other.day_frac
+            else:
+                return Time.compute_new_time(self, other) == other.day_frac
+        elif hasattr(other, 'day_frac'):
+            return NotImplemented
+        else:
+            return False
 
     def __ne__(self, other):
-        return not isinstance(other, Time) or self.day_frac != other.day_frac
+        if isinstance(other, Time):
+            if self.to_utc is None:
+                return self.day_frac != other.day_frac
+            else:
+                return Time.compute_new_time(self, other) != other.day_frac
+        elif hasattr(other, 'day_frac'):
+            return NotImplemented
+        else:
+            return True
 
     def __gt__(self, other):
         if isinstance(other, Time):
-            return self.day_frac > other.day_frac
+            if self.to_utc is None:
+                return self.day_frac > other.day_frac
+            else:
+                return Time.compute_new_time(self, other) > other.day_frac
         elif hasattr(other, 'day_frac'):
             return NotImplemented
         else:
@@ -358,7 +387,10 @@ class Time:
 
     def __ge__(self, other):
         if isinstance(other, Time):
-            return self.day_frac >= other.day_frac
+            if self.to_utc is None:
+                return self.day_frac >= other.day_frac
+            else:
+                return Time.compute_new_time(self, other) >= other.day_frac
         elif hasattr(other, 'day_frac'):
             return NotImplemented
         else:
@@ -366,7 +398,10 @@ class Time:
 
     def __lt__(self, other):
         if isinstance(other, Time):
-            return self.day_frac < other.day_frac
+            if self.to_utc is None:
+                return self.day_frac < other.day_frac
+            else:
+                return Time.compute_new_time(self, other) < other.day_frac
         elif hasattr(other, 'day_frac'):
             return NotImplemented
         else:
@@ -374,7 +409,10 @@ class Time:
 
     def __le__(self, other):
         if isinstance(other, Time):
-            return self.day_frac <= other.day_frac
+            if self.to_utc is None:
+                return self.day_frac <= other.day_frac
+            else:
+                return Time.compute_new_time(self, other) <= other.day_frac
         elif hasattr(other, 'day_frac'):
             return NotImplemented
         else:

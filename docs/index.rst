@@ -237,12 +237,16 @@ Notes:
    ``==`` and ``!=``) behave similarly.
 
 (6)
-   Comparison between a :class:`Date` object and an object of another class
-   raises a :exc:`TypeError` exception, unless the other object has a
-   ``day_count`` attribute, in which case ``NotImplemented`` is returned. This
-   allows a Date-like instance to implement reflected comparison, if wanted.
-   When the comparison is equality or inequality operator, the value returned
-   is always :const:`False` and :const:`True` respectively.
+   When comparing a :class:`Datee` object and an object of another class, if
+   the latter has a ``day_count`` attribute, ``NotImplemented`` is returned.
+   This allows a Date-like instance to perform reflected comparison if it is
+   the second operator. When the second object doesn't have a ``day_count``
+   attribute, if the operator is equality(``==``) or inequality(``!=``), the
+   value returned is always :const:`False` and :const:`True` respectively.
+   If the operator is one of the other four (``<=``, ``>``, ``>=`` or
+   ``==``), a :exc:`TypeError` exception is raised.
+
+
 
 
 :class:`Time` Objects
@@ -451,19 +455,20 @@ Notes:
 
 (5)
    All other comparison operators (``<=``, ``>``, ``>=``, ``==`` and ``!=``)
-   behave similarly. Both operand must have the same naivety; if they don't, a
-   :exc:`ValueError` exception is raised.
+   behave similarly.
 
 (6)
-   Comparison between a :class:`Time` object and an object of another class
-   raises a :exc:`TypeError` exception, unless the  :class:`Time` instances is
-   naive and the other object has a ``day_frac`` attribute, or the
-   :class:`Time` instances is aware and the other object has both ``day_frac``
-   and ``to_utc`` attributes, in which case ``NotImplemented`` is returned.
+   If both objects to be compared are :class:`Time` instances, they must have
+   the same naivety; if they don't, a :exc:`ValueError` exception is raised.
+   When comparing a :class:`Time` object and an object of another class, if
+   the latter has a ``day_frac`` attribute, ``NotImplemented`` is returned.
    This allows a Time-like instance to perform reflected comparison if it is
-   the second operator. When the comparison is equality or inequality
-   operators, the value returned is always :const:`False` and :const:`True`
-   respectively.
+   the second operator. In this case, the second object is responsible for
+   checking naivety. When the second object doesn't have a ``day_frac``
+   attribute, if the operator is equality(``==``) or inequality(``!=``), the
+   value returned is always :const:`False` and :const:`True` respectively.
+   If the operator is one of the other four (``<=``, ``>``, ``>=`` or
+   ``==``), a :exc:`TypeError` exception is raised.
 
 
 .. rubric:: Footnotes
