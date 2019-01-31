@@ -142,10 +142,20 @@ class Date:
 
     # Comparison operators
     def __eq__(self, other):
-        return isinstance(other, Date) and self.day_count == other.day_count
+        if isinstance(other, Date):
+            return self.day_count == other.day_count
+        elif hasattr(other, 'day_count'):
+            return NotImplemented
+        else:
+            return False
 
     def __ne__(self, other):
-        return not isinstance(other, Date) or self.day_count != other.day_count
+        if isinstance(other, Date):
+            return self.day_count != other.day_count
+        elif hasattr(other, 'day_count'):
+            return NotImplemented
+        else:
+            return True
 
     def __gt__(self, other):
         if isinstance(other, Date):
@@ -334,10 +344,22 @@ class Time:
 
     def __sub__(self, other):
         if isinstance(other, Time):
-            return TimeDelta(self.day_frac - other.day_frac)
+            if self.to_utc is None:
+                if other.to_utc is None:
+                    return TimeDelta(self.day_frac - other.day_frac)
+                else:
+                    raise ValueError
+            elif other.to_utc is not None:
+                return TimeDelta(self.day_frac + self.utc - other.day_frac - other.to_utc)
+            else:
+                raise ValueError
         elif isinstance(other, TimeDelta):
             total = self.day_frac - other.days
-            return Time(total - floor(total))
+            if self.to_utc is None:
+                return Time(total - floor(total))
+            else:
+                #TODO: call with to_utc_obj if present, add relevant tests
+                return Time(total - floor(total), to_utc=self.to_utc)
         else:
             return NotImplemented
 

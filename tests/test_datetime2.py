@@ -871,7 +871,7 @@ class TestTime:
 
     def test_322_comparisons_to_utc(self):
         t1 = Time("7/8", to_utc='5/6')  # These value have a lot of overflows and underflows
-        t2 = Time(0.375, to_utc=-(2,3))
+        t2 = Time(0.375, to_utc=(-2,3))
         assert t1 == t2
         assert t1 <= t2
         assert t1 >= t2
