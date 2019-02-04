@@ -267,16 +267,16 @@ program that uses it.
 
 There are four :class:`Time` constructors:
 
-.. class:: Time(day_frac, *, time_to_utc=None)
+.. class:: Time(day_frac, *, to_utc=None)
 
    Return an object that represents a moment in a day as a fraction of the
    whole day, given in the ``day_frac`` argument. If needed, it is possible
    to assign to the instance an indication of the time to be added to get UTC,
    for whatever political, algorithmic or geographic need (e.g. time zone).
-   This indication is given in the ``time_to_utc`` argument, which must be
+   This indication is given in the ``to_utc`` argument, which must be
    explicitly named.
 
-   The ``day_frac`` and ``time_to_utc`` arguments can be anything that can
+   The ``day_frac`` and ``to_utc`` arguments can be anything that can
    be passed to the :class:`fractions.Fraction` constructor, i.e. an integer, a
    float, another Fraction, a Decimal number or a string representing an
    integer, a float or a fraction. In addition, it is also possible to use a
@@ -285,18 +285,18 @@ There are four :class:`Time` constructors:
    :class:`fractions.Fraction` constructor.
 
    The ``day_frac`` argument is stored in a read-only attribute with the same
-   name. In addition to the types listed above, the ``time_to_utc`` argument
-   can also be an object that has a ``time_to_utc`` method returning a
+   name. In addition to the types listed above, the ``to_utc`` argument
+   can also be an object that has a ``to_utc`` method returning a
    :class:`fractions.Fraction` value.
 
    When a :class:`Time` instance is created giving an indication of time to
    UTC, one of the two following cases can happen:
 
-   - ``time_to_utc`` is a fractional value, expressed in one of the
+   - ``to_utc`` is a fractional value, expressed in one of the
      possibilities above. This value is stored in the ``to_utc`` attribute. The
      ``to_utc_obj`` attribute is set to ``None``.
 
-   - ``time_to_utc`` is an object that has a ``time_to_utc`` method. This
+   - ``to_utc`` is an object that has a ``to_utc`` method. This
      method is called and its value is stored in the ``to_utc`` read-only
      attribute. The object itself is stored in the ``to_utc_obj`` attribute for
      further reference, in order to save it for further reference. It is
@@ -310,15 +310,15 @@ There are four :class:`Time` constructors:
    argument does not have two values. A :exc:`ZeroDivisionError` exception is
    raised if the second value (denominator) of a tuple argument is 0.
 
-.. classmethod:: Time.now(time_to_utc = None)
+.. classmethod:: Time.now(to_utc = None)
 
    Return an aware :class:`Time` object that represents the current time.
    Without argument, the time represented in ``day_frac`` will be local
    standard time, ``to_utc`` will be set to the difference between UTC and
    local standard time, and ``to_utc_obj`` will be set to ``None``.
 
-   If ``time_to_utc`` is given, the returned object will be the current time
-   at the given time difference from UTC. ``time_to_utc`` will be treated as
+   If ``to_utc`` is given, the returned object will be the current time
+   at the given time difference from UTC. ``to_utc`` will be treated as
    in the default constructor.
 
 .. classmethod:: Time.localnow()
@@ -353,7 +353,7 @@ considered to be true.
 
 .. attribute:: Time.to_utc_obj
 
-   This attribute is used to store the object passed as ``time_to_utc`` in any
+   This attribute is used to store the object passed as ``to_utc`` in any
    of the relevant constructors. This object does not contribute to the
    semantics of the :class:`Time` object.
 
@@ -379,7 +379,7 @@ considered to be true.
 
    Applicable only to aware instances, return another :class:`Time` instance
    that identifies the same moment, but at a different time distance from UTC.
-   The ``new_time_to_utc`` argument has the same meaning as in the default
+   The ``new_to_utc`` argument has the same meaning as in the default
    creator. If called on a naive instance, a :exc:`TypeError` exception
    is raised. Example:
 
