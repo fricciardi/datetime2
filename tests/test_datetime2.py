@@ -706,6 +706,33 @@ class TestTime:
         assert c - minus_half == Time(0.25, to_utc='1/6')
         assert c - integer == Time(0.75, to_utc='1/6')
 
+    def test_308_operations_preserve_naivety(self):
+        a = Time('3/8')
+        b = Time((5,4), to_utc='1/6')
+        test_obj = DummyTZ(-1, 8)
+        c = Time(0.25, to_utc=test_obj)
+        zero = TimeDelta(0)
+
+        for td in (TimeDelta(0.5), TimeDelta(-0.25), TimeDelta(3), TimeDelta(-2.75)):
+            res_a_plus = a + td
+            assert res_a_plus.to_utc is None
+            assert res_a_plus.to_utc_obj is None
+            res_a_minus = a - td
+            assert res_a_minus.to_utc is None
+            assert res_a_minus.to_utc_obj is None
+            res_b_plus = a + td
+            assert res_b_plus.to_utc == Fraction(1, 6)
+            assert res_b_plus.to_utc_obj is None
+            res_b_minus = a - td
+            assert res_b_minus.to_utc == Fraction(1, 6)
+            assert res_b_minus.to_utc_obj is None
+            res_c_plus = a + td
+            assert res_c_plus.to_utc == Fraction(1, 4)
+            assert res_c_plus.to_utc_obj is test_obj
+            res_c_plus = a - td
+            assert res_c_plus.to_utc == Fraction(1, 4)
+            assert res_c_plus.to_utc_obj is test_obj
+
     def test_310_disallowed_operations(self):
         a = Time('3/4')
         b = Time('2/5', to_utc='1/8')

@@ -327,7 +327,13 @@ class Time:
     def __add__(self, other):
         if isinstance(other, TimeDelta):
             total = self.day_frac + other.days
-            return Time(total - floor(total))
+            if self.to_utc is None:
+                return Time(total - floor(total))
+            else:
+                if self.to_utc_obj:
+                    return Time(total - floor(total), to_utc=self.to_utc_obj)
+                else:
+                    return Time(total - floor(total), to_utc=self.to_utc)
         else:
             return NotImplemented
 
@@ -349,8 +355,10 @@ class Time:
             if self.to_utc is None:
                 return Time(total - floor(total))
             else:
-                #TODO: call with to_utc_obj if present, add relevant tests
-                return Time(total - floor(total), to_utc=self.to_utc)
+                if self.to_utc_obj:
+                    return Time(total - floor(total), to_utc=self.to_utc_obj)
+                else:
+                    return Time(total - floor(total), to_utc=self.to_utc)
         else:
             return NotImplemented
 

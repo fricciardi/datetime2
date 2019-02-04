@@ -299,9 +299,8 @@ There are four :class:`Time` constructors:
    - ``time_to_utc`` is an object that has a ``time_to_utc`` method. This
      method is called and its value is stored in the ``to_utc`` read-only
      attribute. The object itself is stored in the ``to_utc_obj`` attribute for
-     further reference. Note that the value is read only once. This mechanism
-     is such that e.g. a time zone object can be stored with the :class:`Time`
-     instance.
+     further reference, in order to save it for further reference. It is
+     expected that subsequent calls to the method always return the same value.
 
    In any case, the resulting value for ``day_frac`` must be equal or greater
    than 0 and less than 1. The resulting value for ``to_utc`` must be greater
@@ -434,7 +433,7 @@ Notes:
 (1)
    The result of this operation will always be a valid :class:`Time` instance.
    If overflow or underflow occur, the full day part will be truncated so that
-   only the fractional part will remain. Naivety is maintained: if ``time1``
+   only the fractional part will remain. Naivety is preserved: if ``time1``
    has a correction, this will be copied to ``time2``, including, if populated,
    the ``to_utc_obj`` object.
 
