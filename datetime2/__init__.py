@@ -41,15 +41,6 @@ from datetime2 import western, modern
 ##############################################################################
 # OS dependent functions
 #
-def get_moment():
-    """Return date and time as day_count and day fraction."""
-    # TODO: check if it possible to have greater resolution
-    moment = time.localtime()
-    year = moment.tm_year
-    days_before_year = (year - 1) * 365 + (year - 1) // 4 - (year - 1) // 100 + (year - 1) // 400
-    day_frac = Fraction(moment.tm_hour, 24) + Fraction(moment.tm_min, 1440) + Fraction(moment.tm_sec, 86400)
-    return days_before_year + moment.tm_yday + day_frac
-
 #TODO: When Python 3.4 will be no more supported, reuse underscore in long integer constants
 
 def get_moment_complete():
@@ -60,7 +51,7 @@ def get_moment_complete():
     except AttributeError:
         moment_ns = int(time.time() * 1000000000)  # time() returns a float in second
     # for the moment we are using time module's functions to get localtime
-    #TODO: check if possible to implement something independent from time, e.g. tzlocal
+    #TODO: check if possible to implement something independent from time module, see e.g. tzlocal
     seconds, nanoseconds = divmod(moment_ns, 1000000000)
     moment = time.localtime(seconds)
     year = moment.tm_year
@@ -108,7 +99,7 @@ class Date:
 
     @classmethod
     def today(cls):
-        return cls(floor(get_moment()))
+        return cls(get_moment_complete()[0])
 
     @property
     def day_count(self):
