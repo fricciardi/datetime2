@@ -1143,7 +1143,7 @@ class TestTime:
         class T(Time):
             pass
 
-        t_sub = T('3/4')
+        t_sub = T('3/4', to_utc='-1/8')
         assert type(T.now()) is T
         assert type(T.localnow()) is T
         assert type(T.utcnow()) is T
