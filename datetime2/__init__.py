@@ -115,7 +115,7 @@ class Date:
         if isinstance(other, TimeDelta):
             if other.days != floor(other.days):
                 raise ValueError("Date object cannot be added to non integral TimeDelta.")
-            return Date(self.day_count + floor(other.days)) # this way we ensure day count is integer
+            return self.__class__(self.day_count + floor(other.days)) # this way we ensure day count is integer
         else:
             return NotImplemented
         
@@ -127,7 +127,7 @@ class Date:
         elif isinstance(other, TimeDelta):
             if other.days != floor(other.days):
                 raise ValueError("non integral TimeDelta cannot be subtracted from Date.")
-            return Date(self.day_count - floor(other.days))
+            return self.__class__(self.day_count - floor(other.days))
         else:
             return NotImplemented
 
@@ -328,12 +328,12 @@ class Time:
         if isinstance(other, TimeDelta):
             total = self.day_frac + other.days
             if self.to_utc is None:
-                return Time(total - floor(total))
+                return self.__class__(total - floor(total))
             else:
                 if self.to_utc_obj:
-                    return Time(total - floor(total), to_utc=self.to_utc_obj)
+                    return self.__class__(total - floor(total), to_utc=self.to_utc_obj)
                 else:
-                    return Time(total - floor(total), to_utc=self.to_utc)
+                    return self.__class__(total - floor(total), to_utc=self.to_utc)
         else:
             return NotImplemented
 
@@ -353,12 +353,12 @@ class Time:
         elif isinstance(other, TimeDelta):
             total = self.day_frac - other.days
             if self.to_utc is None:
-                return Time(total - floor(total))
+                return self.__class__(total - floor(total))
             else:
                 if self.to_utc_obj:
-                    return Time(total - floor(total), to_utc=self.to_utc_obj)
+                    return self.__class__(total - floor(total), to_utc=self.to_utc_obj)
                 else:
-                    return Time(total - floor(total), to_utc=self.to_utc)
+                    return self.__class__(total - floor(total), to_utc=self.to_utc)
         else:
             return NotImplemented
 

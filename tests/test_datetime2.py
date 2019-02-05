@@ -360,7 +360,8 @@ class TestDate:
                 derived = pickle.loads(pickled)
                 assert d == derived
 
-    def test_920_subclass(self):
+    def test_920_subclass1(self):
+        # check that there is no interference from the interface mechanism and from possible additional arguments
         class D(Date):
             theAnswer = 42
 
@@ -380,6 +381,15 @@ class TestDate:
         assert d1.day_count == d2.day_count
         assert d2.newmeth(-7) == (d1.day_count * 3) // 2 - 7
 
+    def test_930_subclass2(self):
+        # check that all possible methods return subclass
+        class D(Date):
+            pass
+
+        d_sub = D(102030)
+        assert type(D.today()) is D
+        assert type(d_sub + TimeDelta(1)) is D
+        assert type(d_sub - TimeDelta(1)) is D
 
 
 #############################################################################
@@ -1108,7 +1118,8 @@ class TestTime:
                     derived = pickle.loads(pickled)
                     assert t == derived
 
-    def test_920_subclass(self):
+    def test_920_subclass1(self):
+        # check that there is no interference from the interface mechanism and from possible additional arguments
         class T(Time):
             theAnswer = 42
 
@@ -1128,5 +1139,15 @@ class TestTime:
         assert t1.day_frac == t2.day_frac
         assert t2.newmeth(-7) == (t1.day_frac * 3) // 2 - 7
 
+    def test_920_subclass2(self):
+        class T(Time):
+            pass
 
+        t_sub = T('3/4')
+        assert type(T.now()) is T
+        assert type(T.localnow()) is T
+        assert type(T.utcnow()) is T
+        assert type(T.relocate('1/3')) is T
+        assert type(t_sub + TimeDelta(0.25)) is T
+        assert type(t_sub - TimeDelta(0.25)) is T
 
