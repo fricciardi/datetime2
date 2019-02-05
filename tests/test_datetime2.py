@@ -1147,7 +1147,7 @@ class TestTime:
         assert type(T.now()) is T
         assert type(T.localnow()) is T
         assert type(T.utcnow()) is T
-        assert type(T.relocate('1/3')) is T
+        assert type(t_sub.relocate('1/3')) is T
         assert type(t_sub + TimeDelta(0.25)) is T
         assert type(t_sub - TimeDelta(0.25)) is T
 
