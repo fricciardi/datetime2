@@ -29,7 +29,7 @@ representation. Indeed, dates are defined counting the elapsed days: January
    >>> d2 = Date(737109)  # February 19th, 2019
 
 We can then print those dates with different representations. These
-representations are accessed as attibutes of the :class:`Date` object::
+representations are accessed as attibutes of the :class:`Date` object:
 
 .. doctest::
 
@@ -104,19 +104,14 @@ calendars, where many representation exists [#many]_ .
 Currently (version |release|) the following calendars and time representations
 are available.
 
-Calendars:
++-------------------+-----------------------------------------+----------------------------------------------------+
+| Module            | Calendar(s)                             | Time representation(s)                             |
++===================+=========================================+====================================================+
+| datetime2.western | :ref:`Gregorian <gregorian-calendar>`   | :ref:`Western <western-time>`                      |
++-------------------+-----------------------------------------+----------------------------------------------------+
+| datetime2.modern  | :ref:`ISO <iso-calendar>`               | :ref:`Internet <internet-time>`                    |
++-------------------+-----------------------------------------+----------------------------------------------------+
 
-.. hlist::
-
-  * :ref:`gregorian-calendar`
-  * :ref:`iso-calendar`
-
-Time representation:
-
-.. hlist::
-
-  * :ref:`western-time`
-  * :ref:`internet-time`
 
 .. [#many] Well, this should be read as "will exist", since current version
            (|release|) only has two of them.
