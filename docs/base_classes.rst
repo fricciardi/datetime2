@@ -345,14 +345,3 @@ Notes:
    If the operator is one of the other four (``<=``, ``>``, ``>=`` or
    ``==``), a :exc:`TypeError` exception is raised.
 
-
-.. rubric:: Footnotes
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
