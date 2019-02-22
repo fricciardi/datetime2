@@ -29,7 +29,7 @@ representation. Indeed, dates are defined counting the elapsed days: January
    >>> d2 = Date(737109)  # February 19th, 2019
 
 We can then print those dates with different representations. These
-representations are accessed as attibutes of the :class:`Date` object:
+representations are accessed as attributes of the :class:`Date` object:
 
 .. doctest::
 
@@ -66,23 +66,26 @@ representations:
 
 The same thinking can be applied to the time of the day: any moment in a day
 can be seen as a fraction of one day, starting from midnight. This holds even
-if the number of time representations is smaller than that of calendars. A
-recent definition of time, the "Internet Time", divides the day in 1,000
-units, called "beats".
+if the number of time representations is smaller than that of calendars.
 
 .. doctest::
 
    >>> t1 = Time(0.25)
-   >>> print(t.western)
+   >>> print(t1.western)
    06:00:00
-   >>> print(t.internet)
+   >>> print(t1.internet)
    @250
 
-The :class:`Time` class allows to enter the fraction of a day in many different
-ways, provided they express the value of a day fraction:
+The second time representation you see above is name "Internet Time" and
+divides the day in 1,000 units, called "beats".
+
+The :class:`Time` class allows entering the fraction of a day in many different
+ways, provided they express the value of a day fraction. Other examples:
+
+.. doctest::
 
    >>> t2 = Time("1/8")
-   >>> t3 = Time(3, 24)
+   >>> t3 = Time((3, 24))
    >>> t4 = Time(Fraction(7, 10))
 
 As with dates, also time can be entered with different represetations:
@@ -102,7 +105,7 @@ unless they are effectively used. This is especially important for
 calendars, where many representation exists [#many]_ .
 
 Currently (version |release|) the following calendars and time representations
-are available.
+are available:
 
 +-------------------+-----------------------------------------+----------------------------------------------------+
 | Module            | Calendar(s)                             | Time representation(s)                             |
