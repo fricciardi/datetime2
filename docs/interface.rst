@@ -109,7 +109,7 @@ unchanged even when invoked via access attribute:
 .. _customization:
 
 Customization
-"""""""""""""
+^^^^^^^^^^^^^
 
 It is possible to add new calendars and/or time representations at run time,
 by calling a method of the base class and providing the new access attribute
@@ -197,7 +197,7 @@ The generic definition of the registration method is:
 
 
 Inner workings
-""""""""""""""
+^^^^^^^^^^^^^^
 
 At registration time, some magic needs to be performed to obtain the wanted
 results:
