@@ -150,16 +150,16 @@ program that uses it.
 
 There are four :class:`Time` constructors:
 
-.. class:: Time(day_frac, *, to_utc=None)
+.. class:: Time(day_frac, *, to_ref=None)
 
    Return an object that represents a moment in a day as a fraction of the
    whole day, given in the ``day_frac`` argument. If needed, it is possible
    to assign to the instance an indication of the time to be added to get UTC,
    for whatever political, algorithmic or geographic need (e.g. time zone).
-   This indication is given in the ``to_utc`` argument, which must be
+   This indication is given in the ``to_ref`` argument, which must be
    explicitly named.
 
-   The ``day_frac`` and ``to_utc`` arguments can be anything that can
+   The ``day_frac`` and ``to_ref`` arguments can be anything that can
    be passed to the :class:`fractions.Fraction` constructor, i.e. an integer, a
    float, another Fraction, a Decimal number or a string representing an
    integer, a float or a fraction. In addition, it is also possible to use a
@@ -168,40 +168,40 @@ There are four :class:`Time` constructors:
    :class:`fractions.Fraction` constructor.
 
    The ``day_frac`` argument is stored in a read-only attribute with the same
-   name. In addition to the types listed above, the ``to_utc`` argument
-   can also be an object that has a ``to_utc`` method returning a
+   name. In addition to the types listed above, the ``to_ref`` argument
+   can also be an object that has a ``to_ref`` method returning a
    :class:`fractions.Fraction` value.
 
    When a :class:`Time` instance is created giving an indication of time to
    UTC, one of the two following cases can happen:
 
-   - ``to_utc`` is a fractional value, expressed in one of the
-     possibilities above. This value is stored in the ``to_utc`` attribute. The
-     ``to_utc_obj`` attribute is set to ``None``.
+   - ``to_ref`` is a fractional value, expressed in one of the
+     possibilities above. This value is stored in the ``to_ref`` attribute. The
+     ``to_ref_obj`` attribute is set to ``None``.
 
-   - ``to_utc`` is an object that has a ``to_utc`` method. This
-     method is called and its value is stored in the ``to_utc`` read-only
-     attribute. The object itself is stored in the ``to_utc_obj`` attribute for
+   - ``to_ref`` is an object that has a ``to_ref`` method. This
+     method is called and its value is stored in the ``to_ref`` read-only
+     attribute. The object itself is stored in the ``to_ref_obj`` attribute for
      further reference, in order to save it for further reference. It is
      expected that subsequent calls to the method always return the same value.
 
    In any case, the resulting value for ``day_frac`` must be equal or greater
-   than 0 and less than 1. The resulting value for ``to_utc`` must be greater
+   than 0 and less than 1. The resulting value for ``to_ref`` must be greater
    than -1 and less than 1. A :exc:`ValueError` exception is raised if the
    resulting value are outside these ranges. A :exc:`TypeError` exception is
    raised if the argument type is not one of the accepted types or the tuple
    argument does not have two values. A :exc:`ZeroDivisionError` exception is
    raised if the second value (denominator) of a tuple argument is 0.
 
-.. classmethod:: Time.now(to_utc = None)
+.. classmethod:: Time.now(to_ref = None)
 
    Return an aware :class:`Time` object that represents the current time.
    Without argument, the time represented in ``day_frac`` will be local
-   standard time, ``to_utc`` will be set to the difference between UTC and
-   local standard time, and ``to_utc_obj`` will be set to ``None``.
+   standard time, ``to_ref`` will be set to the difference between UTC and
+   local standard time, and ``to_ref_obj`` will be set to ``None``.
 
-   If ``to_utc`` is given, the returned object will be the current time
-   at the given time difference from UTC. ``to_utc`` will be treated as
+   If ``to_ref`` is given, the returned object will be the current time
+   at the given time difference from UTC. ``to_ref`` will be treated as
    in the default constructor.
 
 .. classmethod:: Time.localnow()
@@ -216,7 +216,7 @@ There are four :class:`Time` constructors:
 
 
 :class:`Time` instances are immutable, so they can be used as dictionary keys.
-They can also be pickled (provided the ``to_utc_obj`` attribute is a pickable
+They can also be pickled (provided the ``to_ref_obj`` attribute is a pickable
 object) and unpickled. In boolean contexts, all :class:`Time` instances are
 considered to be true.
 
@@ -228,15 +228,15 @@ considered to be true.
    A Python :class:`fractions.Fraction` that represents the part of the day
    after midnight. The value is given as a fraction of a day.
 
-.. attribute:: Time.to_utc
+.. attribute:: Time.to_ref
 
    If not ``None``, this attribute is a Python :class:`fractions.Fraction` that
    represents the fraction of a day that must be added to current time to get
    UTC. The value is given as a fraction of a day.
 
-.. attribute:: Time.to_utc_obj
+.. attribute:: Time.to_ref_obj
 
-   This attribute is used to store the object passed as ``to_utc`` in any
+   This attribute is used to store the object passed as ``to_ref`` in any
    of the relevant constructors. This object does not contribute to the
    semantics of the :class:`Time` object.
 
@@ -254,21 +254,21 @@ considered to be true.
    >>> t1 = Time((4, 12))
    >>> print(t1)
    1/3 of a day
-   >>> t2 = Time((3, 24), to_utc=(-4, 24))
+   >>> t2 = Time((3, 24), to_ref=(-4, 24))
    >>> print(t2)
    1/8 of a day, -1/6 of a day to UTC
 
-.. method:: time.relocate(new_to_utc)
+.. method:: time.relocate(new_to_ref)
 
    Applicable only to aware instances, return another :class:`Time` instance
    that identifies the same moment, but at a different time distance from UTC.
-   The ``new_to_utc`` argument has the same meaning as in the default
+   The ``new_to_ref`` argument has the same meaning as in the default
    creator. If called on a naive instance, a :exc:`TypeError` exception
    is raised. Example:
 
 .. doctest::
 
-   >>> t1 = Time(0.25, to_utc=-0.5)
+   >>> t1 = Time(0.25, to_ref=-0.5)
    >>> print(t1)
    1/4 of a day, -1/2 of a day to UTC
    >>> t2 = t1.relocate(0.25)
@@ -318,7 +318,7 @@ Notes:
    If overflow or underflow occur, the full day part will be truncated so that
    only the fractional part will remain. Naivety is preserved: if ``time1``
    has a correction, this will be copied to ``time2``, including, if populated,
-   the ``to_utc_obj`` object.
+   the ``to_ref_obj`` object.
 
 (2)
    If *timedelta* is negative, ``time2`` will be before ``time1``.
