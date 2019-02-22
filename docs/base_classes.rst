@@ -1,6 +1,13 @@
 Base classes
 ============
 
+.. testsetup::
+
+   from datetime2 import Time
+   from fractions import Fraction
+   from datetime2 import Date
+
+
 The heart of the :mod:`datetime2` module is made of four base classes,
 each having a very simple definition. All base classes implement
 operations for date and time independently of the way they are created.
