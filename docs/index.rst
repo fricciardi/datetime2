@@ -3,12 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-.. ##############################################
-   :mod:`datetime2` --- New date and time classes
-   ##############################################
-
 .. module:: datetime2
-   :synopsis: Second generation date and time types
+   :synopsis: New date and time types
 .. moduleauthor:: Francesco Ricciardi <francescor2010@yahoo.it>
 
 .. testsetup::
@@ -104,7 +100,7 @@ As with dates, also time can be entered with different represetations:
 
 .. warning::
 
-   The documentation for the to_utc attribute of the Time class is under
+   The documentation of the time reference in the Time class is under
    development. Its content will not be aligned to code until this warning is
    removed.
 
