@@ -3,9 +3,9 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-##############################################
-:mod:`datetime2` --- New date and time classes
-##############################################
+.. ##############################################
+   :mod:`datetime2` --- New date and time classes
+   ##############################################
 
 .. module:: datetime2
    :synopsis: Second generation date and time types
