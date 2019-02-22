@@ -102,6 +102,30 @@ As with dates, also time can be entered with different represetations:
    >>> print(t6.western)
    03:54:43
 
+.. warning::
+
+   The documentation for the to_utc attribute of the Time class is under
+   development. Its content will not be aligned to code until this warning is
+   removed.
+
+With time objects, there may be an implicit time reference, assumed by program
+implementation, or an explict one, passed as an additional parameter to the
+:class:`Time` object. In the first case the object is said to be "naive", in
+the second case it is said to be "aware". The reference time may be UTC, but
+this is not mandatory.
+
+.. doctest::
+
+   >>> t8 = Time('2/3', to_ref=(1, 12))
+   >>> print(t8)
+   2/3 of a day, 1/12 of a day to ref
+   >>> print(t8.western)
+   16:00:00+02
+
+.. TODO:: The following may change in the future
+
+With western time representation, the time reference is UTC.
+
 Another feature of the :mod:`datetime2` module is the ability to add other
 representations at run time. Representations do not consume memory
 unless they are effectively used. This is especially important for
