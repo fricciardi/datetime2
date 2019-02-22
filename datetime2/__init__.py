@@ -239,7 +239,7 @@ Date.register_new_calendar('iso', modern.IsoCalendar)
 ##############################################################################
 
 class Time:
-    def __init__(self, day_frac, *, to_utc=None):
+    def __init__(self, day_frac, *, to_ref=None):
         try:
             if type(day_frac) == tuple:
                 if len(day_frac) == 2:
@@ -250,43 +250,43 @@ class Time:
                 self._day_frac = Fraction(day_frac)
         except ZeroDivisionError:
             raise ZeroDivisionError("Time denominator cannot be zero.")
-        if to_utc is None:
+        if to_ref is None:
             # naive instance
-            self._to_utc = self._to_utc_obj = None
+            self._to_ref = self._to_ref_obj = None
         else:
             # aware instance
-            if hasattr(to_utc, 'time_to_utc'):
+            if hasattr(to_ref, 'time_to_ref'):
                 try:
-                    to_utc_value = to_utc.time_to_utc()
+                    to_ref_value = to_ref.time_to_ref()
                 except Exception as any_exc:
-                    raise TypeError("Invalid object for 'to_utc' argument.") from any_exc
-                self._to_utc_obj = to_utc
+                    raise TypeError("Invalid object for 'to_ref' argument.") from any_exc
+                self._to_ref_obj = to_ref
             else:
-                to_utc_value = to_utc
-                self._to_utc_obj = None
+                to_ref_value = to_ref
+                self._to_ref_obj = None
             try:
-                if type(to_utc_value) == tuple:
-                    if len(to_utc_value) == 2:
-                        self._to_utc = Fraction(*to_utc_value)
+                if type(to_ref_value) == tuple:
+                    if len(to_ref_value) == 2:
+                        self._to_ref = Fraction(*to_ref_value)
                     else:
                         raise TypeError('Time to UTC tuple is invalid')
                 else:
-                    self._to_utc = Fraction(to_utc_value)
+                    self._to_ref = Fraction(to_ref_value)
             except ZeroDivisionError:
                 raise ZeroDivisionError("Time to UTC denominator cannot be zero.")
-            if self.to_utc <= -1 or self.to_utc >= 1:
-                raise ValueError("Value for time to UTC outside valid rage (-1 < value < 1): {}".format(float(self.to_utc)))
+            if self.to_ref <= -1 or self.to_ref >= 1:
+                raise ValueError("Value for time to UTC outside valid rage (-1 < value < 1): {}".format(float(self.to_ref)))
         if self.day_frac < 0 or self.day_frac >= 1:
             raise ValueError("Value for Time instances (0 <= value < 1): {}".format(float(self.day_frac)))
 
     @classmethod
-    def now(cls, to_utc=None):
+    def now(cls, to_ref=None):
         current_moment = get_moment_complete()
-        local = cls(current_moment[1], to_utc=current_moment[2])
-        if to_utc is None:
+        local = cls(current_moment[1], to_ref=current_moment[2])
+        if to_ref is None:
             return local
         else:
-            return local.relocate(new_to_utc=to_utc)
+            return local.relocate(new_to_ref=to_ref)
 
     @classmethod
     def localnow(cls):
@@ -308,32 +308,32 @@ class Time:
         return self._day_frac
 
     @property
-    def to_utc(self):
-        return self._to_utc
+    def to_ref(self):
+        return self._to_ref
 
     @property
-    def to_utc_obj(self):
-        return self._to_utc_obj
+    def to_ref_obj(self):
+        return self._to_ref_obj
 
     def __repr__(self):
         return "datetime2.{}('{}')".format(self.__class__.__name__, str(self.day_frac))
 
     def __str__(self):
-        if self.to_utc:
-            return "{} of a day, {} of a day to UTC".format(str(self.day_frac), str(self.to_utc))
+        if self.to_ref:
+            return "{} of a day, {} of a day to UTC".format(str(self.day_frac), str(self.to_ref))
         else:
             return "{} of a day".format(str(self.day_frac))
 
     def __add__(self, other):
         if isinstance(other, TimeDelta):
             total = self.day_frac + other.days
-            if self.to_utc is None:
+            if self.to_ref is None:
                 return self.__class__(total - floor(total))
             else:
-                if self.to_utc_obj:
-                    return self.__class__(total - floor(total), to_utc=self.to_utc_obj)
+                if self.to_ref_obj:
+                    return self.__class__(total - floor(total), to_ref=self.to_ref_obj)
                 else:
-                    return self.__class__(total - floor(total), to_utc=self.to_utc)
+                    return self.__class__(total - floor(total), to_ref=self.to_ref)
         else:
             return NotImplemented
 
@@ -341,31 +341,31 @@ class Time:
 
     def __sub__(self, other):
         if isinstance(other, Time):
-            if self.to_utc is None:
-                if other.to_utc is None:
+            if self.to_ref is None:
+                if other.to_ref is None:
                     return TimeDelta(self.day_frac - other.day_frac)
                 else:
                     raise ValueError
-            elif other.to_utc is not None:
-                return TimeDelta(self.day_frac + self.utc - other.day_frac - other.to_utc)
+            elif other.to_ref is not None:
+                return TimeDelta(self.day_frac + self.utc - other.day_frac - other.to_ref)
             else:
                 raise ValueError
         elif isinstance(other, TimeDelta):
             total = self.day_frac - other.days
-            if self.to_utc is None:
+            if self.to_ref is None:
                 return self.__class__(total - floor(total))
             else:
-                if self.to_utc_obj:
-                    return self.__class__(total - floor(total), to_utc=self.to_utc_obj)
+                if self.to_ref_obj:
+                    return self.__class__(total - floor(total), to_ref=self.to_ref_obj)
                 else:
-                    return self.__class__(total - floor(total), to_utc=self.to_utc)
+                    return self.__class__(total - floor(total), to_ref=self.to_ref)
         else:
             return NotImplemented
 
     # Comparison operators
     @staticmethod
     def compute_new_time(this_instance, other_instance):
-        new_time = this_instance.day_frac + this_instance.to_utc - other_instance.to_utc
+        new_time = this_instance.day_frac + this_instance.to_ref - other_instance.to_ref
         while new_time < 0:
             new_time += 1
         else:
@@ -375,7 +375,7 @@ class Time:
 
     def __eq__(self, other):
         if isinstance(other, Time):
-            if self.to_utc is None:
+            if self.to_ref is None:
                 return self.day_frac == other.day_frac
             else:
                 return Time.compute_new_time(self, other) == other.day_frac
@@ -386,7 +386,7 @@ class Time:
 
     def __ne__(self, other):
         if isinstance(other, Time):
-            if self.to_utc is None:
+            if self.to_ref is None:
                 return self.day_frac != other.day_frac
             else:
                 return Time.compute_new_time(self, other) != other.day_frac
@@ -397,7 +397,7 @@ class Time:
 
     def __gt__(self, other):
         if isinstance(other, Time):
-            if self.to_utc is None:
+            if self.to_ref is None:
                 return self.day_frac > other.day_frac
             else:
                 return Time.compute_new_time(self, other) > other.day_frac
@@ -408,7 +408,7 @@ class Time:
 
     def __ge__(self, other):
         if isinstance(other, Time):
-            if self.to_utc is None:
+            if self.to_ref is None:
                 return self.day_frac >= other.day_frac
             else:
                 return Time.compute_new_time(self, other) >= other.day_frac
@@ -419,7 +419,7 @@ class Time:
 
     def __lt__(self, other):
         if isinstance(other, Time):
-            if self.to_utc is None:
+            if self.to_ref is None:
                 return self.day_frac < other.day_frac
             else:
                 return Time.compute_new_time(self, other) < other.day_frac
@@ -430,7 +430,7 @@ class Time:
 
     def __le__(self, other):
         if isinstance(other, Time):
-            if self.to_utc is None:
+            if self.to_ref is None:
                 return self.day_frac <= other.day_frac
             else:
                 return Time.compute_new_time(self, other) <= other.day_frac
@@ -443,35 +443,35 @@ class Time:
     def __hash__(self):
         return hash(self._day_frac)
 
-    def relocate(self, new_to_utc):
-        if self.to_utc is None:
+    def relocate(self, new_to_ref):
+        if self.to_ref is None:
             raise TypeError("Cannot relocate a naive instance.")
         else:
-            self_at_utc = self.day_frac + self.to_utc
-            if hasattr(new_to_utc, 'time_to_utc'):
+            self_at_utc = self.day_frac + self.to_ref
+            if hasattr(new_to_ref, 'time_to_ref'):
                 try:
-                    new_to_utc_value = new_to_utc.time_to_utc()
+                    new_to_ref_value = new_to_ref.time_to_ref()
                 except Exception as any_exc:
-                    raise TypeError("Invalid object for 'new_to_utc' argument.") from any_exc
+                    raise TypeError("Invalid object for 'new_to_ref' argument.") from any_exc
             else:
-                new_to_utc_value = new_to_utc
+                new_to_ref_value = new_to_ref
             try:
-                if type(new_to_utc_value) == tuple:
-                    if len(new_to_utc_value) == 2:
-                        real_to_utc_value = Fraction(*new_to_utc_value)
+                if type(new_to_ref_value) == tuple:
+                    if len(new_to_ref_value) == 2:
+                        real_to_ref_value = Fraction(*new_to_ref_value)
                     else:
                         raise TypeError('New time to UTC tuple is invalid')
                 else:
-                    real_to_utc_value = Fraction(new_to_utc_value)
+                    real_to_ref_value = Fraction(new_to_ref_value)
             except ZeroDivisionError:
                 raise ZeroDivisionError("Time to UTC denominator cannot be zero.")
-            new_time = self_at_utc - real_to_utc_value
+            new_time = self_at_utc - real_to_ref_value
             while new_time < 0:
                 new_time += 1
             else:
                 while new_time >= 1:
                     new_time -= 1
-            return self.__class__(new_time, to_utc=new_to_utc)
+            return self.__class__(new_time, to_ref=new_to_ref)
 
     @classmethod
     def register_new_time(cls, attribute_name, time_repr_class):
