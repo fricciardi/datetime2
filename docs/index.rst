@@ -107,14 +107,14 @@ As with dates, also time can be entered with different represetations:
 With time objects, there may be an implicit time reference, assumed by program
 implementation, or an explict one, passed as an additional parameter to the
 :class:`Time` object. In the first case the object is said to be "naive", in
-the second case it is said to be "aware". The reference time may be UTC, but
-this is not mandatory.
+the second case it is said to be "aware". The reference time is currently UTC,
+but possible future development includes implemention of time references.
 
 .. doctest::
 
    >>> t8 = Time('2/3', to_ref=(1, 12))
    >>> print(t8)
-   2/3 of a day, 1/12 of a day to ref
+   2/3 of a day, 1/12 of a day to UTC
    >>> print(t8.western)
    16:00:00+02
 
