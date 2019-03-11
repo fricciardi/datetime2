@@ -112,7 +112,7 @@ but possible future development includes implemention of time references.
 
 .. doctest::
 
-   >>> t8 = Time('2/3', to_ref=(1, 12))
+   >>> t8 = Time('2/3', to_utc=(1, 12))
    >>> print(t8)
    2/3 of a day, 1/12 of a day to UTC
    >>> print(t8.western)
