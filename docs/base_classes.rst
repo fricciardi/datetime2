@@ -176,14 +176,11 @@ There are four :class:`Time` constructors:
    UTC, one of the two following cases can happen:
 
    - ``to_utc`` is a fractional value, expressed in one of the
-     possibilities above. This value is stored in the ``to_utc`` attribute. The
-     ``to_utc_obj`` attribute is set to ``None``.
+     possibilities above. This value is stored in the ``to_utc`` attribute.
 
    - ``to_utc`` is an object that has a ``to_utc`` method. This
      method is called and its value is stored in the ``to_utc`` read-only
-     attribute. The object itself is stored in the ``to_utc_obj`` attribute for
-     further reference, in order to save it for further reference. It is
-     expected that subsequent calls to the method always return the same value.
+     attribute.
 
    In any case, the resulting value for ``day_frac`` must be equal or greater
    than 0 and less than 1. The resulting value for ``to_utc`` must be greater
@@ -198,7 +195,7 @@ There are four :class:`Time` constructors:
    Return an aware :class:`Time` object that represents the current time.
    Without argument, the time represented in ``day_frac`` will be local
    standard time, ``to_utc`` will be set to the difference between UTC and
-   local standard time, and ``to_utc_obj`` will be set to ``None``.
+   local standard time.
 
    If ``to_utc`` is given, the returned object will be the current time
    at the given time difference from UTC. ``to_utc`` will be treated as
@@ -216,11 +213,10 @@ There are four :class:`Time` constructors:
 
 
 :class:`Time` instances are immutable, so they can be used as dictionary keys.
-They can also be pickled (provided the ``to_utc_obj`` attribute is a pickable
-object) and unpickled. In boolean contexts, all :class:`Time` instances are
-considered to be true.
+They can also be pickled and unpickled. In boolean contexts, all :class:`Time`
+instances are considered to be true.
 
-:class:`Time` instances have three read-only attributes: an
+:class:`Time` instances have two read-only attributes: an
 :exc:`AttributeError` exception is raised when trying to change any of them.
 
 .. attribute:: Time.day_frac
@@ -233,12 +229,6 @@ considered to be true.
    If not ``None``, this attribute is a Python :class:`fractions.Fraction` that
    represents the fraction of a day that must be added to current time to get
    UTC. The value is given as a fraction of a day.
-
-.. attribute:: Time.to_utc_obj
-
-   This attribute is used to store the object passed as ``to_utc`` in any
-   of the relevant constructors. This object does not contribute to the
-   semantics of the :class:`Time` object.
 
 
 :class:`Time` has two instance methods:
@@ -317,8 +307,7 @@ Notes:
    The result of this operation will always be a valid :class:`Time` instance.
    If overflow or underflow occur, the full day part will be truncated so that
    only the fractional part will remain. Naivety is preserved: if ``time1``
-   has a correction, this will be copied to ``time2``, including, if populated,
-   the ``to_utc_obj`` object.
+   has a correction, this will be copied to ``time2``.
 
 (2)
    If *timedelta* is negative, ``time2`` will be before ``time1``.

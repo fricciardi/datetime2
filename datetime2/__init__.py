@@ -252,7 +252,7 @@ class Time:
             raise ZeroDivisionError("Time denominator cannot be zero.")
         if to_utc is None:
             # naive instance
-            self._to_utc = self._to_utc_obj = None
+            self._to_utc = None
         else:
             # aware instance
             if hasattr(to_utc, 'time_to_utc'):
@@ -260,10 +260,8 @@ class Time:
                     to_utc_value = to_utc.time_to_utc()
                 except Exception as any_exc:
                     raise TypeError("Invalid object for 'to_utc' argument.") from any_exc
-                self._to_utc_obj = to_utc
             else:
                 to_utc_value = to_utc
-                self._to_utc_obj = None
             try:
                 if type(to_utc_value) == tuple:
                     if len(to_utc_value) == 2:
@@ -311,10 +309,6 @@ class Time:
     def to_utc(self):
         return self._to_utc
 
-    @property
-    def to_utc_obj(self):
-        return self._to_utc_obj
-
     def __repr__(self):
         return "datetime2.{}('{}')".format(self.__class__.__name__, str(self.day_frac))
 
@@ -330,10 +324,7 @@ class Time:
             if self.to_utc is None:
                 return self.__class__(total - floor(total))
             else:
-                if self.to_utc_obj:
-                    return self.__class__(total - floor(total), to_utc=self.to_utc_obj)
-                else:
-                    return self.__class__(total - floor(total), to_utc=self.to_utc)
+                return self.__class__(total - floor(total), to_utc=self.to_utc)
         else:
             return NotImplemented
 
@@ -355,10 +346,7 @@ class Time:
             if self.to_utc is None:
                 return self.__class__(total - floor(total))
             else:
-                if self.to_utc_obj:
-                    return self.__class__(total - floor(total), to_utc=self.to_utc_obj)
-                else:
-                    return self.__class__(total - floor(total), to_utc=self.to_utc)
+                return self.__class__(total - floor(total), to_utc=self.to_utc)
         else:
             return NotImplemented
 

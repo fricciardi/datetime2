@@ -527,7 +527,6 @@ class TestTime:
             count += 1
         assert count < 3, "Unable to get at least one a correct Time.now(to_utc=0)"
         assert time_now.to_utc == 0
-        assert time_now.to_utc_obj is None
 
         # again but with class
         count = 0
@@ -540,7 +539,6 @@ class TestTime:
             count += 1
         assert count < 3, "Unable to get at least one a correct Time.now(to_utc=DummyTZ(0, 1))"
         assert time_now.to_utc == 0
-        assert time_now.to_utc_obj is not None
 
     def test_040_localnow(self):
         "Return an object that represents the current moment in the day."
@@ -558,7 +556,6 @@ class TestTime:
             count += 1
         assert count < 3, "Unable to get at least one a correct Time.localnow()"
         assert time_now.to_utc is None
-        assert time_now.to_utc_obj is None
 
     def test_050_utcnow(self):
         "Return an object that represents the current moment in the day."
@@ -576,7 +573,6 @@ class TestTime:
             count += 1
         assert count < 3, "Unable to get at least one a correct Time.localnow()"
         assert time_now.to_utc is None
-        assert time_now.to_utc_obj is None
 
     def test_100_write_attributes(self):
         "This attribute is read-only."
@@ -584,17 +580,14 @@ class TestTime:
         with pytest.raises(AttributeError):
             t1.day_frac = Fraction(3, 7)
             t1.to_utc = Fraction(1, 11)
-            t1.to_utc_obj = object()
         t2 = Time('0.6789', to_utc='-1/2')
         with pytest.raises(AttributeError):
             t2.day_frac = Fraction(3, 7)
             t2.to_utc = Fraction(1, 11)
-            t2.to_utc_obj = object()
         t3 = Time('0.0123', to_utc=DummyTZ(-2, 3))
         with pytest.raises(AttributeError):
             t3.day_frac = Fraction(3, 7)
             t3.to_utc = Fraction(1, 11)
-            t3.to_utc_obj = object()
 
     def test_110_get_unknown_attribute(self):
         "Time instances have one attribute."
@@ -725,22 +718,16 @@ class TestTime:
         for td in (TimeDelta(0.5), TimeDelta(-0.25), TimeDelta(3), TimeDelta(-2.75)):
             res_a_plus = a + td
             assert res_a_plus.to_utc is None
-            assert res_a_plus.to_utc_obj is None
             res_a_minus = a - td
             assert res_a_minus.to_utc is None
-            assert res_a_minus.to_utc_obj is None
             res_b_plus = b + td
             assert res_b_plus.to_utc == Fraction(1, 6)
-            assert res_b_plus.to_utc_obj is None
             res_b_minus = b - td
             assert res_b_minus.to_utc == Fraction(1, 6)
-            assert res_b_minus.to_utc_obj is None
             res_c_plus = c + td
             assert res_c_plus.to_utc == Fraction(-1, 8)
-            assert res_c_plus.to_utc_obj is test_obj
             res_c_plus = c - td
             assert res_c_plus.to_utc == Fraction(-1, 8)
-            assert res_c_plus.to_utc_obj is test_obj
 
     def test_310_disallowed_operations(self):
         a = Time('3/4')
