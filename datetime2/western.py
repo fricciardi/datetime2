@@ -193,7 +193,7 @@ class GregorianCalendar:
 #
 @total_ordering
 class WesternTime:
-    def __init__(self, hour, minute, second, tz=None):
+    def __init__(self, hour, minute, second, *, tz=None):
         if not isinstance(hour, int) or not isinstance(minute, int):
             raise TypeError("hour and minute must be integer")
         try:
