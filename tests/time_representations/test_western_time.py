@@ -38,7 +38,6 @@ import pytest
 from datetime2.western import WesternTime
 
 
-
 INF = float('inf')
 NAN = float('nan')
 
@@ -120,6 +119,16 @@ western_time_microseconds = [
     [ "12345/23456",    "526304"]
 ]
 
+tz_test_data = [
+    [Decimal("-23.5"),  Fraction(-47, 2)],
+    [-2,                Fraction(-2, 1)],
+    [-0.5,              Fraction(-1, 2)],
+    ["0",               Fraction(0, 1)],
+    [Decimal(0.25),     Fraction(1, 4)],
+    [2,                 Fraction(2, 1)],
+    [23.5,              Fraction(47, 2)]
+]
+
 class TestWestern():
     def test_000_constructor(self):
         for test_row in western_time_test_data:
@@ -173,6 +182,11 @@ class TestWestern():
             western = WesternTime.from_day_frac(day_frac)
             assert (western.hour, western.minute, western.second) == (hour, minute, second)
 
+    def test_009_timezone_valid(self):
+        for test_tz in tz_test_data:
+            western = WesternTime(1, 2, 3, tz=test_tz[0])
+            assert western.tz == test_tz[1]
+
     def test_010_invalid_parameter_types(self):
         # exception with none, two or four parameters
         with pytest.raises(TypeError):
@@ -182,23 +196,23 @@ class TestWestern():
         with pytest.raises(TypeError):
             WesternTime(1, 2, 3, 4)
         # exception with non-numeric types
-        for par in ("1", (1,), [1], {1: 1}, (), [], {}, None):
+        for invalid_par in ("1", (1,), [1], {1: 1}, (), [], {}, None):
             with pytest.raises(TypeError):
-                WesternTime(par, 1, 1)
+                WesternTime(invalid_par, 1, 1)
             with pytest.raises(TypeError):
-                WesternTime(1, par, 1)
-        for par in ((1,), [1], {1: 1}, (), [], {}, None):
+                WesternTime(1, invalid_par, 1)
+        for invalid_par in ((1,), [1], {1: 1}, (), [], {}, None):
             with pytest.raises(TypeError):
-                WesternTime(1, 1, par)
+                WesternTime(1, 1, invalid_par)
         # exception with invalid numeric types
-        for par in (1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN):
+        for invalid_par in (1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN):
             with pytest.raises(TypeError):
-                WesternTime(par, 1, 1)
+                WesternTime(invalid_par, 1, 1)
             with pytest.raises(TypeError):
-                WesternTime(1, par, 1)
-        for par in (1j, 1 + 1j, INF):
+                WesternTime(1, invalid_par, 1)
+        for invalid_par in (1j, 1 + 1j, INF):
             with pytest.raises(TypeError):
-                WesternTime(1, 1, par)
+                WesternTime(1, 1, invalid_par)
 
     def test_012_invalid_parameter_types_in_hours(self):
         # exception with none, two or four parameters
@@ -207,13 +221,13 @@ class TestWestern():
         with pytest.raises(TypeError):
             WesternTime.in_hours(1, 2)
         # exception with non-numeric types
-        for par in ((1,), [1], {1: 1}, (), [], {}, None):
+        for invalid_hours in ((1,), [1], {1: 1}, (), [], {}, None):
             with pytest.raises(TypeError):
-                WesternTime.in_hours(par)
+                WesternTime.in_hours(invalid_hours)
         # exception with invalid numeric types
-        for par in (1j, 1 + 1j, INF):
+        for invalid_hours in (1j, 1 + 1j, INF):
             with pytest.raises(TypeError):
-                WesternTime.in_hours(par)
+                WesternTime.in_hours(invalid_hours)
 
     def test_014_invalid_parameter_types_in_minutes(self):
         # exception with none, two or four parameters
@@ -222,13 +236,13 @@ class TestWestern():
         with pytest.raises(TypeError):
             WesternTime.in_minutes(1, 2)
         # exception with non-numeric types
-        for par in ((1,), [1], {1: 1}, (), [], {}, None):
+        for invalid_minutes in ((1,), [1], {1: 1}, (), [], {}, None):
             with pytest.raises(TypeError):
-                WesternTime.in_minutes(par)
+                WesternTime.in_minutes(invalid_minutes)
         # exception with invalid numeric types
-        for par in (1j, 1 + 1j, INF):
+        for invalid_minutes in (1j, 1 + 1j, INF):
             with pytest.raises(TypeError):
-                WesternTime.in_minutes(par)
+                WesternTime.in_minutes(invalid_minutes)
 
     def test_016_invalid_parameter_types_in_seconds(self):
         # exception with none, two or four parameters
@@ -237,13 +251,13 @@ class TestWestern():
         with pytest.raises(TypeError):
             WesternTime.in_seconds(1, 2)
         # exception with non-numeric types
-        for par in ((1,), [1], {1: 1}, (), [], {}, None):
+        for invalid_seconds in ((1,), [1], {1: 1}, (), [], {}, None):
             with pytest.raises(TypeError):
-                WesternTime.in_seconds(par)
+                WesternTime.in_seconds(invalid_seconds)
         # exception with invalid numeric types
-        for par in (1j, 1 + 1j, INF):
+        for invalid_seconds in (1j, 1 + 1j, INF):
             with pytest.raises(TypeError):
-                WesternTime.in_seconds(par)
+                WesternTime.in_seconds(invalid_seconds)
 
     def test_018_invalid_parameter_types_day_frac(self):
         # exception with none, two or four parameters
@@ -252,13 +266,26 @@ class TestWestern():
         with pytest.raises(TypeError):
             WesternTime.from_day_frac(1, 2)
         # exception with non-numeric types
-        for par in ("1", (1,), [1], {1: 1}, (), [], {}, None):
+        for invalid_day_frac in ("1", (1,), [1], {1: 1}, (), [], {}, None):
             with pytest.raises(TypeError):
-                WesternTime.from_day_frac(par)
+                WesternTime.from_day_frac(invalid_day_frac)
         # exception with invalid numeric types
-        for par in (1.0, Decimal(1), 1j, 1 + 1j, INF, NAN):
+        for invalid_day_frac in (1.0, Decimal(1), 1j, 1 + 1j, INF, NAN):
             with pytest.raises(TypeError):
-                WesternTime.from_day_frac(par)
+                WesternTime.from_day_frac(invalid_day_frac)
+
+    def test_019_timezone_invalid(self):
+        # exception with unknown named parameter
+        with pytest.raises(TypeError):
+            WesternTime(1, 2, 3, invalid=0)
+        # exception with non-numeric types
+        for invalid_tz in ((1,), [1], {1: 1}, (), [], {}, None):
+            with pytest.raises(TypeError):
+                WesternTime(1, 2, 3, tz=invalid_tz)
+        # exception with invalid numeric types
+        for invalid_tz in (1j, 1 + 1j, INF, NAN):
+            with pytest.raises(TypeError):
+                WesternTime(1, 2, 3, tz=invalid_tz)
 
     def test_020_invalid_values(self):
         for test_row in western_time_invalid_data:
@@ -287,6 +314,11 @@ class TestWestern():
         for num, denum in ((1, 1), (1, -1), (1000001, 1000000), (-1, 1000000)):
             with pytest.raises(ValueError):
                 WesternTime.from_day_frac(Fraction(num, denum))
+
+    def test_029_timezone_invalid_values(self):
+        for invalid_value in (-25, -24, 24, 25):
+            with pytest.raises(ValueError):
+                WesternTime(1, 2, 3, tz=invalid_value)
 
     def test_100_write_attribute(self):
         western = WesternTime(10, 10, 10)

@@ -193,7 +193,7 @@ class GregorianCalendar:
 #
 @total_ordering
 class WesternTime:
-    def __init__(self, hour, minute, second):
+    def __init__(self, hour, minute, second, tz=None):
         if not isinstance(hour, int) or not isinstance(minute, int):
             raise TypeError("hour and minute must be integer")
         try:
@@ -210,6 +210,16 @@ class WesternTime:
         self._minute = minute
         self._second = second_fraction
         self._day_frac = None
+        if tz is None:
+            self._tz = None
+        else:
+            try:
+                candidate_tz = Fraction(tz)
+            except (TypeError, OverflowError):
+                raise TypeError("time zone is not a valid Fraction value")
+            if candidate_tz <= -24 or candidate_tz >= 24:
+                raise ValueError("Time zone must be greater than -24 and less than 24, while it is {}.".format(candidate_tz))
+            self._tz = candidate_tz
 
     @property
     def hour(self):
@@ -222,6 +232,10 @@ class WesternTime:
     @property
     def second(self):
         return self._second
+
+    @property
+    def tz(self):
+        return self._tz
 
     @classmethod
     def in_hours(cls, day_hours):
