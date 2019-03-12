@@ -215,7 +215,7 @@ class WesternTime:
         else:
             try:
                 candidate_tz = Fraction(tz)
-            except (TypeError, OverflowError):
+            except (TypeError, ValueError):
                 raise TypeError("time zone is not a valid Fraction value")
             if candidate_tz <= -24 or candidate_tz >= 24:
                 raise ValueError("Time zone must be greater than -24 and less than 24, while it is {}.".format(candidate_tz))
