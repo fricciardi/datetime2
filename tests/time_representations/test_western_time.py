@@ -279,7 +279,7 @@ class TestWestern():
         with pytest.raises(TypeError):
             WesternTime(1, 2, 3, invalid=0)
         # exception with non-numeric types
-        for invalid_tz in ((1,), [1], {1: 1}, (), [], {}, None):
+        for invalid_tz in ((1,), [1], {1: 1}, (), [], {}):
             with pytest.raises(TypeError):
                 WesternTime(1, 2, 3, tz=invalid_tz)
         # exception with invalid numeric types
