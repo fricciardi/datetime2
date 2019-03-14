@@ -42,8 +42,8 @@ INF = float('inf')
 NAN = float('nan')
 
 western_time_test_data = [
-    # day_frac           western  as hours     as minutes   as seconds
-    # numer  denom       h   m   s    num denum    num denum    num denum
+    # day_frac           western                    as hours         as minutes         as seconds
+    # numer  denom        h   m   s                 num denum         num denum         num denum
 
     # Boundary conditions around midnight
     # hour, minute, second and their halves second
@@ -64,18 +64,18 @@ western_time_test_data = [
     # Boundary conditions around noon (e.g. for AM/PM switch)
     # hour, minute, second and their halves second
     [      "1/2",       (12,  0,  0),               "12/1",          "720/1",        "43200/1"],
-    [     "13/24",      (13,  0,  0),               "13/1",          "780/1",        "46800/1"],
     [     "11/24",      (11,  0,  0),               "11/1",          "660/1",        "39600/1"],
-    [     "25/48",      (12, 30,  0),               "25/2",          "750/1",        "45000/1"],
+    [     "13/24",      (13,  0,  0),               "13/1",          "780/1",        "46800/1"],
     [     "23/48",      (11, 30,  0),               "23/2",          "690/1",        "41400/1"],
-    [    "721/1440",    (12,  1,  0),              "721/60",         "721/1",        "43260/1"],
+    [     "25/48",      (12, 30,  0),               "25/2",          "750/1",        "45000/1"],
     [    "719/1440",    (11, 59,  0),              "719/60",         "719/1",        "43140/1"],
-    [   "1441/2880",    (12,  0, 30),             "1441/120",       "1441/2",        "43230/1"],
+    [    "721/1440",    (12,  1,  0),              "721/60",         "721/1",        "43260/1"],
     [   "1439/2880",    (11, 59, 30),             "1439/120",       "1439/2",        "43170/1"],
-    [  "43201/86400",   (12,  0,  1),            "43201/3600",     "43201/60",       "43201/1"],
+    [   "1441/2880",    (12,  0, 30),             "1441/120",       "1441/2",        "43230/1"],
     [  "43199/86400",   (11, 59, 59),            "43199/3600",     "43199/60",       "43199/1"],
-    [  "86401/172800",  (12,  0,  0.5),          "86401/7200",     "86401/120",      "86401/2"],
+    [  "43201/86400",   (12,  0,  1),            "43201/3600",     "43201/60",       "43201/1"],
     [  "86399/172800",  (11, 59, 59.5),          "86399/7200",     "86399/120",      "86399/2"],
+    [  "86401/172800",  (12,  0,  0.5),          "86401/7200",     "86401/120",      "86401/2"],
 
     # fractional part of day
     [ "     1/10",      ( 2, 24, 0),                "12/5",          "144/1",         "8640/1"],
@@ -92,7 +92,7 @@ western_time_test_data = [
     [      "9/10",      (21, 36,  0),              "108/5",         "1296/1",        "77760/1"]
 ]
 
-western_time_invalid_data = [
+western_time_out_of_range_data = [
     # negative hour, minute or second
     [30, 10,  -1],
     [30, -1,  20],
@@ -103,8 +103,7 @@ western_time_invalid_data = [
     [30, 60,  20],
     [30, 61,  20],
     [24,  0,   0],
-    [25,  0,   0],
-    [ 1,  2, NAN]
+    [25,  0,   0]
 ]
 
 western_time_microseconds = [
@@ -201,7 +200,7 @@ class TestWestern():
                 WesternTime(invalid_par, 1, 1)
             with pytest.raises(TypeError):
                 WesternTime(1, invalid_par, 1)
-        for invalid_par in ((1,), [1], {1: 1}, (), [], {}, None):
+        for invalid_par in ((1,), [1], {1: 1}, (), [], {}, None): # "1" is acceptable for seconds, since it is a valid Fraction argument
             with pytest.raises(TypeError):
                 WesternTime(1, 1, invalid_par)
         # exception with invalid numeric types
@@ -288,7 +287,7 @@ class TestWestern():
                 WesternTime(1, 2, 3, tz=invalid_tz)
 
     def test_020_invalid_values(self):
-        for test_row in western_time_invalid_data:
+        for test_row in western_time_out_of_range_data:
             hour = test_row[0]
             minute = test_row[1]
             second = test_row[2]
