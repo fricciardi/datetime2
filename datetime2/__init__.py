@@ -33,9 +33,8 @@ import time
 from fractions import Fraction
 from math import floor
 
-from datetime2 import western, modern
-
-
+from .common import verify_fractional_value
+from . import western, modern
 
 
 ##############################################################################
@@ -240,16 +239,7 @@ Date.register_new_calendar('iso', modern.IsoCalendar)
 
 class Time:
     def __init__(self, day_frac, *, to_utc=None):
-        try:
-            if type(day_frac) == tuple:
-                if len(day_frac) == 2:
-                    self._day_frac = Fraction(*day_frac)
-                else:
-                    raise TypeError('Time argument tuple is invalid')
-            else:
-                self._day_frac = Fraction(day_frac)
-        except ZeroDivisionError:
-            raise ZeroDivisionError("Time denominator cannot be zero.")
+        self._day_frac = verify_fractional_value(day_frac, min=0, max_excl=1)
         if to_utc is None:
             # naive instance
             self._to_utc = None
@@ -262,20 +252,7 @@ class Time:
                     raise TypeError("Invalid object for 'to_utc' argument.") from any_exc
             else:
                 to_utc_value = to_utc
-            try:
-                if type(to_utc_value) == tuple:
-                    if len(to_utc_value) == 2:
-                        self._to_utc = Fraction(*to_utc_value)
-                    else:
-                        raise TypeError('Time to UTC tuple is invalid')
-                else:
-                    self._to_utc = Fraction(to_utc_value)
-            except ZeroDivisionError:
-                raise ZeroDivisionError("Time to UTC denominator cannot be zero.")
-            if self.to_utc <= -1 or self.to_utc >= 1:
-                raise ValueError("Value for time to UTC outside valid rage (-1 < value < 1): {}".format(float(self.to_utc)))
-        if self.day_frac < 0 or self.day_frac >= 1:
-            raise ValueError("Value for Time instances (0 <= value < 1): {}".format(float(self.day_frac)))
+            self._to_utc = verify_fractional_value(to_utc_value, min=-1, max=1)
 
     @classmethod
     def now(cls, to_utc=None):
