@@ -36,9 +36,9 @@ __author__ = 'Francesco Ricciardi <francescor2010 at yahoo.it>'
 
 def verify_fractional_value(fractional, min=None, max=None, min_excl=None, max_excl=None):
     if min is not None and min_excl is not None:
-        raise ValueError("Only one minimum value can be given.")
+        raise RuntimeError("Only one minimum value can be given.")
     if max is not None and max_excl is not None:
-        raise ValueError("Only one maximum value can be given.")
+        raise RuntimeError("Only one maximum value can be given.")
     try:
         if type(fractional) == tuple:
             if len(fractional) == 2:
@@ -47,10 +47,12 @@ def verify_fractional_value(fractional, min=None, max=None, min_excl=None, max_e
                 raise TypeError('Tuple argument must have two elements.')
         else:
             value = Fraction(fractional)
-    except ZeroDivisionError:
-        raise ValueError("Denomnator cannot be 0.")
-    except (TypeError, OverflowError):
-        raise TypeError("Invalid fractional value.")
+    except ZeroDivisionError as exc:
+        raise ValueError("Denominator of a valid fractional value cannot be 0.") from exc
+    except TypeError as exc:
+        raise TypeError("Invalid type in a fractional value.") from exc
+    except (OverflowError, ValueError) as exc:
+        raise ValueError("Invalid fractional value.") from exc
     if min is not None and value < min:
         raise ValueError("Value must be more than or equal to {}".format(min))
     if min_excl is not None and value <= min_excl:
