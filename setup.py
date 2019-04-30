@@ -35,5 +35,7 @@ setuptools.setup(
 
     packages=setuptools.find_packages(exclude=['docs*']),
 
-    platforms=['Platform independent']
+    platforms=['Platform independent'],
+
+    project_urls={"Issue Tracker": "https://github.com/fricciardi/datetime2/issues"}
     )
