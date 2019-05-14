@@ -83,7 +83,7 @@ internet_time_millibeat = [
     [ "12345/56789", "217"]
 ]
 
-class TestWestern():
+class TestInternet():
     def test_000_constructor(self):
         for test_row in internet_time_test_data:
             beat = test_row[1]
