@@ -32,8 +32,6 @@ representations are accessed as attributes of the :class:`Date` object:
 
 .. doctest::
 
-   >>> d1 = Date(1)  # January 1st, AD 1
-   >>> d2 = Date(737109)  # February 19th, 2019
    >>> print(d1.gregorian)
    0001-01-01
    >>> print(d1.iso)
@@ -49,15 +47,13 @@ the date object:
 .. doctest::
 
    >>> d3 = Date.gregorian(1965, 3, 1)  # Gregorian: 1965-03-01
-   >>> d4 = Date.iso(2001, 1, 1)  # ISO: 2001-W01-1
+   >>> d4 = Date.iso(2011, 1, 1)  # ISO: 2011-W01-1
 
 And also objects created in this way can be used with different
 representations:
 
 .. doctest::
 
-   >>> d3 = Date.gregorian(1965, 3, 1)  # Gregorian: 1965-03-01
-   >>> d4 = Date.iso(2011, 1, 1)  # ISO: 2001-W01-1
    >>> print(d3.iso)
    1965-W09-1
    >>> print(d4.gregorian)
