@@ -249,10 +249,12 @@ class TestWestern():
             WesternTime.in_seconds()
         with pytest.raises(TypeError):
             WesternTime.in_seconds(1, 2)
+
         # exception with non-numeric types
         for invalid_seconds in ((1,), [1], {1: 1}, (), [], {}, None):
             with pytest.raises(TypeError):
                 WesternTime.in_seconds(invalid_seconds)
+
         # exception with invalid numeric types
         for invalid_seconds in (1j, 1 + 1j, INF, NAN):
             with pytest.raises(TypeError):
@@ -264,10 +266,12 @@ class TestWestern():
             WesternTime.from_day_frac()
         with pytest.raises(TypeError):
             WesternTime.from_day_frac(1, 2)
+
         # exception with non-numeric types
         for invalid_day_frac in ("1", (1,), [1], {1: 1}, (), [], {}, None):
             with pytest.raises(TypeError):
                 WesternTime.from_day_frac(invalid_day_frac)
+
         # exception with invalid numeric types
         for invalid_day_frac in (1.0, Decimal(1), 1j, 1 + 1j, INF, NAN):
             with pytest.raises(TypeError):
@@ -500,7 +504,7 @@ class TestWestern():
             western1.replace(minute=60)
         with pytest.raises(ValueError):
             western1.replace(second=60)
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             western1.replace(second=NAN)
 
     def test_500_repr(self):

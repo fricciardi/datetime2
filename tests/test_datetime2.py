@@ -489,8 +489,9 @@ class TestTime:
         for par in (-100, -1.00001, 1.00000001, 100):
             with pytest.raises(ValueError):
                 Time("0.5555", to_utc=par)
+
         # same for tuple argument
-        for par in ( (-100, 1), (-4, 3), (-2, 2), (2, 2), (4, 3), (100, 1) ):
+        for par in ( (-100, 1), (-4, 3), (4, 3), (100, 1) ):
             with pytest.raises(ValueError):
                 Time("0.6666", to_utc=par)
 
@@ -1077,7 +1078,7 @@ class TestTime:
                 Time("0.5555", to_utc=par)
 
         # same for tuple argument
-        for par in ( (-100, 1), (-4, 3), (-2, 2), (2, 2), (4, 3), (100, 1) ):
+        for par in ( (-100, 1), (-4, 3), (4, 3), (100, 1) ):
             with pytest.raises(ValueError):
                 Time("0.6666", to_utc=par)
 
