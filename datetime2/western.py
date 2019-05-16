@@ -30,13 +30,12 @@
 __author__ = 'Francesco Ricciardi <francescor2010 at yahoo.it>'
 
 
-__all__ = ['GregorianCalendar']
-
-
 import bisect
 from fractions import Fraction
 from functools import total_ordering
 from math import floor
+
+from .common import verify_fractional_value
 
 
 _days_in_month = [[31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
@@ -190,22 +189,22 @@ class GregorianCalendar:
 
 ##############################################################################
 # Western time representation
-#
+
 @total_ordering
 class WesternTime:
     def __init__(self, hour, minute, second, *, tz=None):
         if not isinstance(hour, int) or not isinstance(minute, int):
-            raise TypeError("hour and minute must be integer")
-        try:
-            second_fraction = Fraction(second)
-        except (TypeError, OverflowError):
-            raise TypeError("second is not a valid Fraction value")
+            raise TypeError("Hour and minute must be integer")
         if hour < 0 or hour > 23:
             raise ValueError("Hour must be between 0 and 23, while it is {}.".format(hour))
         if minute < 0 or minute > 59:
             raise ValueError("Minute must be between 0 and 59, while it is {}.".format(minute))
-        if second_fraction < 0 or second_fraction >= 60:
-            raise ValueError("Second must be equal or greater than 0 and less than 60, while it is {}.".format(second_fraction))
+        try:
+            second_fraction = verify_fractional_value(second, min=0, max_excl=60)
+        except TypeError as exc:
+            raise TypeError("Second is not a valid fractional value") from exc
+        except ValueError as exc:
+            raise ValueError("Second must be equal or greater than 0 and less than 60.") from exc
         self._hour = hour
         self._minute = minute
         self._second = second_fraction
@@ -214,11 +213,11 @@ class WesternTime:
             self._tz = None
         else:
             try:
-                candidate_tz = Fraction(tz)
-            except (TypeError, ValueError):
-                raise TypeError("time zone is not a valid Fraction value")
-            if candidate_tz <= -24 or candidate_tz >= 24:
-                raise ValueError("Time zone must be greater than -24 and less than 24, while it is {}.".format(candidate_tz))
+                candidate_tz = verify_fractional_value(tz, min_excl=-24, max_excl=+24)
+            except TypeError as exc:
+                raise TypeError("Time zone is not a valid fractional value") from exc
+            except ValueError as exc:
+                raise ValueError("Time zone must be greater than -24 and less than 24.") from exc
             self._tz = candidate_tz
 
     @property
@@ -238,13 +237,13 @@ class WesternTime:
         return self._tz
 
     @classmethod
-    def in_hours(cls, day_hours):
+    def in_hours(cls, hours):
         try:
-            hour_fraction = Fraction(day_hours)
-        except (TypeError, OverflowError):
-            raise TypeError("hour is not of a valid Fraction value")
-        if hour_fraction < 0 or hour_fraction >= 24:
-            raise ValueError("Day fraction in hours must be equal or greater than 0 and less than 24, while it is {}.".format(hour_fraction))
+            hour_fraction = verify_fractional_value(hours, min=0, max_excl=24)
+        except TypeError as exc:
+            raise TypeError("'hours' is not a valid fractional value") from exc
+        except ValueError as exc:
+            raise ValueError("'hours' must be equal or greater than 0 and less than 24.") from exc
         hour = int(hour_fraction)
         minute = int((hour_fraction - hour) * 60)
         second = (hour_fraction - hour - Fraction(minute, 60)) * 3600
@@ -253,13 +252,13 @@ class WesternTime:
         return western
 
     @classmethod
-    def in_minutes(cls, day_minutes):
+    def in_minutes(cls, minutes):
         try:
-            minute_fraction = Fraction(day_minutes)
-        except (TypeError, OverflowError):
-            raise TypeError("minute is not of a valid Fraction value")
-        if minute_fraction < 0 or minute_fraction >= 1440:
-            raise ValueError("Day fraction in minutes must be equal or greater than 0 and less than 1440, while it is {}.".format(minute_fraction))
+            minute_fraction = verify_fractional_value(minutes, min=0, max_excl=1440)
+        except TypeError as exc:
+            raise TypeError("'minutes' is not a valid fractional value") from exc
+        except ValueError as exc:
+            raise ValueError("'minutes' must be equal or greater than 0 and less than 1440.") from exc
         hour = int(minute_fraction / 60)
         minute = int(minute_fraction - hour * 60)
         second = (minute_fraction - hour * 60 - minute) * 60
@@ -268,13 +267,13 @@ class WesternTime:
         return western
 
     @classmethod
-    def in_seconds(cls, day_seconds):
+    def in_seconds(cls, seconds):
         try:
-            second_fraction = Fraction(day_seconds)
-        except (TypeError, OverflowError):
-            raise TypeError("second is not of a valid Fraction value")
-        if second_fraction < 0 or second_fraction >= 86400:
-            raise ValueError("Day fraction in seconds must be equal or greater than 0 and less than 86400, while it is {}.".format(second_fraction))
+            second_fraction = verify_fractional_value(seconds, min=0, max_excl=86400)
+        except TypeError as exc:
+            raise TypeError("'seconds' is not a valid fractional value") from exc
+        except ValueError as exc:
+            raise ValueError("'seconds' must be equal or greater than 0 and less than 86400.") from exc
         hour = int(second_fraction / 3600)
         minute = int((second_fraction - hour * 3600) / 60)
         second = second_fraction - hour * 3600 - minute * 60

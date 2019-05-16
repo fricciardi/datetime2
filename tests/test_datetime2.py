@@ -415,8 +415,8 @@ to_utc_test_data = [
 
 # but we want to test with a few strange values
 time_strange_test_data = (Fraction(123, 4567), 0.999999, '0.999999', '0.0000001', '5/456789', (123, 4567))
-to_utc_strange_test_data = [Fraction(123, 4567), 0.999999, '0.999999', '0.0000001', '5/456789', (123, 4567),
-                            Fraction(-123, 4567), -0.999999, '-0.999999', '-0.0000001', '-5/456789', (123, -4567)]
+to_utc_strange_test_data = [1, Fraction(123, 4567), 0.999999, '0.999999', '0.0000001', '5/456789', (123, 4567),
+                            -1, Fraction(-123, 4567), -0.999999, '-0.999999', '-0.0000001', '-5/456789', (123, -4567)]
 
 class TestTime:
     def test_000_valid_argument_types(self):
@@ -485,8 +485,8 @@ class TestTime:
             Time((2, 0))
 
     def test_017_invalid_argument_values_to_utc(self):
-        "The resulting value must be greater than -1 and less than 1."
-        for par in (-100, -1.00001, -1, 1, 1.00000001, 100):
+        "The resulting value must be equal or greater than -1 and less or equal to 1."
+        for par in (-100, -1.00001, 1.00000001, 100):
             with pytest.raises(ValueError):
                 Time("0.5555", to_utc=par)
         # same for tuple argument
@@ -1072,7 +1072,7 @@ class TestTime:
 
     def test_420_relocate_invalid_values(self):
         "Return another Time instance that identifies the same time"
-        for par in (-100, -1.00001, -1, 1, 1.00000001, 100):
+        for par in (-100, -1.00001, 1.00000001, 100):
             with pytest.raises(ValueError):
                 Time("0.5555", to_utc=par)
 

@@ -183,12 +183,12 @@ There are four :class:`Time` constructors:
      attribute.
 
    In any case, the resulting value for ``day_frac`` must be equal or greater
-   than 0 and less than 1. The resulting value for ``to_utc`` must be greater
-   than -1 and less than 1. A :exc:`ValueError` exception is raised if the
+   than 0 and less than 1. The resulting value for ``to_utc`` must be equal or greater
+   than -1 and less or equal to 1. A :exc:`ValueError` exception is raised if the
    resulting value are outside these ranges. A :exc:`TypeError` exception is
    raised if the argument type is not one of the accepted types or the tuple
-   argument does not have two values. A :exc:`ZeroDivisionError` exception is
-   raised if the second value (denominator) of a tuple argument is 0.
+   argument is invalid (e.g. it does not have two values or the denominator
+   value is 0).
 
 .. classmethod:: Time.now(to_utc = None)
 
