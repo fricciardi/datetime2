@@ -30,8 +30,11 @@ from the calendar class descriptions below.
 .. TODO: if we will be keeping all time representations on a page, a ToC here will be useful
 
 In the following we will call a Python rational number anything that can be
-passed to a Fraction constructor, i.e. an integer, a float, another Fraction,
-a Decimal number or a string representing an integer, a float or a fraction.
+passed to the :class:`fractions.Fraction` constructor, i.e. an integer, a
+float, another Fraction, a Decimal number or a string representing an integer,
+a float or a fraction. In addition, it is also possible to use a 2-value tuple
+with integer values. This tuple represents the numerator and denominator of a
+fraction that will be passed to the :class:`fractions.Fraction` constructor.
 
 .. _western-time:
 
