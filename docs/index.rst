@@ -41,15 +41,15 @@ representations are accessed as attributes of the :class:`Date` object:
    >>> print(d2.iso)
    2019-W08-2
 
-Date representation can be used also in the opposite direction, i.e. to create
-the date object:
+Attribute can be used also applied to the class itself, to create
+a date object with a specific representation:
 
 .. doctest::
 
    >>> d3 = Date.gregorian(1965, 3, 1)  # Gregorian: 1965-03-01
    >>> d4 = Date.iso(2011, 1, 1)  # ISO: 2011-W01-1
 
-And also objects created in this way can be used with different
+Also objects created in this way can be used with different
 representations:
 
 .. doctest::
@@ -59,9 +59,8 @@ representations:
    >>> print(d4.gregorian)
    2011-01-03
 
-The same thinking can be applied to the time of the day: any moment in a day
-can be seen as a fraction of one day, starting from midnight. This holds even
-if the number of time representations is smaller than that of calendars.
+The same mechanism can be applied to the time of the day: any moment in a day
+can be seen as a fraction of one day, starting from midnight.
 
 .. doctest::
 
@@ -71,7 +70,7 @@ if the number of time representations is smaller than that of calendars.
    >>> print(t1.internet)
    @250
 
-The second time representation you see above is name "Internet Time" and
+The second time representation you see above is named "Internet Time" and
 divides the day in 1,000 units, called "beats".
 
 The :class:`Time` class allows entering the fraction of a day in many different
@@ -109,9 +108,10 @@ time for :class:`Time` objects is UTC.
    16:00:00+02
 
 Another feature of the :mod:`datetime2` module is the ability to add other
-representations at run time. Representations do not consume memory
-unless they are effectively used. This is especially important for
-calendars, where many representation exists [#many]_ .
+representations at run time.
+
+Representations do not consume memory unless they are effectively used. This is
+especially important for calendars, where many representation exists [#many]_ .
 
 Currently (version |release|) the following calendars and time representations
 are available:
