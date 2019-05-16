@@ -63,12 +63,11 @@ internet_time_test_data = [
     [    "1/1000000", "1/1000"]
 ]
 
-internet_time_invalid_data = [
+internet_time_out_of_range = [
     -1,
     1000,
     "10001/10",
-    1001,
-    NAN
+    1001
 ]
 
 internet_time_millibeat = [
@@ -118,7 +117,7 @@ class TestInternet():
                 InternetTime(par)
 
         # exception with invalid numeric types
-        for par in (1j, 1 + 1j, INF):
+        for par in (1j, 1 + 1j, INF, NAN):
             with pytest.raises(TypeError):
                 InternetTime(par)
 
@@ -140,7 +139,7 @@ class TestInternet():
                 InternetTime.from_day_frac(par)
 
     def test_020_invalid_values(self):
-        for test_beat in internet_time_invalid_data:
+        for test_beat in internet_time_out_of_range:
             with pytest.raises(ValueError):
                 InternetTime(test_beat)
 

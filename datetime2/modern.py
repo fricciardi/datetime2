@@ -38,6 +38,8 @@ from fractions import Fraction
 from functools import total_ordering
 from math import floor
 
+from datetime2 import verify_fractional_value
+
 _long_years = frozenset([  4,   9,  15,  20,  26,  32,  37,  43,  48,
                           54,  60,  65,  71,  76,  82,  88,  93,  99,
                          105, 111, 116, 122, 128, 133, 139, 144,
@@ -187,11 +189,11 @@ class IsoCalendar:
 class InternetTime:
     def __init__(self, beat):
         try:
-            beat_fraction = Fraction(beat)
-        except (TypeError, OverflowError):
-            raise TypeError("beat is not a valid Fraction value")
-        if beat_fraction < 0 or beat_fraction >= 1000:
-            raise ValueError("Beat must be equal or greater than 0 and less than 1000, while it is {}.".format(beat_fraction))
+            beat_fraction = verify_fractional_value(beat, min=0, max_excl=1000)
+        except TypeError as exc:
+            raise TypeError("beat is not a valid fractional value") from exc
+        except ValueError as exc:
+            raise ValueError("beat must be equal or greater than 0 and less than 1000.") from exc
         self._beat = beat_fraction
         self._day_frac = None
 
