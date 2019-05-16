@@ -209,7 +209,7 @@ class TestWestern():
                 WesternTime(invalid_par, 1, 1)
             with pytest.raises(TypeError):
                 WesternTime(1, invalid_par, 1)
-        for invalid_par in (1j, 1 + 1j, INF):
+        for invalid_par in (1j, 1 + 1j, INF, NAN):
             with pytest.raises(TypeError):
                 WesternTime(1, 1, invalid_par)
 
@@ -224,7 +224,7 @@ class TestWestern():
             with pytest.raises(TypeError):
                 WesternTime.in_hours(invalid_hours)
         # exception with invalid numeric types
-        for invalid_hours in (1j, 1 + 1j, INF):
+        for invalid_hours in (1j, 1 + 1j, INF, NAN):
             with pytest.raises(TypeError):
                 WesternTime.in_hours(invalid_hours)
 
@@ -239,7 +239,7 @@ class TestWestern():
             with pytest.raises(TypeError):
                 WesternTime.in_minutes(invalid_minutes)
         # exception with invalid numeric types
-        for invalid_minutes in (1j, 1 + 1j, INF):
+        for invalid_minutes in (1j, 1 + 1j, INF, NAN):
             with pytest.raises(TypeError):
                 WesternTime.in_minutes(invalid_minutes)
 
@@ -254,7 +254,7 @@ class TestWestern():
             with pytest.raises(TypeError):
                 WesternTime.in_seconds(invalid_seconds)
         # exception with invalid numeric types
-        for invalid_seconds in (1j, 1 + 1j, INF):
+        for invalid_seconds in (1j, 1 + 1j, INF, NAN):
             with pytest.raises(TypeError):
                 WesternTime.in_seconds(invalid_seconds)
 

@@ -111,10 +111,12 @@ class TestInternet():
             InternetTime()
         with pytest.raises(TypeError):
             InternetTime(1, 2)
+
         # exception with non-numeric types
         for par in ((1,), [1], {1: 1}, (), [], {}, None):
             with pytest.raises(TypeError):
                 InternetTime(par)
+
         # exception with invalid numeric types
         for par in (1j, 1 + 1j, INF):
             with pytest.raises(TypeError):
@@ -126,10 +128,12 @@ class TestInternet():
             InternetTime.from_day_frac()
         with pytest.raises(TypeError):
             InternetTime.from_day_frac(1, 2)
+
         # exception with non-numeric types
         for par in ("1", (1,), [1], {1: 1}, (), [], {}, None):
             with pytest.raises(TypeError):
                 InternetTime.from_day_frac(par)
+
         # exception with invalid numeric types
         for par in (1.0, Decimal(1), 1j, 1 + 1j, INF, NAN):
             with pytest.raises(TypeError):
