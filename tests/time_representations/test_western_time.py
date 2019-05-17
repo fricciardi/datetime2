@@ -118,14 +118,16 @@ western_time_microseconds = [
     [ "12345/23456",    "526304"]
 ]
 
-tz_test_data = [
+to_utc_test_data = [
+    ["-24",             Fraction(24, 1)],
     [Decimal("-23.5"),  Fraction(-47, 2)],
     [-2,                Fraction(-2, 1)],
     [-0.5,              Fraction(-1, 2)],
-    ["0",               Fraction(0, 1)],
+    [Fraction(0, 1),    Fraction(0, 1)],
     [Decimal(0.25),     Fraction(1, 4)],
     [2,                 Fraction(2, 1)],
-    [23.5,              Fraction(47, 2)]
+    [23.5,              Fraction(47, 2)],
+    ["24",              Fraction(24, 1)]
 ]
 
 class TestWestern():
@@ -182,9 +184,9 @@ class TestWestern():
             assert (western.hour, western.minute, western.second) == (hour, minute, second)
 
     def test_009_timezone_valid(self):
-        for test_tz in tz_test_data:
-            western = WesternTime(1, 2, 3, tz=test_tz[0])
-            assert western.tz == test_tz[1]
+        for test_to_utc in to_utc_test_data:
+            western = WesternTime(1, 2, 3, to_utc=test_to_utc[0])
+            assert western.to_utc == test_to_utc[1]
 
     def test_010_invalid_parameter_types(self):
         # exception with none, two or four parameters
@@ -281,14 +283,16 @@ class TestWestern():
         # exception with unknown named parameter
         with pytest.raises(TypeError):
             WesternTime(1, 2, 3, invalid=0)
+
         # exception with non-numeric types
-        for invalid_tz in ((1,), [1], {1: 1}, (), [], {}):
+        for invalid_to_utc in ((1,), [1], {1: 1}, (), [], {}):
             with pytest.raises(TypeError):
-                WesternTime(1, 2, 3, tz=invalid_tz)
+                WesternTime(1, 2, 3, to_utc=invalid_to_utc)
+
         # exception with invalid numeric types
-        for invalid_tz in (1j, 1 + 1j, INF, NAN):
+        for invalid_to_utc in (1j, 1 + 1j, INF, NAN):
             with pytest.raises(TypeError):
-                WesternTime(1, 2, 3, tz=invalid_tz)
+                WesternTime(1, 2, 3, to_utc=invalid_to_utc)
 
     def test_020_invalid_values(self):
         for test_row in western_time_out_of_range_data:
@@ -319,9 +323,9 @@ class TestWestern():
                 WesternTime.from_day_frac(Fraction(num, denum))
 
     def test_029_timezone_invalid_values(self):
-        for invalid_value in (-25, -24, 24, 25):
+        for invalid_value in (-25, -24.000001, 24.000001, 25):
             with pytest.raises(ValueError):
-                WesternTime(1, 2, 3, tz=invalid_value)
+                WesternTime(1, 2, 3, to_utc=invalid_value)
 
     def test_100_write_attribute(self):
         western = WesternTime(10, 10, 10)
@@ -333,7 +337,7 @@ class TestWestern():
             western.second = 3
 
     def test_110_write_attribute_timezone(self):
-        western = WesternTime(10, 10, 10, tz=10)
+        western = WesternTime(10, 10, 10, to_utc=10)
         with pytest.raises(AttributeError):
             western.tz = 3
 

@@ -29,7 +29,7 @@ from the calendar class descriptions below.
 
 .. TODO: if we will be keeping all time representations on a page, a ToC here will be useful
 
-In the following we will call a Python rational number anything that can be
+In the following we will call a rational number anything that can be
 passed to the :class:`fractions.Fraction` constructor, i.e. an integer, a
 float, another Fraction, a Decimal number or a string representing an integer,
 a float or a fraction. In addition, it is also possible to use a 2-value tuple
@@ -47,7 +47,7 @@ in 60 minutes and each minute in 60 seconds.
 
 There are four constructors for a western time. The default one is:
 
-.. class:: western.WesternTime(hour, minute, second)
+.. class:: western.WesternTime(hour, minute, second, to_utc=None)
 
    Return an object that represents the moment of a day in hour, minute and
    second elapsed from midnight. This representation does not take into
@@ -57,11 +57,16 @@ There are four constructors for a western time. The default one is:
 
    * ``hour`` must be an integer and ``0 <= month <= 23``
    * ``minute`` must be an integer and ``0 <= minute <= 59``
-   * ``second`` must be a Python rational number; its value must be ``0 <= second < 60``
+   * ``second`` must be a rational number; its value must be ``0 <= second < 60``
+   * ``to_utc``, if present, must be a rational number; its value must be
+     ``-24 <= to_utc <= 24``
 
    If an argument is not of the accepted type, a :exc:`TypeError` exception
    is raised. If an argument is outside its accepted range, a
    :exc:`ValueError` exception is raised.
+
+   The ``to_utc``, if present, makes the object aware and defines the number of
+   hours that must be added to it to get UTC time.
 
 The other three constructors are:
 
@@ -69,7 +74,7 @@ The other three constructors are:
 
    Return an object that represents the moment of the day specified in
    hours, possibly fractional, elapsed from midnight. The argument must be a
-   Python rational number, otherwise a :exc:`TypeError` exception is raised. Its
+   rational number, otherwise a :exc:`TypeError` exception is raised. Its
    value must be greater or equal to 0 and less than 24, otherwise a
    :exc:`ValueError` exception is raised.
 
@@ -77,7 +82,7 @@ The other three constructors are:
 
    Return an object that represents the moment of the day specified in
    minutes, possibly fractional, elapsed from midnight. The argument must be
-   a Python rational number, otherwise a :exc:`TypeError` exception is raised. Its
+   a rational number, otherwise a :exc:`TypeError` exception is raised. Its
    value must be greater or equal to 0 and less than 1440, otherwise a
    :exc:`ValueError` exception is raised.
 
@@ -85,7 +90,7 @@ The other three constructors are:
 
    Return an object that represents the moment of the day specified in
    seconds, possibly fractional, elapsed from midnight. The argument must be
-   a Python rational number, otherwise a :exc:`TypeError` exception is raised. Its
+   a rational number, otherwise a :exc:`TypeError` exception is raised. Its
    value must be greater or equal to 0 and less than 86400, otherwise a
    :exc:`ValueError` exception is raised.
 
@@ -207,7 +212,7 @@ The default constructor for Internet time is:
 .. class:: InternetTime(beat)
 
    Return an object that represents the time in thousandths of a day. The
-   ``beat`` argument is required and must be Python rational number; its value must
+   ``beat`` argument is required and must be a rational number; its value must
    be equal or greater than 0 and less than 1000. If the argument is not a
    Python number, a :exc:`TypeError` exception is raised. If the argument
    is outside its accepted range, a :exc:`ValueError` exception is raised.
