@@ -299,13 +299,13 @@ class WesternTime:
             self._day_frac = self._second / 86400 + Fraction(self.minute, 1440) + Fraction(self.hour, 24)
         return self._day_frac
 
-    def as_hours(self):
+    def to_hours(self):
         return self.to_day_frac() * 24
 
-    def as_minutes(self):
+    def to_minutes(self):
         return self.to_day_frac() * 1440
 
-    def as_seconds(self):
+    def to_seconds(self):
         return self.to_day_frac() * 86400
 
     def replace(self, *, hour=None, minute=None, second=None):

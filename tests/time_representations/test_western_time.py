@@ -140,10 +140,10 @@ class TestWestern():
     def test_001_constructor_types_for_seconds(self):
         for integer_second in (3, '3'):
             western = WesternTime(5, 4, integer_second)
-            assert western.as_seconds() == Fraction(18243, 1)
+            assert western.to_seconds() == Fraction(18243, 1)
         for fractional_second in (1.25, Fraction(5, 4), '1.25', Decimal('1.25'), '5/4'):
             western = WesternTime(5, 4, fractional_second)
-            assert western.as_seconds() == Fraction(72965, 4)
+            assert western.to_seconds() == Fraction(72965, 4)
 
     def test_002_constructor_in_hours(self):
         for test_row in western_time_test_data:
@@ -419,29 +419,29 @@ class TestWestern():
             second = Fraction(test_row[1][2])
             assert WesternTime(hour, minute, second)
 
-    def test_400_as_hours(self):
+    def test_400_to_hours(self):
         for test_row in western_time_test_data:
             hour = test_row[1][0]
             minute = test_row[1][1]
             second = Fraction(test_row[1][2])
-            as_hours = Fraction(test_row[2])
-            assert WesternTime(hour, minute, second).as_hours() == as_hours
+            to_hours = Fraction(test_row[2])
+            assert WesternTime(hour, minute, second).to_hours() == to_hours
 
-    def test_410_as_minutes(self):
+    def test_410_to_minutes(self):
         for test_row in western_time_test_data:
             hour = test_row[1][0]
             minute = test_row[1][1]
             second = Fraction(test_row[1][2])
-            as_minutes = Fraction(test_row[3])
-            assert WesternTime(hour, minute, second).as_minutes() == as_minutes
+            to_minutes = Fraction(test_row[3])
+            assert WesternTime(hour, minute, second).to_minutes() == to_minutes
 
-    def test_420_as_seconds(self):
+    def test_420_to_seconds(self):
         for test_row in western_time_test_data:
             hour = test_row[1][0]
             minute = test_row[1][1]
             second = Fraction(test_row[1][2])
-            as_seconds = Fraction(test_row[4])
-            assert WesternTime(hour, minute, second).as_seconds() == as_seconds
+            to_seconds = Fraction(test_row[4])
+            assert WesternTime(hour, minute, second).to_seconds() == to_seconds
 
     def test_430_to_day_frac(self):
         for test_row in western_time_test_data:

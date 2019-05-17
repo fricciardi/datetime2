@@ -104,19 +104,19 @@ A :class:`WesternTime` object has three attributes:
 
 An instance of the :class:`WesternTime` class has the following methods:
 
-.. method:: western.as_hours()
+.. method:: western.to_hours()
 
    Return a Python Fraction representing the moment of the day in hours.
    Thus the returned value will be equal or greater than 0, and less
    than 24.
 
-.. method:: western.as_minutes()
+.. method:: western.to_minutes()
 
    Return a Python Fraction representing the moment of the day in minutes.
    Thus the returned value will be equal or greater than 0, and less
    than 1440.
 
-.. method:: western.as_seconds()
+.. method:: western.to_seconds()
 
    Return a Python Fraction representing the moment of the day in seconds.
    Thus the returned value will be equal or greater than 0, and less
