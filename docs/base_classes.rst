@@ -190,7 +190,7 @@ There are four :class:`Time` constructors:
    argument is invalid (e.g. it does not have two values or the denominator
    value is 0).
 
-.. classmethod:: Time.now(to_utc = None)
+.. classmethod:: Time.now(to_utc=None)
 
    Return an aware :class:`Time` object that represents the current time.
    Without argument, the time represented in ``day_frac`` will be local
