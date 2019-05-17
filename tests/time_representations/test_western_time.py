@@ -336,10 +336,10 @@ class TestWestern():
         with pytest.raises(AttributeError):
             western.second = 3
 
-    def test_110_write_attribute_timezone(self):
+    def test_110_write_attribute_to_utc(self):
         western = WesternTime(10, 10, 10, to_utc=10)
         with pytest.raises(AttributeError):
-            western.tz = 3
+            western.to_utc = 3
 
     def test_300_compare(self):
         western1 = WesternTime(2, 3, 4)

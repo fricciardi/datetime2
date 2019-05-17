@@ -213,12 +213,12 @@ class WesternTime:
             self._to_utc = None
         else:
             try:
-                candidate_tz = verify_fractional_value(to_utc, min=-24, max=+24)
+                candidate_to_utc = verify_fractional_value(to_utc, min=-24, max=+24)
             except TypeError as exc:
                 raise TypeError("Time zone is not a valid fractional value") from exc
             except ValueError as exc:
                 raise ValueError("Time zone must be greater than -24 and less than 24.") from exc
-            self._to_utc = candidate_tz
+            self._to_utc = candidate_to_utc
 
     @property
     def hour(self):
@@ -233,7 +233,7 @@ class WesternTime:
         return self._second
 
     @property
-    def tz(self):
+    def to_utc(self):
         return self._to_utc
 
     @classmethod

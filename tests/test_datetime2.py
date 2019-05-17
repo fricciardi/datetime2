@@ -395,7 +395,7 @@ class TestDate:
 #############################################################################
 # Time tests
 #
-class DummyTZ:
+class DummyToUtc:
     def __init__(self, num, den):
         self.num = num
         self.den = den
@@ -409,9 +409,9 @@ time_test_data = [
 # we are not going to test more values, because we don't want to test the Fraction constructor :-)
 
 to_utc_test_data = [
-    [Fraction(0, 1), [0, Fraction(0), Decimal('0'), 0.0, '0', '0/33', (0, 5), DummyTZ(0, -3)]],
-    [Fraction(1, 4), [Fraction(1, 4), Decimal('0.25'), 0.25, '0.25', '1/4', (2, 8), DummyTZ(3, 12)]],
-    [Fraction(1, -4), [Fraction(-1, 4), Decimal('-0.25'), -0.25, '-0.25', '-1/4', (2, -8), DummyTZ(-3, 12)]]]
+    [Fraction(0, 1), [0, Fraction(0), Decimal('0'), 0.0, '0', '0/33', (0, 5), DummyToUtc(0, -3)]],
+    [Fraction(1, 4), [Fraction(1, 4), Decimal('0.25'), 0.25, '0.25', '1/4', (2, 8), DummyToUtc(3, 12)]],
+    [Fraction(1, -4), [Fraction(-1, 4), Decimal('-0.25'), -0.25, '-0.25', '-1/4', (2, -8), DummyToUtc(-3, 12)]]]
 
 # but we want to test with a few strange values
 time_strange_test_data = (Fraction(123, 4567), 0.999999, '0.999999', '0.0000001', '5/456789', (123, 4567))
@@ -538,11 +538,11 @@ class TestTime:
         while count < 3:
             datetime_now = datetime.datetime.utcnow()
             datetime_frac_seconds = datetime_now.hour * 3600 + datetime_now.minute * 60 + datetime_now.second
-            time_now = Time.now(to_utc=DummyTZ(0, 1))
+            time_now = Time.now(to_utc=DummyToUtc(0, 1))
             if int(time_now.day_frac * 86400) == datetime_frac_seconds:
                 break
             count += 1
-        assert count < 3, "Unable to get at least one a correct Time.now(to_utc=DummyTZ(0, 1))"
+        assert count < 3, "Unable to get at least one a correct Time.now(to_utc=DummyToUtc(0, 1))"
         assert time_now.to_utc == 0
 
     def test_040_localnow(self):
@@ -589,7 +589,7 @@ class TestTime:
         with pytest.raises(AttributeError):
             t2.day_frac = Fraction(3, 7)
             t2.to_utc = Fraction(1, 11)
-        t3 = Time('0.0123', to_utc=DummyTZ(-2, 3))
+        t3 = Time('0.0123', to_utc=DummyToUtc(-2, 3))
         with pytest.raises(AttributeError):
             t3.day_frac = Fraction(3, 7)
             t3.to_utc = Fraction(1, 11)
@@ -717,7 +717,7 @@ class TestTime:
     def test_308_operations_preserve_naivety(self):
         a = Time('3/8')
         b = Time((3,4), to_utc='1/6')
-        test_obj = DummyTZ(-1, 8)
+        test_obj = DummyToUtc(-1, 8)
         c = Time(0.25, to_utc=test_obj)
 
         for td in (TimeDelta(0.5), TimeDelta(-0.25), TimeDelta(3), TimeDelta(-2.75)):
