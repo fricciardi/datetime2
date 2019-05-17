@@ -65,7 +65,7 @@ There are four constructors for a western time. The default one is:
 
 The other three constructors are:
 
-.. class:: datetimeWesternTime.in_hours(hour)
+.. class:: WesternTime.in_hours(hour)
 
    Return an object that represents the moment of the day specified in
    hours, possibly fractional, elapsed from midnight. The argument must be a
