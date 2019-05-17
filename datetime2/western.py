@@ -213,7 +213,7 @@ class WesternTime:
             self._to_utc = None
         else:
             try:
-                candidate_tz = verify_fractional_value(to_utc, min_excl=-24, max_excl=+24)
+                candidate_tz = verify_fractional_value(to_utc, min=-24, max=+24)
             except TypeError as exc:
                 raise TypeError("Time zone is not a valid fractional value") from exc
             except ValueError as exc:
