@@ -119,7 +119,7 @@ western_time_microseconds = [
 ]
 
 to_utc_test_data = [
-    ["-24",             Fraction(24, 1)],
+    ["-24",             Fraction(-24, 1)],
     [Decimal("-23.5"),  Fraction(-47, 2)],
     [-2,                Fraction(-2, 1)],
     [-0.5,              Fraction(-1, 2)],
