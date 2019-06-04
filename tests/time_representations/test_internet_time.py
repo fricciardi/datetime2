@@ -27,7 +27,7 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__author__ = 'Francesco Ricciardi <francescor2010 at yahoo.it>'
+__author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
 from decimal import Decimal
 from fractions import Fraction
@@ -38,51 +38,44 @@ import pytest
 from datetime2.modern import InternetTime
 
 
-
-INF = float('inf')
-NAN = float('nan')
+INF = float("inf")
+NAN = float("nan")
 
 internet_time_test_data = [
     # day_frac           internet as fraction
     # numer  denom       beat
-
     # Boundary conditions around midnight
     # beat and half beat
-    [    "0/1",         0],
-    [    "1/1000",      1],
-    [  "999/1000",    999],
-    [    "1/2000",      0.5],
-    [ "1999/2000",    999.5],
-
+    ["0/1", 0],
+    ["1/1000", 1],
+    ["999/1000", 999],
+    ["1/2000", 0.5],
+    ["1999/2000", 999.5],
     # fractional part of day
-    [    "1/10",      100],
-    [    "1/100",      10],
-    [    "1/1000",      1],
-    [    "1/10000",   "1/10"],
-    [    "1/100000",  "1/100"],
-    [    "1/1000000", "1/1000"]
+    ["1/10", 100],
+    ["1/100", 10],
+    ["1/1000", 1],
+    ["1/10000", "1/10"],
+    ["1/100000", "1/100"],
+    ["1/1000000", "1/1000"],
 ]
 
-internet_time_out_of_range = [
-    -1,
-    1000,
-    "10001/10",
-    1001
-]
+internet_time_out_of_range = [-1, 1000, "10001/10", 1001]
 
 internet_time_millibeat = [
     # boundary conditions
-    [   "0/1",       "000"],
-    [   "1/1000",    "001"],
-    [   "1/2000",    "000"],
-    [ "999/1000",    "999"],
-    ["1999/2000",    "999"],
+    ["0/1", "000"],
+    ["1/1000", "001"],
+    ["1/2000", "000"],
+    ["999/1000", "999"],
+    ["1999/2000", "999"],
     # a few not so random numbers
-    [     "5/7",     "714"],
-    [ "12345/56789", "217"]
+    ["5/7", "714"],
+    ["12345/56789", "217"],
 ]
 
-class TestInternet():
+
+class TestInternet:
     def test_000_constructor(self):
         for test_row in internet_time_test_data:
             beat = test_row[1]
@@ -90,10 +83,10 @@ class TestInternet():
             assert internet.beat == Fraction(beat)
 
     def test_003_constructor_types_for_beats(self):
-        for integer_beat in (3, '3'):
+        for integer_beat in (3, "3"):
             internet = InternetTime(integer_beat)
             assert internet.beat == 3
-        for integer_beat in (1.25, Fraction(5, 4), '1.25', Decimal('1.25'), '5/4'):
+        for integer_beat in (1.25, Fraction(5, 4), "1.25", Decimal("1.25"), "5/4"):
             internet = InternetTime(integer_beat)
             assert internet.beat == Fraction(5, 4)
 
@@ -196,7 +189,17 @@ class TestInternet():
             with pytest.raises(TypeError):
                 internet >= par
         # exception with numeric types (all invalid) and other objects
-        for par in (1, 1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN, SomeClass()):
+        for par in (
+            1,
+            1.0,
+            Fraction(1, 1),
+            Decimal(1),
+            1j,
+            1 + 1j,
+            INF,
+            NAN,
+            SomeClass(),
+        ):
             assert not internet == par
             assert internet != par
             with pytest.raises(TypeError):
@@ -233,11 +236,14 @@ class TestInternet():
 
     def test_500_repr(self):
         import datetime2
+
         for test_row in internet_time_test_data:
             beat = Fraction(test_row[1])
             internet = InternetTime(beat)
             internet_repr = repr(internet)
-            assert internet_repr.startswith('datetime2.modern.InternetTime(') and internet_repr.endswith(')')
+            assert internet_repr.startswith(
+                "datetime2.modern.InternetTime("
+            ) and internet_repr.endswith(")")
             args = internet_repr[30:-1]
             assert internet == eval(internet_repr)
             assert Fraction(eval(args)) == beat
@@ -246,29 +252,29 @@ class TestInternet():
         for test_row in internet_time_test_data:
             beat = Fraction(test_row[1])
             internet = InternetTime(beat)
-            expected = '@{:03d}'.format(floor(beat))
+            expected = "@{:03d}".format(floor(beat))
             assert str(internet) == expected
 
     def test_530_cformat_numbers(self):
         for test_row in internet_time_test_data:
             beat = Fraction(test_row[1])
             internet = InternetTime(beat)
-            assert internet.cformat('%b') == '{:03d}'.format(floor(beat))
+            assert internet.cformat("%b") == "{:03d}".format(floor(beat))
 
     def test_540_cformat_millibeat(self):
         for fraction, millibeat in internet_time_millibeat:
             internet = InternetTime(Fraction(fraction))
-            assert internet.cformat('%f') == millibeat
+            assert internet.cformat("%f") == millibeat
 
     def test_550_cformat_percent(self):
         internet = InternetTime(2)
-        assert internet.cformat('%') == '%'
-        assert internet.cformat('%%') == '%'
-        assert internet.cformat('%%%') == '%%'
-        assert internet.cformat('abcd%') == 'abcd%'
-        assert internet.cformat('%k') == '%k'
-        assert internet.cformat('a%k') == 'a%k'
-        assert internet.cformat('%k%') == '%k%'
+        assert internet.cformat("%") == "%"
+        assert internet.cformat("%%") == "%"
+        assert internet.cformat("%%%") == "%%"
+        assert internet.cformat("abcd%") == "abcd%"
+        assert internet.cformat("%k") == "%k"
+        assert internet.cformat("a%k") == "a%k"
+        assert internet.cformat("%k%") == "%k%"
 
     def test_560_cformat_invalid_type(self):
         western = InternetTime(3)
@@ -286,13 +292,12 @@ class TestInternet():
                 assert internet == derived
 
     def test_920_subclass(self):
-
         class W(InternetTime):
             theAnswer = 42
 
             def __init__(self, *args, **kws):
                 temp = kws.copy()
-                self.extra = temp.pop('extra')
+                self.extra = temp.pop("extra")
                 InternetTime.__init__(self, *args, **temp)
 
             def newmeth(self, start):
@@ -305,4 +310,3 @@ class TestInternet():
         assert internet2.extra == 7
         assert internet1.to_day_frac() == internet2.to_day_frac()
         assert internet2.newmeth(-7) == internet1.beat * 2 - 7
-

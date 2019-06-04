@@ -31,10 +31,12 @@
 from fractions import Fraction
 
 
-__author__ = 'Francesco Ricciardi <francescor2010 at yahoo.it>'
+__author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
 
-def verify_fractional_value(fractional, min=None, max=None, min_excl=None, max_excl=None):
+def verify_fractional_value(
+    fractional, min=None, max=None, min_excl=None, max_excl=None
+):
     """Raised exceptions:
     - RuntimeError: if both min and min:excl, or max and max_excl are provided.
     - TypeError: if tuple argument for fraction is invalid or has worng values
@@ -49,7 +51,7 @@ def verify_fractional_value(fractional, min=None, max=None, min_excl=None, max_e
             if len(fractional) == 2:
                 value = Fraction(*fractional)
             else:
-                raise TypeError('Tuple argument must have two elements.')
+                raise TypeError("Tuple argument must have two elements.")
         else:
             value = Fraction(fractional)
     except ZeroDivisionError as exc:

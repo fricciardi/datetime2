@@ -7,7 +7,7 @@
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #
-# * Redistributions of source code must retain the above copyright notice, 
+# * Redistributions of source code must retain the above copyright notice,
 #   this list of conditions and the following disclaimer.
 # * Redistributions in binary form must reproduce the above copyright notice,
 #   this list of conditions and the following disclaimer in the documentation
@@ -21,13 +21,13 @@
 # MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
 # EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY DIRECT, INDIRECT,
 # INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
 # OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__author__ = 'Francesco Ricciardi <francescor2010 at yahoo.it>'
+__author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
 import time
 from fractions import Fraction
@@ -40,25 +40,36 @@ from . import western, modern
 ##############################################################################
 # OS dependent functions
 #
-#TODO: When Python 3.4 will be no more supported, reuse underscore in long integer constants
+# TODO: When Python 3.4 will be no more supported, reuse underscore in long integer constants
+
 
 def get_moment_complete():
     """Return local date and time as day_count, local time as day fraction, and,
     if possible, distance to UTC as fraction of a day."""
     try:
-        moment_ns = time.time_ns() # time in ns from epoch; note epoch is platform dependent
+        moment_ns = (
+            time.time_ns()
+        )  # time in ns from epoch; note epoch is platform dependent
     except AttributeError:
         moment_ns = int(time.time() * 1000000000)  # time() returns a float in second
     # for the moment we are using time module's functions to get localtime
-    #TODO: check if possible to implement something independent from time module, see e.g. tzlocal
+    # TODO: check if possible to implement something independent from time module, see e.g. tzlocal
     seconds, nanoseconds = divmod(moment_ns, 1000000000)
     moment = time.localtime(seconds)
     year = moment.tm_year
-    days_before_year = (year - 1) * 365 + (year - 1) // 4 - (year - 1) // 100 + (year - 1) // 400
+    days_before_year = (
+        (year - 1) * 365 + (year - 1) // 4 - (year - 1) // 100 + (year - 1) // 400
+    )
     day_count = days_before_year + moment.tm_yday
-    day_frac = Fraction(moment.tm_hour, 24) + Fraction(moment.tm_min, 1440) + Fraction(moment.tm_sec, 86400) + Fraction(nanoseconds, 86400000000000)
+    day_frac = (
+        Fraction(moment.tm_hour, 24)
+        + Fraction(moment.tm_min, 1440)
+        + Fraction(moment.tm_sec, 86400)
+        + Fraction(nanoseconds, 86400000000000)
+    )
     to_utc = -Fraction(moment.tm_gmtoff, 86400)
     return day_count, day_frac, to_utc
+
 
 ##############################################################################
 #
@@ -66,11 +77,12 @@ def get_moment_complete():
 #
 ##############################################################################
 
+
 class TimeDelta:
     # ==>> STUB <<==
     def __init__(self, days):
         self._days = Fraction(days)
-        
+
     def __repr__(self):
         return "TimeDelta({})".format(self.days)
 
@@ -88,13 +100,16 @@ class TimeDelta:
 #
 ##############################################################################
 
+
 class Date:
     def __init__(self, day_count):
         # TODO: consider using the number hierarchy
         if isinstance(day_count, int):
             self._day_count = day_count
         else:
-            raise TypeError("day_count argument for Date must be an integer.".format(str(day_count)))
+            raise TypeError(
+                "day_count argument for Date must be an integer.".format(str(day_count))
+            )
 
     @classmethod
     def today(cls):
@@ -103,21 +118,25 @@ class Date:
     @property
     def day_count(self):
         return self._day_count
-    
+
     def __repr__(self):
         return "datetime2.{}({})".format(self.__class__.__name__, self.day_count)
-    
+
     def __str__(self):
         return "R.D. {}".format(self.day_count)
-    
+
     def __add__(self, other):
         if isinstance(other, TimeDelta):
             if other.days != floor(other.days):
-                raise ValueError("Date object cannot be added to non integral TimeDelta.")
-            return self.__class__(self.day_count + floor(other.days)) # this way we ensure day count is integer
+                raise ValueError(
+                    "Date object cannot be added to non integral TimeDelta."
+                )
+            return self.__class__(
+                self.day_count + floor(other.days)
+            )  # this way we ensure day count is integer
         else:
             return NotImplemented
-        
+
     __radd__ = __add__
 
     def __sub__(self, other):
@@ -125,7 +144,9 @@ class Date:
             return TimeDelta(self.day_count - other.day_count)
         elif isinstance(other, TimeDelta):
             if other.days != floor(other.days):
-                raise ValueError("non integral TimeDelta cannot be subtracted from Date.")
+                raise ValueError(
+                    "non integral TimeDelta cannot be subtracted from Date."
+                )
             return self.__class__(self.day_count - floor(other.days))
         else:
             return NotImplemented
@@ -134,7 +155,7 @@ class Date:
     def __eq__(self, other):
         if isinstance(other, Date):
             return self.day_count == other.day_count
-        elif hasattr(other, 'day_count'):
+        elif hasattr(other, "day_count"):
             return NotImplemented
         else:
             return False
@@ -142,7 +163,7 @@ class Date:
     def __ne__(self, other):
         if isinstance(other, Date):
             return self.day_count != other.day_count
-        elif hasattr(other, 'day_count'):
+        elif hasattr(other, "day_count"):
             return NotImplemented
         else:
             return True
@@ -150,34 +171,50 @@ class Date:
     def __gt__(self, other):
         if isinstance(other, Date):
             return self.day_count > other.day_count
-        elif hasattr(other, 'day_count'):
+        elif hasattr(other, "day_count"):
             return NotImplemented
         else:
-            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
+            raise TypeError(
+                "You cannot compare '{}' with '{}'.".format(
+                    str(type(self)), str(type(other))
+                )
+            )
 
     def __ge__(self, other):
         if isinstance(other, Date):
             return self.day_count >= other.day_count
-        elif hasattr(other, 'day_count'):
+        elif hasattr(other, "day_count"):
             return NotImplemented
         else:
-            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
+            raise TypeError(
+                "You cannot compare '{}' with '{}'.".format(
+                    str(type(self)), str(type(other))
+                )
+            )
 
     def __lt__(self, other):
         if isinstance(other, Date):
             return self.day_count < other.day_count
-        elif hasattr(other, 'day_count'):
+        elif hasattr(other, "day_count"):
             return NotImplemented
         else:
-            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
+            raise TypeError(
+                "You cannot compare '{}' with '{}'.".format(
+                    str(type(self)), str(type(other))
+                )
+            )
 
     def __le__(self, other):
         if isinstance(other, Date):
             return self.day_count <= other.day_count
-        elif hasattr(other, 'day_count'):
+        elif hasattr(other, "day_count"):
             return NotImplemented
         else:
-            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
+            raise TypeError(
+                "You cannot compare '{}' with '{}'.".format(
+                    str(type(self)), str(type(other))
+                )
+            )
 
     # hash value
     def __hash__(self):
@@ -186,13 +223,17 @@ class Date:
     @classmethod
     def register_new_calendar(cls, attribute_name, calendar_class):
         if not isinstance(attribute_name, str) or not attribute_name.isidentifier():
-            raise ValueError('Invalid calendar attribute name: {}.'.format(attribute_name))
+            raise ValueError(
+                "Invalid calendar attribute name: {}.".format(attribute_name)
+            )
         if hasattr(cls, attribute_name):
-            raise AttributeError('Calendar attribute already existing: {}.'.format(attribute_name))
-        if not hasattr(calendar_class, 'from_rata_die'):
-            raise TypeError('Calendar class does not have method from_rata_die.')
-        if not hasattr(calendar_class, 'to_rata_die'):
-            raise TypeError('Calendar class does not have method to_rata_die.')
+            raise AttributeError(
+                "Calendar attribute already existing: {}.".format(attribute_name)
+            )
+        if not hasattr(calendar_class, "from_rata_die"):
+            raise TypeError("Calendar class does not have method from_rata_die.")
+        if not hasattr(calendar_class, "to_rata_die"):
+            raise TypeError("Calendar class does not have method to_rata_die.")
 
         class ModifiedClass(type):
             def __call__(klass, *args, **kwargs):
@@ -202,7 +243,7 @@ class Date:
                 return date_obj
 
         # Create the modified calendar class
-        new_class_name = '{}In{}'.format(calendar_class.__name__, cls.__name__)
+        new_class_name = "{}In{}".format(calendar_class.__name__, cls.__name__)
         modified_calendar_class = ModifiedClass(new_class_name, (calendar_class,), {})
 
         class CalendarAttribute:
@@ -216,19 +257,25 @@ class Date:
                     return self.modified_calendar_class
                 else:
                     assert self.attribute_name not in instance.__dict__
-                    date_obj = self.modified_calendar_class.from_rata_die(instance.day_count)
+                    date_obj = self.modified_calendar_class.from_rata_die(
+                        instance.day_count
+                    )
                     calendar_obj = getattr(date_obj, self.attribute_name)
                     setattr(instance, self.attribute_name, calendar_obj)
                     return calendar_obj
 
-        setattr(cls, attribute_name, CalendarAttribute(attribute_name, modified_calendar_class))
+        setattr(
+            cls,
+            attribute_name,
+            CalendarAttribute(attribute_name, modified_calendar_class),
+        )
 
 
 ##############################################################################
 # Register current calendars
 #
-Date.register_new_calendar('gregorian', western.GregorianCalendar)
-Date.register_new_calendar('iso', modern.IsoCalendar)
+Date.register_new_calendar("gregorian", western.GregorianCalendar)
+Date.register_new_calendar("iso", modern.IsoCalendar)
 
 
 ##############################################################################
@@ -236,6 +283,7 @@ Date.register_new_calendar('iso', modern.IsoCalendar)
 # Time
 #
 ##############################################################################
+
 
 class Time:
     def __init__(self, day_frac, *, to_utc=None):
@@ -245,11 +293,13 @@ class Time:
             self._to_utc = None
         else:
             # aware instance
-            if hasattr(to_utc, 'time_to_utc'):
+            if hasattr(to_utc, "time_to_utc"):
                 try:
                     to_utc_value = to_utc.time_to_utc()
                 except Exception as any_exc:
-                    raise TypeError("Invalid object for 'to_utc' argument.") from any_exc
+                    raise TypeError(
+                        "Invalid object for 'to_utc' argument."
+                    ) from any_exc
             else:
                 to_utc_value = to_utc
             self._to_utc = verify_fractional_value(to_utc_value, min=-1, max=1)
@@ -291,7 +341,9 @@ class Time:
 
     def __str__(self):
         if self.to_utc:
-            return "{} of a day, {} of a day to UTC".format(str(self.day_frac), str(self.to_utc))
+            return "{} of a day, {} of a day to UTC".format(
+                str(self.day_frac), str(self.to_utc)
+            )
         else:
             return "{} of a day".format(str(self.day_frac))
 
@@ -315,7 +367,9 @@ class Time:
                 else:
                     raise ValueError
             elif other.to_utc is not None:
-                return TimeDelta(self.day_frac + self.utc - other.day_frac - other.to_utc)
+                return TimeDelta(
+                    self.day_frac + self.utc - other.day_frac - other.to_utc
+                )
             else:
                 raise ValueError
         elif isinstance(other, TimeDelta):
@@ -344,7 +398,7 @@ class Time:
                 return self.day_frac == other.day_frac
             else:
                 return Time.compute_new_time(self, other) == other.day_frac
-        elif hasattr(other, 'day_frac'):
+        elif hasattr(other, "day_frac"):
             return NotImplemented
         else:
             return False
@@ -355,7 +409,7 @@ class Time:
                 return self.day_frac != other.day_frac
             else:
                 return Time.compute_new_time(self, other) != other.day_frac
-        elif hasattr(other, 'day_frac'):
+        elif hasattr(other, "day_frac"):
             return NotImplemented
         else:
             return True
@@ -366,10 +420,14 @@ class Time:
                 return self.day_frac > other.day_frac
             else:
                 return Time.compute_new_time(self, other) > other.day_frac
-        elif hasattr(other, 'day_frac'):
+        elif hasattr(other, "day_frac"):
             return NotImplemented
         else:
-            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
+            raise TypeError(
+                "You cannot compare '{}' with '{}'.".format(
+                    str(type(self)), str(type(other))
+                )
+            )
 
     def __ge__(self, other):
         if isinstance(other, Time):
@@ -377,10 +435,14 @@ class Time:
                 return self.day_frac >= other.day_frac
             else:
                 return Time.compute_new_time(self, other) >= other.day_frac
-        elif hasattr(other, 'day_frac'):
+        elif hasattr(other, "day_frac"):
             return NotImplemented
         else:
-            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
+            raise TypeError(
+                "You cannot compare '{}' with '{}'.".format(
+                    str(type(self)), str(type(other))
+                )
+            )
 
     def __lt__(self, other):
         if isinstance(other, Time):
@@ -388,10 +450,14 @@ class Time:
                 return self.day_frac < other.day_frac
             else:
                 return Time.compute_new_time(self, other) < other.day_frac
-        elif hasattr(other, 'day_frac'):
+        elif hasattr(other, "day_frac"):
             return NotImplemented
         else:
-            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
+            raise TypeError(
+                "You cannot compare '{}' with '{}'.".format(
+                    str(type(self)), str(type(other))
+                )
+            )
 
     def __le__(self, other):
         if isinstance(other, Time):
@@ -399,10 +465,14 @@ class Time:
                 return self.day_frac <= other.day_frac
             else:
                 return Time.compute_new_time(self, other) <= other.day_frac
-        elif hasattr(other, 'day_frac'):
+        elif hasattr(other, "day_frac"):
             return NotImplemented
         else:
-            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
+            raise TypeError(
+                "You cannot compare '{}' with '{}'.".format(
+                    str(type(self)), str(type(other))
+                )
+            )
 
     # hash value
     def __hash__(self):
@@ -413,11 +483,13 @@ class Time:
             raise TypeError("Cannot relocate a naive instance.")
         else:
             self_at_utc = self.day_frac + self.to_utc
-            if hasattr(new_to_utc, 'time_to_utc'):
+            if hasattr(new_to_utc, "time_to_utc"):
                 try:
                     new_to_utc_value = new_to_utc.time_to_utc()
                 except Exception as any_exc:
-                    raise TypeError("Invalid object for 'new_to_utc' argument.") from any_exc
+                    raise TypeError(
+                        "Invalid object for 'new_to_utc' argument."
+                    ) from any_exc
             else:
                 new_to_utc_value = new_to_utc
             try:
@@ -425,7 +497,7 @@ class Time:
                     if len(new_to_utc_value) == 2:
                         real_to_utc_value = Fraction(*new_to_utc_value)
                     else:
-                        raise TypeError('New time to UTC tuple is invalid')
+                        raise TypeError("New time to UTC tuple is invalid")
                 else:
                     real_to_utc_value = Fraction(new_to_utc_value)
             except ZeroDivisionError:
@@ -441,13 +513,25 @@ class Time:
     @classmethod
     def register_new_time(cls, attribute_name, time_repr_class):
         if not isinstance(attribute_name, str) or not attribute_name.isidentifier():
-            raise ValueError("Invalid attribute name ('{}') for time representation.".format(attribute_name))
+            raise ValueError(
+                "Invalid attribute name ('{}') for time representation.".format(
+                    attribute_name
+                )
+            )
         if hasattr(cls, attribute_name):
-            raise AttributeError('Time representation attribute already existing: {}.'.format(attribute_name))
-        if not hasattr(time_repr_class, 'from_day_frac'):
-            raise TypeError('Time representation class does not have method from_day_frac.')
-        if not hasattr(time_repr_class, 'to_day_frac'):
-            raise TypeError('Time representation class does not have method to_day_frac.')
+            raise AttributeError(
+                "Time representation attribute already existing: {}.".format(
+                    attribute_name
+                )
+            )
+        if not hasattr(time_repr_class, "from_day_frac"):
+            raise TypeError(
+                "Time representation class does not have method from_day_frac."
+            )
+        if not hasattr(time_repr_class, "to_day_frac"):
+            raise TypeError(
+                "Time representation class does not have method to_day_frac."
+            )
 
         class ModifiedClass(type):
             def __call__(klass, *args, **kwargs):
@@ -457,7 +541,7 @@ class Time:
                 return time_obj
 
         # Create the modified calendar class
-        new_class_name = '{}In{}'.format(time_repr_class.__name__, cls.__name__)
+        new_class_name = "{}In{}".format(time_repr_class.__name__, cls.__name__)
         modified_time_repr_class = ModifiedClass(new_class_name, (time_repr_class,), {})
 
         class TimeReprAttribute:
@@ -471,17 +555,22 @@ class Time:
                     return self.modified_time_repr_class
                 else:
                     assert self.attr_name not in instance.__dict__
-                    time_obj = self.modified_time_repr_class.from_day_frac(instance.day_frac)
+                    time_obj = self.modified_time_repr_class.from_day_frac(
+                        instance.day_frac
+                    )
                     time_repr_obj = getattr(time_obj, self.attr_name)
                     setattr(instance, self.attr_name, time_repr_obj)
                     return time_repr_obj
 
-        setattr(cls, attribute_name, TimeReprAttribute(attribute_name, modified_time_repr_class))
+        setattr(
+            cls,
+            attribute_name,
+            TimeReprAttribute(attribute_name, modified_time_repr_class),
+        )
 
 
 ##############################################################################
 # Register current time representations
 #
-Time.register_new_time('western', western.WesternTime)
-Time.register_new_time('internet', modern.InternetTime)
-
+Time.register_new_time("western", western.WesternTime)
+Time.register_new_time("internet", modern.InternetTime)

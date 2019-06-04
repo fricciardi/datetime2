@@ -7,7 +7,7 @@
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #
-# * Redistributions of source code must retain the above copyright notice, 
+# * Redistributions of source code must retain the above copyright notice,
 #   this list of conditions and the following disclaimer.
 # * Redistributions in binary form must reproduce the above copyright notice,
 #   this list of conditions and the following disclaimer in the documentation
@@ -21,13 +21,13 @@
 # MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
 # EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY DIRECT, INDIRECT,
 # INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
 # OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__author__ = 'Francesco Ricciardi <francescor2010 at yahoo.it>'
+__author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
 from decimal import Decimal
 from fractions import Fraction
@@ -44,7 +44,22 @@ NAN = float("nan")
 #############################################################################
 # Date tests
 #
-date_test_data = (-2, -1, 0, 1, 2, -1000, 1000, -123456789, 123456789, -999999999, 999999999, -1000000000, 1000000000)
+date_test_data = (
+    -2,
+    -1,
+    0,
+    1,
+    2,
+    -1000,
+    1000,
+    -123456789,
+    123456789,
+    -999999999,
+    999999999,
+    -1000000000,
+    1000000000,
+)
+
 
 class TestDate:
     def test_000_valid_parameter_types(self):
@@ -60,7 +75,7 @@ class TestDate:
         with pytest.raises(TypeError):
             Date(1, 2)
         # exception with non-numeric types
-        for par in ('1', (1,), [1], {1:1}, (), [], {}, None):
+        for par in ("1", (1,), [1], {1: 1}, (), [], {}, None):
             with pytest.raises(TypeError):
                 Date(par)
         # exception with invalid numeric types
@@ -218,9 +233,9 @@ class TestDate:
         assert d1 >= d2
         assert not (d1 != d2)
         assert not (d1 < d2)
-        assert not(d1 > d2)
+        assert not (d1 > d2)
 
-        d3 = Date(4242)   # this is larger than d1
+        d3 = Date(4242)  # this is larger than d1
         assert d1 < d3
         assert d3 > d1
         assert d1 <= d3
@@ -338,11 +353,12 @@ class TestDate:
 
     def test_500_repr(self):
         import datetime2
+
         for day_count in date_test_data:
             d = Date(day_count)
             date_repr = repr(d)
-            names, args = date_repr.split('(')
-            assert names.split('.') == ['datetime2', 'Date']
+            names, args = date_repr.split("(")
+            assert names.split(".") == ["datetime2", "Date"]
             args = args[:-1]  # drop ')'
             assert int(args) == day_count
             assert d == eval(repr(d))
@@ -367,7 +383,7 @@ class TestDate:
 
             def __init__(self, *args, **kws):
                 temp = kws.copy()
-                self.extra = temp.pop('extra')
+                self.extra = temp.pop("extra")
                 Date.__init__(self, *args, **temp)
 
             def newmeth(self, start):
@@ -403,20 +419,70 @@ class DummyToUtc:
     def time_to_utc(self):
         return Fraction(self.num, self.den)
 
+
 time_test_data = [
-    [Fraction(0, 1), [0, Fraction(0), Decimal('0'), 0.0, '0', '0/33', (0, 5)]],
-    [Fraction(1, 4), [Fraction(1, 4), Decimal('0.25'), 0.25, '0.25', '1/4', (2, 8)]]]
+    [Fraction(0, 1), [0, Fraction(0), Decimal("0"), 0.0, "0", "0/33", (0, 5)]],
+    [Fraction(1, 4), [Fraction(1, 4), Decimal("0.25"), 0.25, "0.25", "1/4", (2, 8)]],
+]
 # we are not going to test more values, because we don't want to test the Fraction constructor :-)
 
 to_utc_test_data = [
-    [Fraction(0, 1), [0, Fraction(0), Decimal('0'), 0.0, '0', '0/33', (0, 5), DummyToUtc(0, -3)]],
-    [Fraction(1, 4), [Fraction(1, 4), Decimal('0.25'), 0.25, '0.25', '1/4', (2, 8), DummyToUtc(3, 12)]],
-    [Fraction(1, -4), [Fraction(-1, 4), Decimal('-0.25'), -0.25, '-0.25', '-1/4', (2, -8), DummyToUtc(-3, 12)]]]
+    [
+        Fraction(0, 1),
+        [0, Fraction(0), Decimal("0"), 0.0, "0", "0/33", (0, 5), DummyToUtc(0, -3)],
+    ],
+    [
+        Fraction(1, 4),
+        [
+            Fraction(1, 4),
+            Decimal("0.25"),
+            0.25,
+            "0.25",
+            "1/4",
+            (2, 8),
+            DummyToUtc(3, 12),
+        ],
+    ],
+    [
+        Fraction(1, -4),
+        [
+            Fraction(-1, 4),
+            Decimal("-0.25"),
+            -0.25,
+            "-0.25",
+            "-1/4",
+            (2, -8),
+            DummyToUtc(-3, 12),
+        ],
+    ],
+]
 
 # but we want to test with a few strange values
-time_strange_test_data = (Fraction(123, 4567), 0.999999, '0.999999', '0.0000001', '5/456789', (123, 4567))
-to_utc_strange_test_data = [1, Fraction(123, 4567), 0.999999, '0.999999', '0.0000001', '5/456789', (123, 4567),
-                            -1, Fraction(-123, 4567), -0.999999, '-0.999999', '-0.0000001', '-5/456789', (123, -4567)]
+time_strange_test_data = (
+    Fraction(123, 4567),
+    0.999999,
+    "0.999999",
+    "0.0000001",
+    "5/456789",
+    (123, 4567),
+)
+to_utc_strange_test_data = [
+    1,
+    Fraction(123, 4567),
+    0.999999,
+    "0.999999",
+    "0.0000001",
+    "5/456789",
+    (123, 4567),
+    -1,
+    Fraction(-123, 4567),
+    -0.999999,
+    "-0.999999",
+    "-0.0000001",
+    "-5/456789",
+    (123, -4567),
+]
+
 
 class TestTime:
     def test_000_valid_argument_types(self):
@@ -449,7 +515,7 @@ class TestTime:
         with pytest.raises(TypeError):
             Time(1, 2)
         # exception with non-numeric types
-        for par in (1j, (1,), [1], {1:1}, [], {}, None, (1,2,3)):
+        for par in (1j, (1,), [1], {1: 1}, [], {}, None, (1, 2, 3)):
             with pytest.raises(TypeError):
                 Time(par)
 
@@ -458,14 +524,14 @@ class TestTime:
         # this object has a time_to_utc attribute, but is isn't callable
         class WrongObj:
             def __init__(self):
-                self.time_to_utc = 'foo'
+                self.time_to_utc = "foo"
 
         # exception with invalid parameter name
         with pytest.raises(TypeError):
-            Time(1, foobar='barfoo')
+            Time(1, foobar="barfoo")
 
         # exception with non-numeric types
-        for par in (1j, (1,), [1], {1:1}, [], {}, (1,2,3), WrongObj()):
+        for par in (1j, (1,), [1], {1: 1}, [], {}, (1, 2, 3), WrongObj()):
             with pytest.raises(TypeError):
                 Time("0.4444", to_utc=par)
 
@@ -476,7 +542,15 @@ class TestTime:
                 Time(par)
 
         # same for tuple argument
-        for par in ( (1000, 1), (4, 2), (2, 2), (-1, -1), (-1, 1000000), (-3, 3), (1000000, -2)):
+        for par in (
+            (1000, 1),
+            (4, 2),
+            (2, 2),
+            (-1, -1),
+            (-1, 1000000),
+            (-3, 3),
+            (1000000, -2),
+        ):
             with pytest.raises(ValueError):
                 Time(par)
 
@@ -491,7 +565,7 @@ class TestTime:
                 Time("0.5555", to_utc=par)
 
         # same for tuple argument
-        for par in ( (-100, 1), (-4, 3), (4, 3), (100, 1) ):
+        for par in ((-100, 1), (-4, 3), (4, 3), (100, 1)):
             with pytest.raises(ValueError):
                 Time("0.6666", to_utc=par)
 
@@ -508,7 +582,11 @@ class TestTime:
         count = 0
         while count < 3:
             datetime_now = datetime.datetime.now()
-            datetime_frac_seconds = datetime_now.hour * 3600 + datetime_now.minute * 60 + datetime_now.second
+            datetime_frac_seconds = (
+                datetime_now.hour * 3600
+                + datetime_now.minute * 60
+                + datetime_now.second
+            )
             time_now = Time.now()
             if int(time_now.day_frac * 86400) == datetime_frac_seconds:
                 break
@@ -525,7 +603,11 @@ class TestTime:
         count = 0
         while count < 3:
             datetime_now = datetime.datetime.utcnow()
-            datetime_frac_seconds = datetime_now.hour * 3600 + datetime_now.minute * 60 + datetime_now.second
+            datetime_frac_seconds = (
+                datetime_now.hour * 3600
+                + datetime_now.minute * 60
+                + datetime_now.second
+            )
             time_now = Time.now(to_utc=0)
             if int(time_now.day_frac * 86400) == datetime_frac_seconds:
                 break
@@ -537,12 +619,18 @@ class TestTime:
         count = 0
         while count < 3:
             datetime_now = datetime.datetime.utcnow()
-            datetime_frac_seconds = datetime_now.hour * 3600 + datetime_now.minute * 60 + datetime_now.second
+            datetime_frac_seconds = (
+                datetime_now.hour * 3600
+                + datetime_now.minute * 60
+                + datetime_now.second
+            )
             time_now = Time.now(to_utc=DummyToUtc(0, 1))
             if int(time_now.day_frac * 86400) == datetime_frac_seconds:
                 break
             count += 1
-        assert count < 3, "Unable to get at least one a correct Time.now(to_utc=DummyToUtc(0, 1))"
+        assert (
+            count < 3
+        ), "Unable to get at least one a correct Time.now(to_utc=DummyToUtc(0, 1))"
         assert time_now.to_utc == 0
 
     def test_040_localnow(self):
@@ -554,7 +642,11 @@ class TestTime:
         count = 0
         while count < 3:
             datetime_now = datetime.datetime.now()
-            datetime_frac_seconds = datetime_now.hour * 3600 + datetime_now.minute * 60 + datetime_now.second
+            datetime_frac_seconds = (
+                datetime_now.hour * 3600
+                + datetime_now.minute * 60
+                + datetime_now.second
+            )
             time_now = Time.localnow()
             if int(time_now.day_frac * 86400) == datetime_frac_seconds:
                 break
@@ -571,7 +663,11 @@ class TestTime:
         count = 0
         while count < 3:
             datetime_now = datetime.datetime.utcnow()
-            datetime_frac_seconds = datetime_now.hour * 3600 + datetime_now.minute * 60 + datetime_now.second
+            datetime_frac_seconds = (
+                datetime_now.hour * 3600
+                + datetime_now.minute * 60
+                + datetime_now.second
+            )
             time_now = Time.utcnow()
             if int(time_now.day_frac * 86400) == datetime_frac_seconds:
                 break
@@ -581,15 +677,15 @@ class TestTime:
 
     def test_100_write_attributes(self):
         "This attribute is read-only."
-        t1 = Time('0.12345')
+        t1 = Time("0.12345")
         with pytest.raises(AttributeError):
             t1.day_frac = Fraction(3, 7)
             t1.to_utc = Fraction(1, 11)
-        t2 = Time('0.6789', to_utc='-1/2')
+        t2 = Time("0.6789", to_utc="-1/2")
         with pytest.raises(AttributeError):
             t2.day_frac = Fraction(3, 7)
             t2.to_utc = Fraction(1, 11)
-        t3 = Time('0.0123', to_utc=DummyToUtc(-2, 3))
+        t3 = Time("0.0123", to_utc=DummyToUtc(-2, 3))
         with pytest.raises(AttributeError):
             t3.day_frac = Fraction(3, 7)
             t3.to_utc = Fraction(1, 11)
@@ -600,7 +696,7 @@ class TestTime:
         # let's tests this both on class and instance
         with pytest.raises(AttributeError):
             Time.unknown
-        t = Time('0.12345')
+        t = Time("0.12345")
         with pytest.raises(AttributeError):
             t.unknown
 
@@ -638,7 +734,7 @@ class TestTime:
         assert zero + b == Time(0.25)
         assert plus_half + b == Time(0.75)
         assert minus_half + b == Time(0.75)
-        assert integer + b  == Time(0.25)
+        assert integer + b == Time(0.25)
         assert zero + c == Time(0.75)
         assert plus_half + c == Time(0.25)
         assert minus_half + c == Time(0.25)
@@ -660,9 +756,9 @@ class TestTime:
         assert c - integer == Time(0.75)
 
     def test_302_valid_operations_to_utc(self):
-        a = Time(0, to_utc='1/3')
-        b = Time(0.25, to_utc='-1/4')
-        c = Time(0.75, to_utc='1/6')
+        a = Time(0, to_utc="1/3")
+        b = Time(0.25, to_utc="-1/4")
+        c = Time(0.75, to_utc="1/6")
         zero = TimeDelta(0)
         # note that TimeDelta is in days
         plus_half = TimeDelta(0.5)
@@ -671,52 +767,52 @@ class TestTime:
 
         # Addition between Time and TimeDelta
         # test with zero, negative and positive dates
-        assert a + zero == Time(0, to_utc='1/3')
-        assert a + plus_half == Time(0.5, to_utc='1/3')
-        assert a + minus_half == Time(0.5, to_utc='1/3')
-        assert a + integer == Time(0, to_utc='1/3')
-        assert b + zero == Time(0.25, to_utc='-1/4')
-        assert b + plus_half == Time(0.75, to_utc='-1/4')
-        assert b + minus_half == Time(0.75, to_utc='-1/4')
-        assert b + integer == Time(0.25, to_utc='-1/4')
-        assert c + zero == Time(0.75, to_utc='1/6')
-        assert c + plus_half == Time(0.25, to_utc='1/6')
-        assert c + minus_half == Time(0.25, to_utc='1/6')
-        assert c + integer == Time(0.75, to_utc='1/6')
+        assert a + zero == Time(0, to_utc="1/3")
+        assert a + plus_half == Time(0.5, to_utc="1/3")
+        assert a + minus_half == Time(0.5, to_utc="1/3")
+        assert a + integer == Time(0, to_utc="1/3")
+        assert b + zero == Time(0.25, to_utc="-1/4")
+        assert b + plus_half == Time(0.75, to_utc="-1/4")
+        assert b + minus_half == Time(0.75, to_utc="-1/4")
+        assert b + integer == Time(0.25, to_utc="-1/4")
+        assert c + zero == Time(0.75, to_utc="1/6")
+        assert c + plus_half == Time(0.25, to_utc="1/6")
+        assert c + minus_half == Time(0.25, to_utc="1/6")
+        assert c + integer == Time(0.75, to_utc="1/6")
 
         # Reversed addition between Time and TimeDelta
         # test with zero, negative and positive dates
-        assert zero + a == Time(0, to_utc='1/3')
-        assert plus_half + a == Time(0.5, to_utc='1/3')
-        assert minus_half + a == Time(0.5, to_utc='1/3')
-        assert integer + a == Time(0, to_utc='1/3')
-        assert zero + b == Time(0.25, to_utc='-1/4')
-        assert plus_half + b == Time(0.75, to_utc='-1/4')
-        assert minus_half + b == Time(0.75, to_utc='-1/4')
-        assert integer + b  == Time(0.25, to_utc='-1/4')
-        assert zero + c == Time(0.75, to_utc='1/6')
-        assert plus_half + c == Time(0.25, to_utc='1/6')
-        assert minus_half + c == Time(0.25, to_utc='1/6')
-        assert integer + c == Time(0.75, to_utc='1/6')
+        assert zero + a == Time(0, to_utc="1/3")
+        assert plus_half + a == Time(0.5, to_utc="1/3")
+        assert minus_half + a == Time(0.5, to_utc="1/3")
+        assert integer + a == Time(0, to_utc="1/3")
+        assert zero + b == Time(0.25, to_utc="-1/4")
+        assert plus_half + b == Time(0.75, to_utc="-1/4")
+        assert minus_half + b == Time(0.75, to_utc="-1/4")
+        assert integer + b == Time(0.25, to_utc="-1/4")
+        assert zero + c == Time(0.75, to_utc="1/6")
+        assert plus_half + c == Time(0.25, to_utc="1/6")
+        assert minus_half + c == Time(0.25, to_utc="1/6")
+        assert integer + c == Time(0.75, to_utc="1/6")
 
         # subtraction between Time and TimeDelta, reverse is not defined
         # test with zero, negative and positive Times
-        assert a - zero == Time(0, to_utc='1/3')
-        assert a - plus_half == Time(0.5, to_utc='1/3')
-        assert a - minus_half == Time(0.5, to_utc='1/3')
-        assert a - integer == Time(0, to_utc='1/3')
-        assert b - zero == Time(0.25, to_utc='-1/4')
-        assert b - plus_half == Time(0.75, to_utc='-1/4')
-        assert b - minus_half == Time(0.75, to_utc='-1/4')
-        assert b - integer == Time(0.25, to_utc='-1/4')
-        assert c - zero == Time(0.75, to_utc='1/6')
-        assert c - plus_half == Time(0.25, to_utc='1/6')
-        assert c - minus_half == Time(0.25, to_utc='1/6')
-        assert c - integer == Time(0.75, to_utc='1/6')
+        assert a - zero == Time(0, to_utc="1/3")
+        assert a - plus_half == Time(0.5, to_utc="1/3")
+        assert a - minus_half == Time(0.5, to_utc="1/3")
+        assert a - integer == Time(0, to_utc="1/3")
+        assert b - zero == Time(0.25, to_utc="-1/4")
+        assert b - plus_half == Time(0.75, to_utc="-1/4")
+        assert b - minus_half == Time(0.75, to_utc="-1/4")
+        assert b - integer == Time(0.25, to_utc="-1/4")
+        assert c - zero == Time(0.75, to_utc="1/6")
+        assert c - plus_half == Time(0.25, to_utc="1/6")
+        assert c - minus_half == Time(0.25, to_utc="1/6")
+        assert c - integer == Time(0.75, to_utc="1/6")
 
     def test_308_operations_preserve_naivety(self):
-        a = Time('3/8')
-        b = Time((3,4), to_utc='1/6')
+        a = Time("3/8")
+        b = Time((3, 4), to_utc="1/6")
         test_obj = DummyToUtc(-1, 8)
         c = Time(0.25, to_utc=test_obj)
 
@@ -735,8 +831,8 @@ class TestTime:
             assert res_c_plus.to_utc == Fraction(-1, 8)
 
     def test_310_disallowed_operations(self):
-        a = Time('3/4')
-        b = Time('2/5', to_utc='1/8')
+        a = Time("3/4")
+        b = Time("2/5", to_utc="1/8")
 
         # Add/sub int, float, string, complex, specials and containers should be illegal
         for obj in (10, 34.5, "abc", 1 + 2j, INF, NAN, {}, [], ()):
@@ -763,7 +859,7 @@ class TestTime:
         with pytest.raises(TypeError):
             TimeDelta(-0.25) - b
 
-        for obj in (1, 1.1, Time('2/5')):
+        for obj in (1, 1.1, Time("2/5")):
             with pytest.raises(TypeError):
                 a * obj
             with pytest.raises(TypeError):
@@ -835,9 +931,9 @@ class TestTime:
         assert t1 >= t2
         assert not (t1 != t2)
         assert not (t1 < t2)
-        assert not(t1 > t2)
+        assert not (t1 > t2)
 
-        t3 = Time("5/7")   # this is larger than t1
+        t3 = Time("5/7")  # this is larger than t1
         assert t1 < t3
         assert t3 > t1
         assert t1 <= t3
@@ -898,16 +994,18 @@ class TestTime:
         assert t45 >= tl
 
     def test_322_comparisons_to_utc(self):
-        t1 = Time("7/8", to_utc='5/6')  # These value have a lot of overflows and underflows
-        t2 = Time(0.375, to_utc=(-2,3))
+        t1 = Time(
+            "7/8", to_utc="5/6"
+        )  # These value have a lot of overflows and underflows
+        t2 = Time(0.375, to_utc=(-2, 3))
         assert t1 == t2
         assert t1 <= t2
         assert t1 >= t2
         assert not (t1 != t2)
         assert not (t1 < t2)
-        assert not(t1 > t2)
+        assert not (t1 > t2)
 
-        t3 = Time("1/2", to_utc=0.25)   # this is larger than t1
+        t3 = Time("1/2", to_utc=0.25)  # this is larger than t1
         assert t1 < t3
         assert t3 > t1
         assert t1 <= t3
@@ -920,7 +1018,7 @@ class TestTime:
         assert not (t3 < t1)
         assert not (t1 >= t3)
         assert not (t3 <= t1)
-        assert t2 < t3                # repeating the tests with an instance with negative to_utc
+        assert t2 < t3  # repeating the tests with an instance with negative to_utc
         assert t3 > t2
         assert t2 <= t3
         assert t3 >= t2
@@ -958,7 +1056,7 @@ class TestTime:
 
         tl = TimeLike()
         # We need not implement naivety checks, which are delegated to the Time-like class, not under test
-        t12 = Time((1, 2), to_utc='-1/3')
+        t12 = Time((1, 2), to_utc="-1/3")
         t34 = Time("3/4", to_utc=0.25)
         t45 = Time((4, 5), to_utc=(-1, 8))
         assert not (t12 == tl)
@@ -1045,18 +1143,21 @@ class TestTime:
                 first = Time(time_input_values[0], to_utc=utc_input_values[0])
                 for new_utc_value in to_utc_strange_test_data:
                     second = first.relocate(new_utc_value)
-                    diff = (first.day_frac + first.to_utc) - (second.day_frac + second.to_utc)
+                    diff = (first.day_frac + first.to_utc) - (
+                        second.day_frac + second.to_utc
+                    )
                     # Note that for some of the test value we have an overflow/underflow,
                     # so we must impement a precise test
                     assert diff == int(diff)
 
     def test_410_relocate_invalid_type(self):
         "Return another Time instance that identifies the same time"
+
         class WrongObj:
             def __init__(self):
-                self.time_to_utc = 'foo'
+                self.time_to_utc = "foo"
 
-        t = Time('123/456', to_utc='-78/90')
+        t = Time("123/456", to_utc="-78/90")
 
         # exception with invalid parameter name
         with pytest.raises(TypeError):
@@ -1064,10 +1165,10 @@ class TestTime:
         with pytest.raises(TypeError):
             t.relocate(1, 2)
         with pytest.raises(TypeError):
-            t.relocate(foobar='barfoo')
+            t.relocate(foobar="barfoo")
 
         # exception with non-numeric types
-        for par in (1j, (1,), [1], {1:1}, [], {}, None, (1,2,3), WrongObj()):
+        for par in (1j, (1,), [1], {1: 1}, [], {}, None, (1, 2, 3), WrongObj()):
             with pytest.raises(TypeError):
                 t.relocate(par)
 
@@ -1078,7 +1179,7 @@ class TestTime:
                 Time("0.5555", to_utc=par)
 
         # same for tuple argument
-        for par in ( (-100, 1), (-4, 3), (4, 3), (100, 1) ):
+        for par in ((-100, 1), (-4, 3), (4, 3), (100, 1)):
             with pytest.raises(ValueError):
                 Time("0.6666", to_utc=par)
 
@@ -1088,13 +1189,14 @@ class TestTime:
 
     def test_500_repr(self):
         import datetime2
+
         for day_frac, input_values in time_test_data:
             for input_value in input_values:
                 t = Time(input_value)
                 time_repr = repr(t)
-                names, args = time_repr.split('(')
-                assert names.split('.') == ['datetime2', 'Time']
-                #TODO: there should be an assert for the value (this is the one for Date: "assert int(args) == day_count")
+                names, args = time_repr.split("(")
+                assert names.split(".") == ["datetime2", "Time"]
+                # TODO: there should be an assert for the value (this is the one for Date: "assert int(args) == day_count")
                 args = args[:-1]  # drop ')'
                 assert t == eval(time_repr)
 
@@ -1102,7 +1204,7 @@ class TestTime:
         for day_frac, input_values in time_test_data:
             for input_value in input_values:
                 t = Time(input_value)
-                assert str(t).split(' of ')[0] == str(day_frac)
+                assert str(t).split(" of ")[0] == str(day_frac)
 
     def test_900_pickling(self):
         for day_frac, input_values in time_test_data:
@@ -1120,7 +1222,7 @@ class TestTime:
 
             def __init__(self, *args, **kws):
                 temp = kws.copy()
-                self.extra = temp.pop('extra')
+                self.extra = temp.pop("extra")
                 Time.__init__(self, *args, **temp)
 
             def newmeth(self, start):
@@ -1138,11 +1240,10 @@ class TestTime:
         class T(Time):
             pass
 
-        t_sub = T('3/4', to_utc='-1/8')
+        t_sub = T("3/4", to_utc="-1/8")
         assert type(T.now()) is T
         assert type(T.localnow()) is T
         assert type(T.utcnow()) is T
-        assert type(t_sub.relocate('1/3')) is T
+        assert type(t_sub.relocate("1/3")) is T
         assert type(t_sub + TimeDelta(0.25)) is T
         assert type(t_sub - TimeDelta(0.25)) is T
-
