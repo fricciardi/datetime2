@@ -460,3 +460,33 @@ class TestTimeRepresentationInterface:
         t3 = Time.western(3, 4, 5)
         assert hasattr(t3, "western")
         t3.western
+
+    def test110_naivety_is_preserved(self):
+        class NaivetyCheck:
+            def __init__(self, hour100, minute100, to_utc=None):
+                self.hour100 = hour100
+                self.minute100 = minute100
+                self.to_utc = to_utc
+
+            def to_day_frac(self):
+                return Fraction(self.hour100 * 100 + self.minute100, 10000)
+
+            @classmethod
+            def from_day_frac(cls, day_frac):
+                minutes_tot = day_frac * 10000
+                hour100 = int(minutes_tot / 100)
+                return cls(hour100, minutes_tot - hour100 * 100)
+
+        Time.register_new_time("test_1", NaivetyCheck)
+
+        t1 = Time("17/24")
+        assert t1.test_1.to_utc is None
+
+        t2 = Time("17/24", to_utc=0)
+        assert t2.test_1.to_utc is not None
+
+        t3 = Time.test_1(11, 12)
+        assert t3.to_utc is None
+
+        t4 = Time.test_1(11, 12, to_utc=0)
+        assert t4.test_1.to_utc is not None
