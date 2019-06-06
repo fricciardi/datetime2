@@ -57,20 +57,21 @@ There are four constructors for a western time. The default one is:
 
    * ``hour`` must be an integer and ``0 <= month <= 23``
    * ``minute`` must be an integer and ``0 <= minute <= 59``
-   * ``second`` must be a rational number; its value must be ``0 <= second < 60``
-   * ``to_utc``, if present, must be a rational number; its value must be
+   * ``second`` must be a rational number and its value must be
+     ``0 <= second < 60``
+   * ``to_utc``, if present, must be a rational number and its value must be
      ``-24 <= to_utc <= 24``
 
    If an argument is not of the accepted type, a :exc:`TypeError` exception
    is raised. If an argument is outside its accepted range, a
    :exc:`ValueError` exception is raised.
 
-   The ``to_utc``, if present, makes the object aware and defines the number of
-   hours that must be added to it to get UTC time.
+   The ``to_utc`` argument, if present, makes the object aware and defines the
+   number of hours that must be added to it to get UTC time.
 
 The other three constructors are:
 
-.. class:: WesternTime.in_hours(hour)
+.. class:: WesternTime.in_hours(hour, to_utc=None)
 
    Return an object that represents the moment of the day specified in
    hours, possibly fractional, elapsed from midnight. The argument must be a
@@ -78,7 +79,11 @@ The other three constructors are:
    value must be greater or equal to 0 and less than 24, otherwise a
    :exc:`ValueError` exception is raised.
 
-.. class:: WesternTime.in_minutes(minute)
+   The ``to_utc`` argument, if present, makes the object aware and defines the
+   number of hours that must be added to it to get UTC time. It must be a
+   rational number and its value must be ``-24 <= to_utc <= 24``
+
+.. class:: WesternTime.in_minutes(minute, to_utc=None)
 
    Return an object that represents the moment of the day specified in
    minutes, possibly fractional, elapsed from midnight. The argument must be
@@ -86,7 +91,11 @@ The other three constructors are:
    value must be greater or equal to 0 and less than 1440, otherwise a
    :exc:`ValueError` exception is raised.
 
-.. class:: WesternTime.in_seconds(second)
+   The ``to_utc`` argument, if present, makes the object aware and defines the
+   number of hours that must be added to it to get UTC time. It must be a
+   rational number and its value must be ``-24 <= to_utc <= 24``
+
+.. class:: WesternTime.in_seconds(second, to_utc=None)
 
    Return an object that represents the moment of the day specified in
    seconds, possibly fractional, elapsed from midnight. The argument must be
@@ -94,8 +103,12 @@ The other three constructors are:
    value must be greater or equal to 0 and less than 86400, otherwise a
    :exc:`ValueError` exception is raised.
 
+   The ``to_utc`` argument, if present, makes the object aware and defines the
+   number of hours that must be added to it to get UTC time. It must be a
+   rational number and its value must be ``-24 <= to_utc <= 24``
 
-A :class:`WesternTime` object has three attributes:
+
+A :class:`WesternTime` object has four attributes:
 
 .. attribute:: western.hour
 
@@ -106,6 +119,12 @@ A :class:`WesternTime` object has three attributes:
    These attributes are read-only numbers. The first two are integers; the
    last one is a Python Fraction. The three attributes will respect the
    value requirements listed in the default constructor description.
+
+.. attribute:: western.to_utc
+
+   If this attribute is not ``None``, it is the number of hours that must be
+   added the object's time to it to get UTC time
+
 
 An instance of the :class:`WesternTime` class has the following methods:
 
