@@ -202,8 +202,14 @@ class TestWestern:
 
     def test_070_timezone_valid(self):
         for test_to_utc in to_utc_test_data:
-            western = WesternTime(1, 2, 3, to_utc=test_to_utc[0])
-            assert western.to_utc == test_to_utc[1]
+            western1 = WesternTime(1, 2, 3, to_utc=test_to_utc[0])
+            assert western1.to_utc == test_to_utc[1]
+            western2 = WesternTime.in_hours("789/123", to_utc=test_to_utc[0])
+            assert western2.to_utc == test_to_utc[1]
+            western2 = WesternTime.in_minutes("78901/123", to_utc=test_to_utc[0])
+            assert western2.to_utc == test_to_utc[1]
+            western3 = WesternTime.in_seconds("789012/123", to_utc=test_to_utc[0])
+            assert western3.to_utc == test_to_utc[1]
 
 
     def test_090_constructor_day_frac(self):
@@ -305,16 +311,31 @@ class TestWestern:
         # exception with unknown named parameter
         with pytest.raises(TypeError):
             WesternTime(1, 2, 3, invalid=0)
+            WesternTime.in_hours("789/123", invalid=0)
+            WesternTime.in_minutes("78901/123", invalid=0)
+            WesternTime.in_seconds("789012/123", invalid=0)
 
         # exception with non-numeric types
         for invalid_to_utc in ((1,), [1], {1: 1}, (), [], {}):
             with pytest.raises(TypeError):
                 WesternTime(1, 2, 3, to_utc=invalid_to_utc)
+            with pytest.raises(TypeError):
+                WesternTime.in_hours("789/123", to_utc=invalid_to_utc)
+            with pytest.raises(TypeError):
+                WesternTime.in_minutes("78901/123", to_utc=invalid_to_utc)
+            with pytest.raises(TypeError):
+                WesternTime.in_seconds("789012/123", to_utc=invalid_to_utc)
 
         # exception with invalid numeric types
         for invalid_to_utc in (1j, 1 + 1j, INF, NAN):
             with pytest.raises(TypeError):
                 WesternTime(1, 2, 3, to_utc=invalid_to_utc)
+            with pytest.raises(TypeError):
+                WesternTime.in_hours("789/123", to_utc=invalid_to_utc)
+            with pytest.raises(TypeError):
+                WesternTime.in_minutes("78901/123", to_utc=invalid_to_utc)
+            with pytest.raises(TypeError):
+                WesternTime.in_seconds("789012/123", to_utc=invalid_to_utc)
 
     def test_190_invalid_parameter_types_day_frac(self):
         # exception with none, two or four parameters
@@ -360,6 +381,12 @@ class TestWestern:
         for invalid_value in (-25, -24.000001, 24.000001, 25):
             with pytest.raises(ValueError):
                 WesternTime(1, 2, 3, to_utc=invalid_value)
+            with pytest.raises(ValueError):
+                WesternTime.in_hours("789/123", invalid_value)
+            with pytest.raises(ValueError):
+                WesternTime.in_minutes("78901/123", invalid_value)
+            with pytest.raises(ValueError):
+                WesternTime.in_seconds("789012/123", invalid_value)
 
     def test_290_invalid_values_day_frac(self):
         for num, denum in ((1, 1), (1, -1), (1000001, 1000000), (-1, 1000000)):
