@@ -19,11 +19,8 @@ object of a different type, the ``==`` and ``!=`` operators *always* consider
 them to be unequal, while the ``<``, ``>``, ``>=`` and ``<=`` operators raise
 a :exc:`TypeError` exception.
 
-Similarly all classes implement the ``from_day_frac`` contructor and the
-``to_day_frac`` method.
-
 Description of the comparison operators and interface methods is then omitted
-from the calendar class descriptions below.
+from the time of day class descriptions below.
 
 .. TODO: if we will be keeping all time representations on a page, a ToC here will be useful
 

@@ -8,9 +8,9 @@ Calendars
    from datetime2.western import GregorianCalendar
    from datetime2.modern import IsoCalendar
 
-This chapter lists the calendars classes available in the :mod:`datetime2` package.
-Of course, they all conform to the requirements for interface classes listed
-in :ref:`customization`.
+This chapter lists the calendars classes available in the :mod:`datetime2`
+package. Of course, they all conform to the requirements for interface classes
+listed in :ref:`customization`.
 
 As such, they all have the six standard comparison operators: ``<``, ``>``, ``==``,
 ``>=``, ``<=``, and ``!=``, which return a meaningful result when comparing
