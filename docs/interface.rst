@@ -75,15 +75,16 @@ different ways.
    >>> t.internet.beat
    Fraction(500, 1)
 
-A feature of :mod:`datetime2` is that any representations is computed
-only once, when first accessed.
+An intended feature of :mod:`datetime2` is that any representations is computed
+only once, when first accessed, then remains available to the base class.
 
-When called via the attribute mechanisms on the base
-class, constructors of the interface class do not return objects of
-that class, but objects of the base class. In the example below,
-:meth:`GregorianCalendar.year_day` and :meth:`GregorianCalendar.replace`
-would return a :class:`GregorianCalendar` instance, but when used via
-the :class:`Date` class this becomes a :class:`Date` instance:
+Interface class may have, as it is normal, additional constructors. E.g. the
+:class:`GregorianCalendar` class has the :meth:`GregorianCalendar.year_day` and
+:meth:`GregorianCalendar.replace` methods that return a
+:class:`GregorianCalendar` instance. However, thanks to some magic explained
+later, when such constructors are accessed via the attribute mechanisms on the
+base class or an instance of it, constructors of the interface class return
+instances of the base class instead, as shown in this example:
 
 .. doctest::
 
@@ -98,7 +99,7 @@ the :class:`Date` class this becomes a :class:`Date` instance:
    >>> str(d2.gregorian)
    '2013-07-31'
 
-In any case, as expected, static methods of the interface classes are
+And, as expected, static methods of the interface classes are
 unchanged even when invoked via access attribute:
 
 .. doctest::
@@ -111,10 +112,10 @@ unchanged even when invoked via access attribute:
 Customization
 ^^^^^^^^^^^^^
 
-It is possible to add new calendars and/or time representations at run time,
-by calling a method of the base class and providing the new access attribute
-name and the new interface class. This new class must satisfy three simple
-requirements in order to be used as such.
+Base classes provide a mechanism to register new interface classes at run-time.
+The same mechanism is indeed used to register already available interface
+classes at module import time. The interface class must respect a few simple
+requirements shown later.
 
 Before examining these requisites in detail, let's have a look at a simple
 example: we want to define a new calendar that defines each day by
@@ -152,28 +153,26 @@ has a non-default constructor that takes as argument also thousands of weeks:
    >>> d2 == d3
    True
 
-AS can be seen in the example, the new interface class (this is true also
-for all the alreay available interface classes) doesn't need to know about
-the way a :class:`Date` object work. All it need to define is:
+As can be seen in the example, the new interface class completely ignores the
+way a base class instance works. The requirements for an interface class to be
+used by the registration module are:
 
-* The non-default constructor ``from_rata_die``, that creates an instance of
-  the calendar using the day count.
-* The method ``to_rata_die`` to return a day count corresponding to the
-  given date in the calendar.
-* All other non-default constructors and all methods returning a calendar
-  instance must use the default constructor to return the new calendar
-  instance.
+* Have a non-default forward constructor, that creates an instance of the
+  interface class using the base class attribute.
+* Have a backward method that returns the base class attribute corresponding to
+  the interface class value.
+* All other non-default constructors and all methods returning an interface
+  class instance must use the interface class default constructor.
 
-Once the new interface class is ready, the call of a registration function
-does the magic. All it needs is the name of the access attribute to be used
-for the interface class and, of course, the interface class itself.
+Once the new interface class is ready, the call of a registration method of the
+base class does the magic.
 
-Each base class have a specific registration function. Required methods also
-have names depending on the base cass they are registered to. The following
-table lists all these names:
+Each :mod:`datetime2` base class has a specific registration function.
+Required methods also have names depending on the base class they are
+registered to. The following table lists all these names:
 
 +-------------------------+---------------------------+---------------------------+---------------------------+---------------------------+
-| Base class              | :class:`Date`             | :class:`Time`             | :class:`DateTime`         | :class:`TimeDelta`        |
+| Base class ->           | :class:`Date`             | :class:`Time`             | :class:`DateTime`         | :class:`TimeDelta`        |
 +=========================+===========================+===========================+===========================+===========================+
 | Registration function   | ``register_new_calendar`` | ``register_new_time``     | TBD                       | TBD                       |
 +-------------------------+---------------------------+---------------------------+---------------------------+---------------------------+
@@ -182,18 +181,35 @@ table lists all these names:
 | Conversion method       | ``to_rata_die``           | ``to_day_frac``           | TBD                       | TBD                       |
 +-------------------------+---------------------------+---------------------------+---------------------------+---------------------------+
 
-The generic definition of the registration method is:
+These methods are detailed below:
 
-.. function:: registration_method(access_attribute, InterfaceClass)
+.. class:: Date.register_new_calendar(access_attribute, CalendarInterface)
 
-   Register the class ``InterfaceClass`` to the corresponding :mod:`datetime2`
-   base class, accessing it with the ``access_attribute`` attribute. If
-   ``access_attribute`` is already defined, an :exc:`AttributeError` exception
-   is raised. If ``access_attribute`` isn't a valid identifier, a
-   :exc:`ValueError` exception is raised.
+   Register the ``CalendarInterface`` class to the :class:`Date` class, using
+   the ``access_attribute`` identifier to access it. If ``access_attribute`` is
+   already defined, an :exc:`AttributeError` exception is raised. If
+   ``access_attribute`` isn't a valid identifier, a :exc:`ValueError` exception
+   is raised.
 
-   ``InterfaceClass`` must have the non-default constructor and conversion
-   method listed above, otherwise a :exc:`TypeError` exception is raised.
+   ``CalendarInterface`` must obey the requirements for the :mod:`datetime2`
+   interface classes, otherwise a :exc:`TypeError` exception is raised.
+
+.. classmethod:: Time.register_new_time(access_attribute, TimeInterface)
+
+   Register the ``TimeInterface`` class to the :class:`Time` class, using
+   the ``access_attribute`` identifier to access it. If ``access_attribute`` is
+   already defined, an :exc:`AttributeError` exception is raised. If
+   ``access_attribute`` isn't a valid identifier, a :exc:`ValueError` exception
+   is raised.
+
+   ``CalendarInterface`` must obey the requirements for the :mod:`datetime2`
+   interface classes, otherwise a :exc:`TypeError` exception is raised.
+
+.. method:: to_rata_die()
+
+   Return a rata die value that corresponds to the day represented by the
+   calendar instance.
+
 
 
 Inner workings
