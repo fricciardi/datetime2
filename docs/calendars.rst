@@ -9,7 +9,8 @@ Calendars
    from datetime2.modern import IsoCalendar
 
 This chapter lists the calendars classes available in the :mod:`datetime2` package.
-They all conform to the rules listed in :ref:`customization`.
+Of course, they all conform to the requirements for interface classes listed
+in :ref:`customization`.
 
 As such, they all have the six standard comparison operators: ``<``, ``>``, ``==``,
 ``>=``, ``<=``, and ``!=``, which return a meaningful result when comparing
@@ -17,9 +18,6 @@ calendar objects of the same type. When comparing a calendar object with an
 object of a different type, the ``==`` and ``!=`` operators *always* consider
 them to be unequal, while the ``<``, ``>``, ``>=`` and ``<=`` operators raise
 a :exc:`TypeError` exception.
-
-Similarly all classes implement the ``from_rata_die`` contructor and the
-``to_rata_die`` method.
 
 Description of the comparison operators and interface methods is then omitted
 from the calendar class descriptions below.

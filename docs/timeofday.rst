@@ -9,10 +9,8 @@ Time of day
    from datetime2.modern import InternetTime
 
 This chapter lists the time representations classes available in the
-:mod:`datetime2` package. They all conform to the rules listed
-in :ref:`customization`. Note that these time representations do not
-have any notion of time correction like daylight saving time or time
-zone.
+:mod:`datetime2` package. Of course, they all conform to the requirements for
+interface classes listed in :ref:`customization`.
 
 As such, they all have the six standard comparison operators: ``<``, ``>``, ``==``,
 ``>=``, ``<=``, and ``!=``, which return a meaningful result when comparing
