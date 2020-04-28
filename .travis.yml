@@ -3,12 +3,8 @@ language: python
 python:
   - "3.5"
   - "3.6"
-# Python 3.7 must be accessed in the Xenial distribution
-matrix:
-  include:
-    - python: 3.7
-      dist: xenial
-      sudo: true
+  - "3.7"
+  - "3.8"
 
 install: "pip install ."
 
@@ -26,7 +22,7 @@ deploy:
     distributions: "sdist bdist_wheel"
     on:
       condition: $TRAVIS_TAG = *dev*
-      python: 3.7
+      python: 3.8
       tags: true
   - provider: pypi
     user: francescor
@@ -35,5 +31,5 @@ deploy:
     distributions: "sdist bdist_wheel"
     on:
       condition: $TRAVIS_TAG != *dev*
-      python: 3.7
+      python: 3.8
       tags: true
