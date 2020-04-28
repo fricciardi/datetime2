@@ -183,7 +183,7 @@ registered to. The following table lists all these names:
 
 These methods are detailed below:
 
-.. class:: Date.register_new_calendar(access_attribute, CalendarInterface)
+.. classmethod:: Date.register_new_calendar(access_attribute, CalendarInterface)
 
    Register the ``CalendarInterface`` class to the :class:`Date` class, using
    the ``access_attribute`` identifier to access it. If ``access_attribute`` is
@@ -205,7 +205,7 @@ These methods are detailed below:
    ``CalendarInterface`` must obey the requirements for the :mod:`datetime2`
    interface classes, otherwise a :exc:`TypeError` exception is raised.
 
-.. method:: to_rata_die()
+.. method:: calendar_obj.to_rata_die()
 
    Return a rata die value that corresponds to the day represented by the
    calendar instance.
