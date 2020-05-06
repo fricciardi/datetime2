@@ -40,9 +40,6 @@ from . import western, modern
 ##############################################################################
 # OS dependent functions
 #
-# TODO: When Python 3.4 will be no more supported, reuse underscore in long integer constants
-
-
 def get_moment_complete():
     """Return local date and time as day_count, local time as day fraction, and,
     if possible, distance to UTC as fraction of a day."""
@@ -51,10 +48,10 @@ def get_moment_complete():
             time.time_ns()
         )  # time in ns from epoch; note epoch is platform dependent
     except AttributeError:
-        moment_ns = int(time.time() * 1000000000)  # time() returns a float in second
+        moment_ns = int(time.time() * 1_000_000_000)  # time() returns a float in second
     # for the moment we are using time module's functions to get localtime
     # TODO: check if possible to implement something independent from time module, see e.g. tzlocal
-    seconds, nanoseconds = divmod(moment_ns, 1000000000)
+    seconds, nanoseconds = divmod(moment_ns, 1_000_000_000)
     moment = time.localtime(seconds)
     year = moment.tm_year
     days_before_year = (
@@ -65,7 +62,7 @@ def get_moment_complete():
         Fraction(moment.tm_hour, 24)
         + Fraction(moment.tm_min, 1440)
         + Fraction(moment.tm_sec, 86400)
-        + Fraction(nanoseconds, 86400000000000)
+        + Fraction(nanoseconds, 86_400_000_000_000)
     )
     to_utc = -Fraction(moment.tm_gmtoff, 86400)
     return day_count, day_frac, to_utc
