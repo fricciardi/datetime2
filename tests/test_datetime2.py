@@ -1,6 +1,6 @@
 # datetime2 package test
 
-# Copyright (c) 2011-2019 Francesco Ricciardi
+# Copyright (c) 2011-2020 Francesco Ricciardi
 #
 # All rights reserved.
 #

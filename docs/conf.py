@@ -20,7 +20,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'datetime2'
-copyright = '2019, Francesco Ricciardi'
+copyright = '2020, Francesco Ricciardi'
 author = 'Francesco Ricciardi'
 
 # The short X.Y version
