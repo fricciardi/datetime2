@@ -151,6 +151,7 @@ program that uses it.
 There are four :class:`Time` constructors:
 
 .. class:: Time(day_frac, *, to_utc=None)
+.. class:: Time(numerator, denominator, *, to_utc=None)
 
    Return an object that represents a moment in a day as a fraction of the
    whole day, given in the ``day_frac`` argument. If needed, it is possible
@@ -162,10 +163,9 @@ There are four :class:`Time` constructors:
    The ``day_frac`` and ``to_utc`` arguments can be anything that can
    be passed to the :class:`fractions.Fraction` constructor, i.e. an integer, a
    float, another Fraction, a Decimal number or a string representing an
-   integer, a float or a fraction. In addition, it is also possible to use a
-   2-value tuple with integer values. This tuple represents the numerator and
-   denominator of a fraction that will be passed to the
-   :class:`fractions.Fraction` constructor.
+   integer, a float or a fraction. In addition, as in a Fraction object, two
+   values can be used to represent numerator and denominator of the fraction.
+   This is possible only for the ``day_frac`` argument, not for ``to_utc``.
 
    The ``day_frac`` argument is stored in a read-only attribute with the same
    name. In addition to the types listed above, the ``to_utc`` argument

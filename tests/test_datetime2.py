@@ -429,7 +429,7 @@ time_test_data = [
 to_utc_test_data = [
     [
         Fraction(0, 1),
-        [0, Fraction(0), Decimal("0"), 0.0, "0", "0/33", (0, 5), DummyToUtc(0, -3)],
+        [0, Fraction(0), Decimal("0"), 0.0, "0", "0/33", DummyToUtc(0, -3)],
     ],
     [
         Fraction(1, 4),
@@ -439,7 +439,6 @@ to_utc_test_data = [
             0.25,
             "0.25",
             "1/4",
-            (2, 8),
             DummyToUtc(3, 12),
         ],
     ],
@@ -451,7 +450,6 @@ to_utc_test_data = [
             -0.25,
             "-0.25",
             "-1/4",
-            (2, -8),
             DummyToUtc(-3, 12),
         ],
     ],
@@ -464,7 +462,7 @@ time_strange_test_data = (
     "0.999999",
     "0.0000001",
     "5/456789",
-    (123, 4567),
+    (123, 4567)
 )
 to_utc_strange_test_data = [
     1,
@@ -473,14 +471,12 @@ to_utc_strange_test_data = [
     "0.999999",
     "0.0000001",
     "5/456789",
-    (123, 4567),
     -1,
     Fraction(-123, 4567),
     -0.999999,
     "-0.999999",
     "-0.0000001",
-    "-5/456789",
-    (123, -4567),
+    "-5/456789"
 ]
 
 
@@ -489,7 +485,11 @@ class TestTime:
         "The day_frac argument can be anything that can be passed to the fractions.Fraction constructor."
         for day_frac, input_values in time_test_data:
             for input_value in input_values:
-                assert Time(input_value).day_frac == day_frac
+                if isinstance(input_value, tuple):
+                    assert len(input_value) == 2
+                    assert Time(input_value[0], input_value[1]).day_frac == day_frac
+                else:
+                    assert Time(input_value).day_frac == day_frac
 
     def test_002_valid_argument_types_to_utc(self):
         "The to_utc argument can be anything that can be passed to the fractions.Fraction constructor."
@@ -500,7 +500,11 @@ class TestTime:
     def test_005_valid_argument_types_strange(self):
         "The day_frac argument can be anything that can be passed to the fractions.Fraction constructor."
         for input_value in time_strange_test_data:
-            Time(input_value)
+            if isinstance(input_value, tuple):
+                assert len(input_value) == 2
+                Time(input_value[0], input_value[1])
+            else:
+                Time(input_value)
 
     def test_007_valid_argument_types_strange_to_utc(self):
         "The to_utc argument can be anything that can be passed to the fractions.Fraction constructor."
@@ -515,7 +519,7 @@ class TestTime:
         with pytest.raises(TypeError):
             Time(1, 2)
         # exception with non-numeric types
-        for par in (1j, (1,), [1], {1: 1}, [], {}, None, (1, 2, 3)):
+        for par in (1j, (1,), [1], {1: 1}, [], {}, None, (1, 2), (1, 2, 3)):
             with pytest.raises(TypeError):
                 Time(par)
 
@@ -531,7 +535,7 @@ class TestTime:
             Time(1, foobar="barfoo")
 
         # exception with non-numeric types
-        for par in (1j, (1,), [1], {1: 1}, [], {}, (1, 2, 3), WrongObj()):
+        for par in (1j, (1,), [1], {1: 1}, [], {}, (1, 2), (1, 2, 3), WrongObj()):
             with pytest.raises(TypeError):
                 Time("0.4444", to_utc=par)
 
@@ -563,15 +567,6 @@ class TestTime:
         for par in (-100, -1.00001, 1.00000001, 100):
             with pytest.raises(ValueError):
                 Time("0.5555", to_utc=par)
-
-        # same for tuple argument
-        for par in ((-100, 1), (-4, 3), (4, 3), (100, 1)):
-            with pytest.raises(ValueError):
-                Time("0.6666", to_utc=par)
-
-        # tuple argument should not have 0 as denominator
-        with pytest.raises(TypeError):
-            Time("0.7777", to_utc=(3, 0))
 
     def test_020_now(self):
         "Return an object that represents the current moment in the day."
