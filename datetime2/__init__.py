@@ -283,11 +283,8 @@ Date.register_new_calendar("iso", modern.IsoCalendar)
 
 
 class Time:
-    def __init__(self, day_frac, denominator=None, *, to_utc=None):
-        if denominator is None:
-            self._day_frac = verify_fractional_value(day_frac, min=0, max_excl=1)
-        else:
-            self._day_frac = verify_fractional_value((day_frac, denominator), min=0, max_excl=1)
+    def __init__(self, day_frac, *, to_utc=None):
+        self._day_frac = verify_fractional_value(day_frac, min=0, max_excl=1)
         if to_utc is None:
             # naive instance
             self._to_utc = None

@@ -34,11 +34,11 @@ from fractions import Fraction
 __author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
 
-def verify_fractional_value(fractional, min=None, max=None, min_excl=None, max_excl=None):
-    """fractional is a 2-value tuple when numerator and denominator of a fraction
-    are passed.
-    Raised exceptions:
-    - RuntimeError: if both min and min_excl, or max and max_excl are provided.
+def verify_fractional_value(
+    fractional, min=None, max=None, min_excl=None, max_excl=None
+):
+    """Raised exceptions:
+    - RuntimeError: if both min and min:excl, or max and max_excl are provided.
     - TypeError: if tuple argument for fraction is invalid or has worng values
                  (0 denominator, NaN or similar)
     - ValueError: if fractional value does not observe condition(s)."""
@@ -48,7 +48,10 @@ def verify_fractional_value(fractional, min=None, max=None, min_excl=None, max_e
         raise RuntimeError("Only one maximum value can be given.")
     try:
         if type(fractional) == tuple:
-            value = Fraction(*fractional)
+            if len(fractional) == 2:
+                value = Fraction(*fractional)
+            else:
+                raise TypeError("Tuple argument must have two elements.")
         else:
             value = Fraction(fractional)
     except ZeroDivisionError as exc:
