@@ -33,7 +33,7 @@ import time
 from fractions import Fraction
 from math import floor
 
-from .common import verify_fractional_value
+from .common import verify_fractional_value, verify_fractional_value_num_den
 from . import western, modern
 
 
@@ -283,8 +283,11 @@ Date.register_new_calendar("iso", modern.IsoCalendar)
 
 
 class Time:
-    def __init__(self, day_frac, *, to_utc=None):
-        self._day_frac = verify_fractional_value(day_frac, min=0, max_excl=1)
+    def __init__(self, numerator, denominator=None, *, to_utc=None):
+        if denominator is None:
+            self._day_frac = verify_fractional_value(numerator, min=0, max_excl=1)
+        else:
+            self._day_frac = verify_fractional_value_num_den(numerator, denominator, min=0, max_excl=1)
         if to_utc is None:
             # naive instance
             self._to_utc = None
@@ -294,9 +297,7 @@ class Time:
                 try:
                     to_utc_value = to_utc.time_to_utc()
                 except Exception as any_exc:
-                    raise TypeError(
-                        "Invalid object for 'to_utc' argument."
-                    ) from any_exc
+                    raise TypeError("Invalid object for 'to_utc' argument.") from any_exc
             else:
                 to_utc_value = to_utc
             self._to_utc = verify_fractional_value(to_utc_value, min=-1, max=1)
