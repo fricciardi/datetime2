@@ -422,7 +422,7 @@ class DummyToUtc:
 
 time_test_data = [
     [Fraction(0, 1), [0, Fraction(0), Decimal("0"), 0.0, "0", "0/33"]],
-    [Fraction(1, 4), [Fraction(1, 4), Decimal("0.25"), 0.25, "0.25", "1/4", (2, 8)]]
+    [Fraction(1, 4), [Fraction(1, 4), Decimal("0.25"), 0.25, "0.25", "1/4"]]
 ]
 time_test_data_num_den = [
     [Fraction(2, 3), [(2, 3), (-4, -6)]],
@@ -474,7 +474,7 @@ class TestTime:
 
     def test_001_valid_num_den(self):
         """The day_frac argument can be a numerator and denominator."""
-        for day_frac, input_values in time_test_data:
+        for day_frac, input_values in time_test_data_num_den:
             for input_value in input_values:
                 assert Time(input_value[0], input_value[1]).day_frac == day_frac
 
@@ -516,8 +516,9 @@ class TestTime:
         for par in (1j, (1,), [1], {1: 1}, [], {}, None, (1, 2), (1, 2, 3)):
             with pytest.raises(TypeError):
                 Time(par, 2)
-            with pytest.raises(TypeError):
-                Time(1, par)
+            if par is not None:    # if par is None, Time() falls back to the first form
+                with pytest.raises(TypeError):
+                    Time(1, par)
 
     def test_012_invalid_argument_types_to_utc(self):
         """A TypeError exception is raised if the argument type is not one of the accepted types."""
@@ -529,13 +530,15 @@ class TestTime:
         # exception with invalid parameter name
         with pytest.raises(TypeError):
             Time(1, foobar="barfoo")
+        with pytest.raises(TypeError):
+            Time(1, 2, foobar="barfoo")
 
         # to_utc must be explicit
         with pytest.raises(TypeError):
             Time(1, 2, 1)
 
         # exception with non-numeric types
-        for par in (1j, (1,), [1], {1: 1}, [], {}, (1, 2), (1, 2, 3), WrongObj()):
+        for par in (1j, (1,), [1], {1: 1}, [], {}, None, (1, 2), (1, 2, 3), WrongObj()):
             with pytest.raises(TypeError):
                 Time("0.4444", to_utc=par)
 
@@ -545,8 +548,8 @@ class TestTime:
             with pytest.raises(ValueError):
                 Time(par)
 
-        # same for tuple argument
-        for par in (
+        # same for numerator, denominator arguments
+        for num, den in (
                 (1000, 1),
                 (4, 2),
                 (2, 2),
@@ -556,17 +559,19 @@ class TestTime:
                 (1000000, -2),
         ):
             with pytest.raises(ValueError):
-                Time(par)
+                Time(num, den)
 
-        # tuple argument should not have 0 as denominator
+        # denominator should not be 0
         with pytest.raises(TypeError):
-            Time((2, 0))
+            Time(2, 0)
 
     def test_017_invalid_argument_values_to_utc(self):
         "The resulting value must be equal or greater than -1 and less or equal to 1."
         for par in (-100, -1.00001, 1.00000001, 100):
             with pytest.raises(ValueError):
                 Time("0.5555", to_utc=par)
+            with pytest.raises(ValueError):
+                Time(2, 3, to_utc=par)
 
     def test_020_now(self):
         "Return an object that represents the current moment in the day."
