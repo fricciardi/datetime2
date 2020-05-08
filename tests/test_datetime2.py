@@ -421,49 +421,34 @@ class DummyToUtc:
 
 
 time_test_data = [
-    [Fraction(0, 1), [0, Fraction(0), Decimal("0"), 0.0, "0", "0/33", (0, 5)]],
-    [Fraction(1, 4), [Fraction(1, 4), Decimal("0.25"), 0.25, "0.25", "1/4", (2, 8)]],
+    [Fraction(0, 1), [0, Fraction(0), Decimal("0"), 0.0, "0", "0/33"]],
+    [Fraction(1, 4), [Fraction(1, 4), Decimal("0.25"), 0.25, "0.25", "1/4", (2, 8)]]
 ]
-# we are not going to test more values, because we don't want to test the Fraction constructor :-)
+time_test_data_num_den = [
+    [Fraction(2, 3), [(2, 3), (-4, -6)]],
+    [Fraction(1, 7), [(1, 7), (-3, -21)]]
+]
+# we are not going to test more values, because our purpose is not to test the Fraction constructor :-)
 
 to_utc_test_data = [
-    [
-        Fraction(0, 1),
-        [0, Fraction(0), Decimal("0"), 0.0, "0", "0/33", DummyToUtc(0, -3)],
-    ],
-    [
-        Fraction(1, 4),
-        [
-            Fraction(1, 4),
-            Decimal("0.25"),
-            0.25,
-            "0.25",
-            "1/4",
-            DummyToUtc(3, 12),
-        ],
-    ],
-    [
-        Fraction(1, -4),
-        [
-            Fraction(-1, 4),
-            Decimal("-0.25"),
-            -0.25,
-            "-0.25",
-            "-1/4",
-            DummyToUtc(-3, 12),
-        ],
-    ],
+    [Fraction(0, 1), [0, Fraction(0), Decimal("0"), 0.0, "0", "0/33", DummyToUtc(0, -3)]],
+    [Fraction(1, 4), [Fraction(1, 4), Decimal("0.25"), 0.25, "0.25", "1/4", DummyToUtc(3, 12)]],
+    [Fraction(1, -4), [Fraction(-1, 4), Decimal("-0.25"), -0.25, "-0.25", "-1/4", DummyToUtc(-3, 12), ]]
 ]
 
 # but we want to test with a few strange values
-time_strange_test_data = (
+time_strange_test_data = [
     Fraction(123, 4567),
     0.999999,
     "0.999999",
     "0.0000001",
-    "5/456789",
-    (123, 4567)
-)
+    "5/456789"
+]
+time_strange_num_den_test_data = [
+    (123, 4567),
+    (0, 1),
+    (9999, 10000)
+]
 to_utc_strange_test_data = [
     1,
     Fraction(123, 4567),
@@ -482,49 +467,60 @@ to_utc_strange_test_data = [
 
 class TestTime:
     def test_000_valid_argument_types(self):
-        "The day_frac argument can be anything that can be passed to the fractions.Fraction constructor."
+        """The day_frac argument can be anything that can be passed to the fractions.Fraction constructor."""
         for day_frac, input_values in time_test_data:
             for input_value in input_values:
-                if isinstance(input_value, tuple):
-                    assert len(input_value) == 2
-                    assert Time(input_value[0], input_value[1]).day_frac == day_frac
-                else:
-                    assert Time(input_value).day_frac == day_frac
+                assert Time(input_value).day_frac == day_frac
+
+    def test_001_valid_num_den(self):
+        """The day_frac argument can be a numerator and denominator."""
+        for day_frac, input_values in time_test_data:
+            for input_value in input_values:
+                assert Time(input_value[0], input_value[1]).day_frac == day_frac
 
     def test_002_valid_argument_types_to_utc(self):
-        "The to_utc argument can be anything that can be passed to the fractions.Fraction constructor."
+        """The to_utc argument can be anything that can be passed to the fractions.Fraction constructor,
+        but not (num, den)."""
         for to_utc_frac, input_values in to_utc_test_data:
             for input_value in input_values:
                 assert Time("0.2222", to_utc=input_value).to_utc == to_utc_frac
 
     def test_005_valid_argument_types_strange(self):
-        "The day_frac argument can be anything that can be passed to the fractions.Fraction constructor."
+        """The day_frac argument can be anything that can be passed to the fractions.Fraction constructor."""
         for input_value in time_strange_test_data:
-            if isinstance(input_value, tuple):
-                assert len(input_value) == 2
-                Time(input_value[0], input_value[1])
-            else:
-                Time(input_value)
+            Time(input_value)
+
+    def test_006_valid_num_den_strange(self):
+        """The day_frac argument can be a numerator and denominator."""
+        for input_value in time_strange_num_den_test_data:
+            Time(input_value[0], input_value[1])
 
     def test_007_valid_argument_types_strange_to_utc(self):
-        "The to_utc argument can be anything that can be passed to the fractions.Fraction constructor."
+        """The to_utc argument can be anything that can be passed to the fractions.Fraction constructor."""
         for input_value in to_utc_strange_test_data:
             Time("0.3333", to_utc=input_value)
 
     def test_010_invalid_argument_types(self):
-        "A TypeError exception is raised if the argument type is not one of the accepted types."
-        # exception with no or two parameters
+        """A TypeError exception is raised if the argument type is not one of the accepted types."""
+        # exception with no or three parameters
         with pytest.raises(TypeError):
             Time()
-        with pytest.raises(TypeError):
-            Time(1, 2)
         # exception with non-numeric types
         for par in (1j, (1,), [1], {1: 1}, [], {}, None, (1, 2), (1, 2, 3)):
             with pytest.raises(TypeError):
                 Time(par)
 
+    def test_011_invalid_num_den(self):
+        """A TypeError exception is raised if the argument type is not one of the accepted types."""
+        # exception with non-numeric types
+        for par in (1j, (1,), [1], {1: 1}, [], {}, None, (1, 2), (1, 2, 3)):
+            with pytest.raises(TypeError):
+                Time(par, 2)
+            with pytest.raises(TypeError):
+                Time(1, par)
+
     def test_012_invalid_argument_types_to_utc(self):
-        "A TypeError exception is raised if the argument type is not one of the accepted types."
+        """A TypeError exception is raised if the argument type is not one of the accepted types."""
         # this object has a time_to_utc attribute, but is isn't callable
         class WrongObj:
             def __init__(self):
@@ -533,6 +529,10 @@ class TestTime:
         # exception with invalid parameter name
         with pytest.raises(TypeError):
             Time(1, foobar="barfoo")
+
+        # to_utc must be explicit
+        with pytest.raises(TypeError):
+            Time(1, 2, 1)
 
         # exception with non-numeric types
         for par in (1j, (1,), [1], {1: 1}, [], {}, (1, 2), (1, 2, 3), WrongObj()):
@@ -547,13 +547,13 @@ class TestTime:
 
         # same for tuple argument
         for par in (
-            (1000, 1),
-            (4, 2),
-            (2, 2),
-            (-1, -1),
-            (-1, 1000000),
-            (-3, 3),
-            (1000000, -2),
+                (1000, 1),
+                (4, 2),
+                (2, 2),
+                (-1, -1),
+                (-1, 1000000),
+                (-3, 3),
+                (1000000, -2),
         ):
             with pytest.raises(ValueError):
                 Time(par)
@@ -578,9 +578,9 @@ class TestTime:
         while count < 3:
             datetime_now = datetime.datetime.now()
             datetime_frac_seconds = (
-                datetime_now.hour * 3600
-                + datetime_now.minute * 60
-                + datetime_now.second
+                    datetime_now.hour * 3600
+                    + datetime_now.minute * 60
+                    + datetime_now.second
             )
             time_now = Time.now()
             if int(time_now.day_frac * 86400) == datetime_frac_seconds:
@@ -599,9 +599,9 @@ class TestTime:
         while count < 3:
             datetime_now = datetime.datetime.utcnow()
             datetime_frac_seconds = (
-                datetime_now.hour * 3600
-                + datetime_now.minute * 60
-                + datetime_now.second
+                    datetime_now.hour * 3600
+                    + datetime_now.minute * 60
+                    + datetime_now.second
             )
             time_now = Time.now(to_utc=0)
             if int(time_now.day_frac * 86400) == datetime_frac_seconds:
@@ -615,16 +615,16 @@ class TestTime:
         while count < 3:
             datetime_now = datetime.datetime.utcnow()
             datetime_frac_seconds = (
-                datetime_now.hour * 3600
-                + datetime_now.minute * 60
-                + datetime_now.second
+                    datetime_now.hour * 3600
+                    + datetime_now.minute * 60
+                    + datetime_now.second
             )
             time_now = Time.now(to_utc=DummyToUtc(0, 1))
             if int(time_now.day_frac * 86400) == datetime_frac_seconds:
                 break
             count += 1
         assert (
-            count < 3
+                count < 3
         ), "Unable to get at least one a correct Time.now(to_utc=DummyToUtc(0, 1))"
         assert time_now.to_utc == 0
 
@@ -638,9 +638,9 @@ class TestTime:
         while count < 3:
             datetime_now = datetime.datetime.now()
             datetime_frac_seconds = (
-                datetime_now.hour * 3600
-                + datetime_now.minute * 60
-                + datetime_now.second
+                    datetime_now.hour * 3600
+                    + datetime_now.minute * 60
+                    + datetime_now.second
             )
             time_now = Time.localnow()
             if int(time_now.day_frac * 86400) == datetime_frac_seconds:
@@ -659,9 +659,9 @@ class TestTime:
         while count < 3:
             datetime_now = datetime.datetime.utcnow()
             datetime_frac_seconds = (
-                datetime_now.hour * 3600
-                + datetime_now.minute * 60
-                + datetime_now.second
+                    datetime_now.hour * 3600
+                    + datetime_now.minute * 60
+                    + datetime_now.second
             )
             time_now = Time.utcnow()
             if int(time_now.day_frac * 86400) == datetime_frac_seconds:
@@ -1139,7 +1139,7 @@ class TestTime:
                 for new_utc_value in to_utc_strange_test_data:
                     second = first.relocate(new_utc_value)
                     diff = (first.day_frac + first.to_utc) - (
-                        second.day_frac + second.to_utc
+                            second.day_frac + second.to_utc
                     )
                     # Note that for some of the test value we have an overflow/underflow,
                     # so we must impement a precise test
