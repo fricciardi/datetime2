@@ -538,7 +538,7 @@ class TestTime:
             Time(1, 2, 1)
 
         # exception with non-numeric types
-        for par in (1j, (1,), [1], {1: 1}, [], {}, None, (1, 2), (1, 2, 3), WrongObj()):
+        for par in (1j, (1,), [1], {1: 1}, [], {}, (1, 2), (1, 2, 3), WrongObj()):
             with pytest.raises(TypeError):
                 Time("0.4444", to_utc=par)
 
@@ -812,7 +812,7 @@ class TestTime:
 
     def test_308_operations_preserve_naivety(self):
         a = Time("3/8")
-        b = Time((3, 4), to_utc="1/6")
+        b = Time(3, 4, to_utc="1/6")
         test_obj = DummyToUtc(-1, 8)
         c = Time(0.25, to_utc=test_obj)
 
@@ -973,7 +973,7 @@ class TestTime:
         tl = TimeLike()
         t12 = Time((1, 2))
         t34 = Time("3/4")
-        t45 = Time((4, 5))
+        t45 = Time(4, 5)
         assert not (t12 == tl)
         assert t34 == tl
         assert not (t45 == tl)

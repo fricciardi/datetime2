@@ -34,7 +34,7 @@ from fractions import Fraction
 __author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
 
-def verify_fractional_value(fractional, min=None, max=None, min_excl=None, max_excl=None):
+def verify_value(arguments, min=None, max=None, min_excl=None, max_excl=None):
     """Raised exceptions:
     - RuntimeError: if both min and min:excl, or max and max_excl are provided.
     - TypeError: if tuple argument for fraction is invalid or has worng values
@@ -45,7 +45,7 @@ def verify_fractional_value(fractional, min=None, max=None, min_excl=None, max_e
     if max is not None and max_excl is not None:
         raise RuntimeError("Only one maximum value can be given.")
     try:
-        value = Fraction(fractional)
+        value = Fraction(*arguments)
     except ZeroDivisionError as exc:
         raise TypeError("Denominator of a valid fractional value cannot be 0.") from exc
     except TypeError as exc:
@@ -63,6 +63,9 @@ def verify_fractional_value(fractional, min=None, max=None, min_excl=None, max_e
     return value
 
 
+def verify_fractional_value(fractional, min=None, max=None, min_excl=None, max_excl=None):
+    return verify_value((fractional,), min, max, min_excl, max_excl)
+
+
 def verify_fractional_value_num_den(numerator, denominator, min=None, max=None, min_excl=None, max_excl=None):
-    fractional = Fraction(numerator, denominator)
-    return verify_fractional_value(fractional, min, max, min_excl, max_excl)
+    return verify_value((numerator, denominator), min, max, min_excl, max_excl)
