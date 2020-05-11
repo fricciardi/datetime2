@@ -461,7 +461,7 @@ class TestTimeRepresentationInterface:
         assert hasattr(t3, "western")
         t3.western
 
-    def test110_naivety_is_preserved(self):
+    def test_110_naivety_is_preserved(self):
         class NaivetyCheck:
             def __init__(self, hour100, minute100, to_utc=None):
                 self.hour100 = hour100
