@@ -971,7 +971,7 @@ class TestTime:
                 return self.day_frac >= other.day_frac
 
         tl = TimeLike()
-        t12 = Time((1, 2))
+        t12 = Time(1, 2)
         t34 = Time("3/4")
         t45 = Time(4, 5)
         assert not (t12 == tl)
@@ -1056,9 +1056,9 @@ class TestTime:
 
         tl = TimeLike()
         # We need not implement naivety checks, which are delegated to the Time-like class, not under test
-        t12 = Time((1, 2), to_utc="-1/3")
+        t12 = Time(1, 2, to_utc="-1/3")
         t34 = Time("3/4", to_utc=0.25)
-        t45 = Time((4, 5), to_utc=(-1, 8))
+        t45 = Time(4, 5, to_utc=(-1, 8))
         assert not (t12 == tl)
         assert t34 == tl
         assert not (t45 == tl)
@@ -1177,15 +1177,6 @@ class TestTime:
         for par in (-100, -1.00001, 1.00000001, 100):
             with pytest.raises(ValueError):
                 Time("0.5555", to_utc=par)
-
-        # same for tuple argument
-        for par in ((-100, 1), (-4, 3), (4, 3), (100, 1)):
-            with pytest.raises(ValueError):
-                Time("0.6666", to_utc=par)
-
-        # tuple argument should not have 0 as denominator
-        with pytest.raises(TypeError):
-            Time("0.7777", to_utc=(3, 0))
 
     def test_500_repr(self):
         import datetime2
