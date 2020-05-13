@@ -148,7 +148,7 @@ it is used to represent a precise moment (regardless of the day). An object
 without indication is said to be "naive", and its interpretation is left to the
 program that uses it.
 
-There are four :class:`Time` constructors:
+There are five :class:`Time` constructors:
 
 .. class:: Time(day_frac, *, to_utc=None)
 .. class:: Time(numerator, denominator, *, to_utc=None)
@@ -186,9 +186,8 @@ There are four :class:`Time` constructors:
    than 0 and less than 1. The resulting value for ``to_utc`` must be equal or greater
    than -1 and less or equal to 1. A :exc:`ValueError` exception is raised if the
    resulting value are outside these ranges. A :exc:`TypeError` exception is
-   raised if the argument type is not one of the accepted types or the tuple
-   argument is invalid (e.g. it does not have two values or the denominator
-   value is 0).
+   raised if the type of any argument is not one of the accepted types. A
+   :exc:`ZeroDivisionError` exception is raised if the denominator is 0.
 
 .. classmethod:: Time.now(to_utc=None)
 
@@ -265,6 +264,8 @@ instances are considered to be true.
    >>> print(t2)
    1/2 of a day, 1/4 of a day to UTC
 
+.. TODO: add "localize" method to get a naive instance from an aware one
+
 The following table lists all available time representations and the attributes
 by which they are reachable:
 
@@ -276,6 +277,7 @@ by which they are reachable:
 | Internet       | ``internet``   | :ref:`InternetTime <internet-time>`            | datetime2.modern   |
 +----------------+----------------+------------------------------------------------+--------------------+
 
+.. TODO: add French decimal time when available
 
 Supported operations
 ^^^^^^^^^^^^^^^^^^^^

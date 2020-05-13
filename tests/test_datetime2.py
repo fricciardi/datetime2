@@ -352,7 +352,6 @@ class TestDate:
             assert Date(day_count)
 
     def test_500_repr(self):
-        import datetime2
 
         for day_count in date_test_data:
             d = Date(day_count)
@@ -479,8 +478,7 @@ class TestTime:
                 assert Time(input_value[0], input_value[1]).day_frac == day_frac
 
     def test_002_valid_argument_types_to_utc(self):
-        """The to_utc argument can be anything that can be passed to the fractions.Fraction constructor,
-        but not (num, den)."""
+        """The to_utc argument can be anything that can be passed to the fractions.Fraction constructor."""
         for to_utc_frac, input_values in to_utc_test_data:
             for input_value in input_values:
                 assert Time("0.2222", to_utc=input_value).to_utc == to_utc_frac
@@ -516,9 +514,10 @@ class TestTime:
         for par in (1j, (1,), [1], {1: 1}, [], {}, None, (1, 2), (1, 2, 3)):
             with pytest.raises(TypeError):
                 Time(par, 2)
-            if par is not None:    # if par is None, Time() falls back to the first form
-                with pytest.raises(TypeError):
-                    Time(1, par)
+        # None is valid as second argument, so we are not testing it
+        for par in (1j, (1,), [1], {1: 1}, [], {},       (1, 2), (1, 2, 3)):
+            with pytest.raises(TypeError):
+                Time(1, par)
 
     def test_012_invalid_argument_types_to_utc(self):
         """A TypeError exception is raised if the argument type is not one of the accepted types."""
@@ -543,17 +542,20 @@ class TestTime:
                 Time("0.4444", to_utc=par)
 
     def test_015_invalid_argument_values(self):
-        "The resulting value must be equal or greater than 0 and less than 1."
+        """The resulting value must be equal or greater than 0 and less than 1."""
         for par in (-0.00001, 1, 1.00000001, 10000, -10000):
             with pytest.raises(ValueError):
                 Time(par)
 
-        # same for numerator, denominator arguments
+    def test_016_invalid_num_den(self):
+        """The resulting value must be equal or greater than 0 and less than 1."""
         for num, den in (
                 (1000, 1),
                 (4, 2),
+                (1.000001, 1),
                 (2, 2),
                 (-1, -1),
+                (-0.000001, 1),
                 (-1, 1000000),
                 (-3, 3),
                 (1000000, -2),
@@ -562,11 +564,11 @@ class TestTime:
                 Time(num, den)
 
         # denominator should not be 0
-        with pytest.raises(TypeError):
+        with pytest.raises(ZeroDivisionError):
             Time(2, 0)
 
     def test_017_invalid_argument_values_to_utc(self):
-        "The resulting value must be equal or greater than -1 and less or equal to 1."
+        """The resulting value must be equal or greater than -1 and less or equal to 1."""
         for par in (-100, -1.00001, 1.00000001, 100):
             with pytest.raises(ValueError):
                 Time("0.5555", to_utc=par)
@@ -574,7 +576,7 @@ class TestTime:
                 Time(2, 3, to_utc=par)
 
     def test_020_now(self):
-        "Return an object that represents the current moment in the day."
+        """Return an object that represents the current moment in the day."""
         # for the time being, let's use the good old datetime module :-)
         import datetime, time
 
@@ -582,12 +584,12 @@ class TestTime:
         count = 0
         while count < 3:
             datetime_now = datetime.datetime.now()
+            time_now = Time.now()
             datetime_frac_seconds = (
                     datetime_now.hour * 3600
                     + datetime_now.minute * 60
                     + datetime_now.second
             )
-            time_now = Time.now()
             if int(time_now.day_frac * 86400) == datetime_frac_seconds:
                 break
             count += 1
@@ -595,7 +597,7 @@ class TestTime:
         assert int(time_now.to_utc) == time.timezone
 
     def test_030_now_with_argument(self):
-        "Return an object that represents the current moment in the day."
+        """Return an object that represents the current moment in the day."""
         # for the time being, let's use the good old datetime module :-)
         import datetime
 
@@ -603,12 +605,12 @@ class TestTime:
         count = 0
         while count < 3:
             datetime_now = datetime.datetime.utcnow()
+            time_now = Time.now(to_utc=0)
             datetime_frac_seconds = (
                     datetime_now.hour * 3600
                     + datetime_now.minute * 60
                     + datetime_now.second
             )
-            time_now = Time.now(to_utc=0)
             if int(time_now.day_frac * 86400) == datetime_frac_seconds:
                 break
             count += 1
@@ -619,22 +621,20 @@ class TestTime:
         count = 0
         while count < 3:
             datetime_now = datetime.datetime.utcnow()
+            time_now = Time.now(to_utc=DummyToUtc(0, 1))
             datetime_frac_seconds = (
                     datetime_now.hour * 3600
                     + datetime_now.minute * 60
                     + datetime_now.second
             )
-            time_now = Time.now(to_utc=DummyToUtc(0, 1))
             if int(time_now.day_frac * 86400) == datetime_frac_seconds:
                 break
             count += 1
-        assert (
-                count < 3
-        ), "Unable to get at least one a correct Time.now(to_utc=DummyToUtc(0, 1))"
+        assert count < 3, "Unable to get at least one a correct Time.now(to_utc=DummyToUtc(0, 1))"
         assert time_now.to_utc == 0
 
     def test_040_localnow(self):
-        "Return an object that represents the current moment in the day."
+        """Return an object that represents the current moment in the day."""
         # for the time being, let's use the good old datetime module :-)
         import datetime
 
@@ -642,12 +642,12 @@ class TestTime:
         count = 0
         while count < 3:
             datetime_now = datetime.datetime.now()
+            time_now = Time.localnow()
             datetime_frac_seconds = (
                     datetime_now.hour * 3600
                     + datetime_now.minute * 60
                     + datetime_now.second
             )
-            time_now = Time.localnow()
             if int(time_now.day_frac * 86400) == datetime_frac_seconds:
                 break
             count += 1
@@ -655,7 +655,7 @@ class TestTime:
         assert time_now.to_utc is None
 
     def test_050_utcnow(self):
-        "Return an object that represents the current moment in the day."
+        """Return an object that represents the current moment in the day."""
         # for the time being, let's use the good old datetime module :-)
         import datetime
 
@@ -663,12 +663,12 @@ class TestTime:
         count = 0
         while count < 3:
             datetime_now = datetime.datetime.utcnow()
+            time_now = Time.utcnow()
             datetime_frac_seconds = (
                     datetime_now.hour * 3600
                     + datetime_now.minute * 60
                     + datetime_now.second
             )
-            time_now = Time.utcnow()
             if int(time_now.day_frac * 86400) == datetime_frac_seconds:
                 break
             count += 1
@@ -676,7 +676,7 @@ class TestTime:
         assert time_now.to_utc is None
 
     def test_100_write_attributes(self):
-        "This attribute is read-only."
+        """This attribute is read-only."""
         t1 = Time("0.12345")
         with pytest.raises(AttributeError):
             t1.day_frac = Fraction(3, 7)
@@ -691,7 +691,7 @@ class TestTime:
             t3.to_utc = Fraction(1, 11)
 
     def test_110_get_unknown_attribute(self):
-        "Time instances have one attribute."
+        """Time instances have one attribute."""
         # I want to do this, because Time will have attributes added at runtime
         # let's tests this both on class and instance
         with pytest.raises(AttributeError):
@@ -1056,7 +1056,7 @@ class TestTime:
         # We need not implement naivety checks, which are delegated to the Time-like class, not under test
         t12 = Time(1, 2, to_utc="-1/3")
         t34 = Time("3/4", to_utc=0.25)
-        t45 = Time(4, 5, to_utc=(-1, 8))
+        t45 = Time(4, 5, to_utc=Fraction(-1, 8))
         assert not (t12 == tl)
         assert t34 == tl
         assert not (t45 == tl)
@@ -1109,9 +1109,9 @@ class TestTime:
                 t >= par
 
     def test_340_hash_equality(self):
-        "Time instances are immutable."
+        """Time instances are immutable."""
         t1 = Time("3/5")
-        t2 = Time("3/5")
+        t2 = Time(3, 5)
         assert hash(t1) == hash(t2)
 
         dic = {t1: 1}
@@ -1127,14 +1127,45 @@ class TestTime:
         assert len(dic) == 1
         assert dic[t3] == 2
 
+        # TODO: also with overflow and underflow
+
+    def test_342_hash_equality_to_utc(self):
+        """Time instances are immutable."""
+        # TODO: completely write tests for hash equality with to_utc
+        assert 1 == 0
+        # t1 = Time("3/5")
+        # t2 = Time(3, 5)
+        # assert hash(t1) == hash(t2)
+        #
+        # dic = {t1: 1}
+        # dic[t2] = 2
+        # assert len(dic) == 1
+        # assert dic[t1] == 2
+        # assert dic[t2] == 2
+        #
+        # t3 = Time("7/20") + TimeDelta(0.25)
+        # assert hash(t1) == hash(t3)
+        #
+        # dic[t3] = 2
+        # assert len(dic) == 1
+        # assert dic[t3] == 2
+
     def test_350_bool(self):
-        "In boolean contexts, all Time instances are considered to be true."
+        """In boolean contexts, all Time instances are considered to be true."""
         for day_frac, input_values in time_test_data:
             for input_value in input_values:
                 assert Time(input_value)
+        for day_frac, input_values in time_test_data_num_den:
+            for input_value in input_values:
+                assert Time(input_value[0], input_value[1])
+
+    def test_352_bool_to_utc(self):
+        """In boolean contexts, all Time instances are considered to be true."""
+        # TODO: completely write tests for boolean value with to_utc
+        assert 1 == 0
 
     def test_400_relocate(self):
-        "Return another Time instance that identifies the same time"
+        """Return another Time instance that identifies the same time"""
         # Im using a mix of values, then check that relocated instance is equal
         for day_frac, time_input_values in time_test_data:
             for to_utc_frac, utc_input_values in to_utc_test_data:
@@ -1145,30 +1176,35 @@ class TestTime:
                             second.day_frac + second.to_utc
                     )
                     # Note that for some of the test value we have an overflow/underflow,
-                    # so we must impement a precise test
-                    assert diff == int(diff)
+                    # so we must implement a precise test
+                    assert diff == int(diff)  # ????
+        # TODO: implement serious test for relocation (values that have overflows and underflows, numerator and denominator, to_utc)
 
     def test_410_relocate_invalid_type(self):
-        "Return another Time instance that identifies the same time"
+        """Return another Time instance that identifies the same time"""
+        # relocate on naive instance
+        t1 = Time("123/456")
+        with pytest.raises(TypeError):
+            t1.relocate("1/7")
 
         class WrongObj:
             def __init__(self):
                 self.time_to_utc = "foo"
 
-        t = Time("123/456", to_utc="-78/90")
+        t2 = Time("123/456", to_utc="-78/90")
 
         # exception with invalid parameter name
         with pytest.raises(TypeError):
-            t.relocate()
+            t2.relocate()
         with pytest.raises(TypeError):
-            t.relocate(1, 2)
+            t2.relocate(1, 2)
         with pytest.raises(TypeError):
-            t.relocate(foobar="barfoo")
+            t2.relocate(foobar="barfoo")
 
         # exception with non-numeric types
         for par in (1j, (1,), [1], {1: 1}, [], {}, None, (1, 2, 3), WrongObj()):
             with pytest.raises(TypeError):
-                t.relocate(par)
+                t2.relocate(par)
 
     def test_420_relocate_invalid_values(self):
         "Return another Time instance that identifies the same time"
@@ -1177,7 +1213,7 @@ class TestTime:
                 Time("0.5555", to_utc=par)
 
     def test_500_repr(self):
-        import datetime2
+        import datetime
 
         for day_frac, input_values in time_test_data:
             for input_value in input_values:
