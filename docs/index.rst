@@ -16,6 +16,8 @@
 Overview
 ========
 
+.. TODO: change this again, remove any description of internal representation
+
 A moment in history is independent from the way it is represented in different
 cultures. There are indeed many calendars in which the same day is represented
 in different ways. The :mod:`datetime2` module detaches operations on time or
