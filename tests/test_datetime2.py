@@ -552,10 +552,10 @@ class TestTime:
         for num, den in (
                 (1000, 1),
                 (4, 2),
-                (1.000001, 1),
+                (Fraction(1.000001), 1),
                 (2, 2),
                 (-1, -1),
-                (-0.000001, 1),
+                (Fraction(-0.000001), 1),
                 (-1, 1000000),
                 (-3, 3),
                 (1000000, -2),
@@ -1127,28 +1127,31 @@ class TestTime:
         assert len(dic) == 1
         assert dic[t3] == 2
 
-        # TODO: also with overflow and underflow
-
     def test_342_hash_equality_to_utc(self):
         """Time instances are immutable."""
-        # TODO: completely write tests for hash equality with to_utc
-        assert 1 == 0
-        # t1 = Time("3/5")
-        # t2 = Time(3, 5)
-        # assert hash(t1) == hash(t2)
-        #
-        # dic = {t1: 1}
-        # dic[t2] = 2
-        # assert len(dic) == 1
-        # assert dic[t1] == 2
-        # assert dic[t2] == 2
-        #
-        # t3 = Time("7/20") + TimeDelta(0.25)
-        # assert hash(t1) == hash(t3)
-        #
-        # dic[t3] = 2
-        # assert len(dic) == 1
-        # assert dic[t3] == 2
+        t1 = Time("3/5", to_utc=0.25)
+        t2 = Time(4, 5, to_utc="1/20")
+        assert hash(t1) == hash(t2)
+
+        dic = {t1: 1}
+        dic[t2] = 2
+        assert len(dic) == 1
+        assert dic[t1] == 2
+        assert dic[t2] == 2
+
+        t3 = Time(Decimal("0.2"), to_utc="-7/20")
+        assert hash(t1) == hash(t3)
+
+        dic[t3] = 2
+        assert len(dic) == 1
+        assert dic[t3] == 2
+
+        t4 = Time("3/5", to_utc=0.75)
+        assert hash(t1) == hash(t4)
+
+        dic[t4] = 2
+        assert len(dic) == 1
+        assert dic[t4] == 2
 
     def test_350_bool(self):
         """In boolean contexts, all Time instances are considered to be true."""
@@ -1161,8 +1164,9 @@ class TestTime:
 
     def test_352_bool_to_utc(self):
         """In boolean contexts, all Time instances are considered to be true."""
-        # TODO: completely write tests for boolean value with to_utc
-        assert 1 == 0
+        for to_utc_frac, input_values in to_utc_test_data:
+            for input_value in input_values:
+                assert Time("0.2222", to_utc=input_value)
 
     def test_400_relocate(self):
         """Return another Time instance that identifies the same time"""
@@ -1213,17 +1217,18 @@ class TestTime:
                 Time("0.5555", to_utc=par)
 
     def test_500_repr(self):
-        import datetime
-
         for day_frac, input_values in time_test_data:
             for input_value in input_values:
                 t = Time(input_value)
                 time_repr = repr(t)
                 names, args = time_repr.split("(")
                 assert names.split(".") == ["datetime2", "Time"]
-                # TODO: there should be an assert for the value (this is the one for Date: "assert int(args) == day_count")
                 args = args[:-1]  # drop ')'
+                assert eval(args) == day_frac
                 assert t == eval(time_repr)
+
+    def test_505_repr_to_utc(self):
+        # TODO: implement
 
     def test_520_str(self):
         for day_frac, input_values in time_test_data:
@@ -1243,7 +1248,7 @@ class TestTime:
     def test_920_subclass1(self):
         # check that there is no interference from the interface mechanism and from possible additional arguments
         class T(Time):
-            theAnswer = 42
+            the_answer = 42
 
             def __init__(self, *args, **kws):
                 temp = kws.copy()
@@ -1256,7 +1261,7 @@ class TestTime:
         t1 = Time("3/8")
         t2 = T(0.375, extra=7)
 
-        assert t2.theAnswer == 42
+        assert t2.the_answer == 42
         assert t2.extra == 7
         assert t1.day_frac == t2.day_frac
         assert t2.newmeth(-7) == (t1.day_frac * 3) // 2 - 7
