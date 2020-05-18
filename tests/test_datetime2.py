@@ -1229,6 +1229,7 @@ class TestTime:
 
     def test_505_repr_to_utc(self):
         # TODO: implement
+        pass
 
     def test_520_str(self):
         for day_frac, input_values in time_test_data:
