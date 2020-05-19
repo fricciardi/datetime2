@@ -46,8 +46,6 @@ def verify_value(arguments, min=None, max=None, min_excl=None, max_excl=None):
         raise RuntimeError("Only one maximum value can be given.")
     try:
         value = Fraction(*arguments)
-    except ZeroDivisionError as exc:
-        raise TypeError("Denominator of a valid fractional value cannot be 0.") from exc
     except TypeError as exc:
         raise TypeError("Invalid type in a fractional value.") from exc
     except (OverflowError, ValueError) as exc:

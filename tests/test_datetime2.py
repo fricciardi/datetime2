@@ -63,12 +63,12 @@ date_test_data = (
 
 class TestDate:
     def test_000_valid_parameter_types(self):
-        "The argument is required and must be an integer."
+        """The argument is required and must be an integer."""
         for day_count in date_test_data:
             assert Date(day_count).day_count == day_count
 
     def test_010_invalid_parameter_types(self):
-        "The argument is required and must be an integer."
+        """The argument is required and must be an integer."""
         # exception with no or two parameters
         with pytest.raises(TypeError):
             Date()
@@ -84,7 +84,7 @@ class TestDate:
                 Date(par)
 
     def test_020_today(self):
-        "Return a Date object that represents the current local date."
+        """Return a Date object that represents the current local date."""
         # for the time being, let's use the good old datetime module :-)
         import datetime
 
@@ -98,13 +98,13 @@ class TestDate:
         assert date_today.day_count == today_before.toordinal()
 
     def test_100_write_attribute(self):
-        "This attribute is read-only."
+        """This attribute is read-only."""
         d = Date(1)
         with pytest.raises(AttributeError):
             d.day_count = 3
 
     def test_110_get_unknown_attribute(self):
-        "Date instances have one attribute."
+        """Date instances have one attribute."""
         # I want to do this, because Date will have attributes added at runtime
         # let's tests this both on class and instance
         with pytest.raises(AttributeError):
@@ -328,7 +328,7 @@ class TestDate:
                 d >= par
 
     def test_340_hash_equality(self):
-        "Date instances are immutable."
+        """Date instances are immutable."""
         d1 = Date(42)
         d2 = Date(42)
         assert hash(d1) == hash(d2)
@@ -347,7 +347,7 @@ class TestDate:
         assert dic[d3] == 2
 
     def test_350_bool(self):
-        "In boolean contexts, all Date instances are considered to be true."
+        """In boolean contexts, all Date instances are considered to be true."""
         for day_count in date_test_data:
             assert Date(day_count)
 
@@ -1211,12 +1211,14 @@ class TestTime:
                 t2.relocate(par)
 
     def test_420_relocate_invalid_values(self):
-        "Return another Time instance that identifies the same time"
+        """Return another Time instance that identifies the same time"""
         for par in (-100, -1.00001, 1.00000001, 100):
             with pytest.raises(ValueError):
                 Time("0.5555", to_utc=par)
 
     def test_500_repr(self):
+        import datetime2
+
         for day_frac, input_values in time_test_data:
             for input_value in input_values:
                 t = Time(input_value)

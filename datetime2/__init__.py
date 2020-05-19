@@ -335,7 +335,10 @@ class Time:
         return self._to_utc
 
     def __repr__(self):
-        return "datetime2.{}('{}')".format(self.__class__.__name__, str(self.day_frac))
+        if self.to_utc is None:
+            return "datetime2.{}('{}')".format(self.__class__.__name__, str(self.day_frac))
+        else:
+            return "datetime2.{}('{}', to_utc='{}')".format(self.__class__.__name__, str(self.day_frac), str(self.to_utc))
 
     def __str__(self):
         if self.to_utc:
@@ -474,7 +477,10 @@ class Time:
 
     # hash value
     def __hash__(self):
-        return hash(self._day_frac)
+        if self.to_utc is None:
+            return hash((self.day_frac, None))
+        else:
+            return hash(self.day_frac + self.to_utc)
 
     def relocate(self, new_to_utc):
         if self.to_utc is None:
