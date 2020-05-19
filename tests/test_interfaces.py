@@ -489,4 +489,4 @@ class TestTimeRepresentationInterface:
         assert t3.to_utc is None
 
         t4 = Time.test_1(11, 12, to_utc=0)
-        assert t4.test_1.to_utc is not None
+        assert t4.to_utc is not None
