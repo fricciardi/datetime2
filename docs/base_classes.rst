@@ -18,7 +18,7 @@ operations for date and time independently of the way they are created.
 
 
 
-:class:`Date` Objects
+:class:`Date` objects
 ---------------------
 
 A :class:`Date` object represents a date in an idealized calendar, just
@@ -132,7 +132,7 @@ Notes:
 
 
 
-:class:`Time` Objects
+:class:`Time` objects
 ---------------------
 
 .. warning:: This version of the documentation is under revision for the part
