@@ -253,7 +253,7 @@ well described in `Descriptor HowTo Guide <http://docs.python.org/3.4/howto/desc
 
 This quite complex implementation has a few advantages:
 
-* Base cass instances do not store access attributes unless they are
+* Base class instances do not store access attributes unless they are
   retrieved.
 * Modified interface classes are built at registration time, which happens
   only once per program invocation.
