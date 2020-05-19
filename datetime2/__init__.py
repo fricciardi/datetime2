@@ -342,9 +342,7 @@ class Time:
 
     def __str__(self):
         if self.to_utc:
-            return "{} of a day, {} of a day to UTC".format(
-                str(self.day_frac), str(self.to_utc)
-            )
+            return "{} of a day, {} of a day to UTC".format(str(self.day_frac), str(self.to_utc))
         else:
             return "{} of a day".format(str(self.day_frac))
 
@@ -480,7 +478,9 @@ class Time:
         if self.to_utc is None:
             return hash((self.day_frac, None))
         else:
-            return hash(self.day_frac + self.to_utc)
+            not_normal = self.day_frac + self.to_utc
+            normal = not_normal - int(not_normal)
+            return hash(normal)
 
     def relocate(self, new_to_utc):
         if self.to_utc is None:

@@ -352,6 +352,7 @@ class TestDate:
             assert Date(day_count)
 
     def test_500_repr(self):
+        import datetime2
 
         for day_count in date_test_data:
             d = Date(day_count)
@@ -1226,7 +1227,7 @@ class TestTime:
                 names, args = time_repr.split("(")
                 assert names.split(".") == ["datetime2", "Time"]
                 args = args[:-1]  # drop ')'
-                assert eval(args) == day_frac
+                assert eval(args) == str(day_frac)
                 assert t == eval(time_repr)
 
     def test_505_repr_to_utc(self):
