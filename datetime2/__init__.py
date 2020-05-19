@@ -422,11 +422,7 @@ class Time:
         elif hasattr(other, "day_frac"):
             return NotImplemented
         else:
-            raise TypeError(
-                "You cannot compare '{}' with '{}'.".format(
-                    str(type(self)), str(type(other))
-                )
-            )
+            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
 
     def __ge__(self, other):
         if isinstance(other, Time):
@@ -438,10 +434,7 @@ class Time:
             return NotImplemented
         else:
             raise TypeError(
-                "You cannot compare '{}' with '{}'.".format(
-                    str(type(self)), str(type(other))
-                )
-            )
+                "You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
 
     def __lt__(self, other):
         if isinstance(other, Time):
@@ -452,11 +445,7 @@ class Time:
         elif hasattr(other, "day_frac"):
             return NotImplemented
         else:
-            raise TypeError(
-                "You cannot compare '{}' with '{}'.".format(
-                    str(type(self)), str(type(other))
-                )
-            )
+            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
 
     def __le__(self, other):
         if isinstance(other, Time):
@@ -467,11 +456,7 @@ class Time:
         elif hasattr(other, "day_frac"):
             return NotImplemented
         else:
-            raise TypeError(
-                "You cannot compare '{}' with '{}'.".format(
-                    str(type(self)), str(type(other))
-                )
-            )
+            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
 
     # hash value
     def __hash__(self):
