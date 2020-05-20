@@ -29,6 +29,8 @@
 
 __author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
+# TODO: change all .format( to formatted string literal. Check also in other source files
+
 import time
 from fractions import Fraction
 from math import floor
@@ -254,18 +256,12 @@ class Date:
                     return self.modified_calendar_class
                 else:
                     assert self.attribute_name not in instance.__dict__
-                    date_obj = self.modified_calendar_class.from_rata_die(
-                        instance.day_count
-                    )
+                    date_obj = self.modified_calendar_class.from_rata_die(instance.day_count)
                     calendar_obj = getattr(date_obj, self.attribute_name)
                     setattr(instance, self.attribute_name, calendar_obj)
                     return calendar_obj
 
-        setattr(
-            cls,
-            attribute_name,
-            CalendarAttribute(attribute_name, modified_calendar_class),
-        )
+        setattr(cls, attribute_name, CalendarAttribute(attribute_name, modified_calendar_class))
 
 
 ##############################################################################
@@ -465,7 +461,7 @@ class Time:
         else:
             not_normal = self.day_frac + self.to_utc
             normal = not_normal - int(not_normal)
-            return hash(normal)
+            return hash(normal) if normal >= 0 else hash(1 + normal)
 
     def relocate(self, new_to_utc):
         if self.to_utc is None:
@@ -476,9 +472,7 @@ class Time:
                 try:
                     new_to_utc_value = new_to_utc.time_to_utc()
                 except Exception as any_exc:
-                    raise TypeError(
-                        "Invalid object for 'new_to_utc' argument."
-                    ) from any_exc
+                    raise TypeError("Invalid object for 'new_to_utc' argument.") from any_exc
             else:
                 new_to_utc_value = new_to_utc
             try:
@@ -502,25 +496,13 @@ class Time:
     @classmethod
     def register_new_time(cls, attribute_name, time_repr_class):
         if not isinstance(attribute_name, str) or not attribute_name.isidentifier():
-            raise ValueError(
-                "Invalid attribute name ('{}') for time representation.".format(
-                    attribute_name
-                )
-            )
+            raise ValueError("Invalid attribute name ('{}') for time representation.".format(attribute_name))
         if hasattr(cls, attribute_name):
-            raise AttributeError(
-                "Time representation attribute already existing: {}.".format(
-                    attribute_name
-                )
-            )
+            raise AttributeError("Time representation attribute already existing: {}.".format(attribute_name))
         if not hasattr(time_repr_class, "from_day_frac"):
-            raise TypeError(
-                "Time representation class does not have method from_day_frac."
-            )
+            raise TypeError("Time representation class does not have method from_day_frac.")
         if not hasattr(time_repr_class, "to_day_frac"):
-            raise TypeError(
-                "Time representation class does not have method to_day_frac."
-            )
+            raise TypeError("Time representation class does not have method to_day_frac.")
 
         class ModifiedClass(type):
             def __call__(klass, *args, **kwargs):
@@ -544,18 +526,12 @@ class Time:
                     return self.modified_time_repr_class
                 else:
                     assert self.attr_name not in instance.__dict__
-                    time_obj = self.modified_time_repr_class.from_day_frac(
-                        instance.day_frac
-                    )
+                    time_obj = self.modified_time_repr_class.from_day_frac(instance.day_frac)
                     time_repr_obj = getattr(time_obj, self.attr_name)
                     setattr(instance, self.attr_name, time_repr_obj)
                     return time_repr_obj
 
-        setattr(
-            cls,
-            attribute_name,
-            TimeReprAttribute(attribute_name, modified_time_repr_class),
-        )
+        setattr(cls, attribute_name, TimeReprAttribute(attribute_name, modified_time_repr_class))
 
 
 ##############################################################################
