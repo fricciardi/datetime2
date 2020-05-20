@@ -499,15 +499,16 @@ class Time:
             raise ValueError("Invalid attribute name ('{}') for time representation.".format(attribute_name))
         if hasattr(cls, attribute_name):
             raise AttributeError("Time representation attribute already existing: {}.".format(attribute_name))
-        if not hasattr(time_repr_class, "from_day_frac"):
-            raise TypeError("Time representation class does not have method from_day_frac.")
-        if not hasattr(time_repr_class, "to_day_frac"):
-            raise TypeError("Time representation class does not have method to_day_frac.")
+        if not hasattr(time_repr_class, "from_time_pair"):
+            raise TypeError("Time representation class does not have method from_time_pair.")
+        if not hasattr(time_repr_class, "to_time_pair"):
+            raise TypeError("Time representation class does not have method to_time_pair.")
 
         class ModifiedClass(type):
             def __call__(klass, *args, **kwargs):
                 time_repr_obj = super().__call__(*args, **kwargs)
-                time_obj = cls(time_repr_obj.to_day_frac())
+                day_frac, to_utc = time_repr_obj.to_time_pair()
+                time_obj = cls(day_frac, to_utc=to_utc)
                 setattr(time_obj, attribute_name, time_repr_obj)
                 return time_obj
 
@@ -526,7 +527,7 @@ class Time:
                     return self.modified_time_repr_class
                 else:
                     assert self.attr_name not in instance.__dict__
-                    time_obj = self.modified_time_repr_class.from_day_frac(instance.day_frac)
+                    time_obj = self.modified_time_repr_class.from_time_pair(instance.day_frac, to_utc=instance.to_utc)
                     time_repr_obj = getattr(time_obj, self.attr_name)
                     setattr(instance, self.attr_name, time_repr_obj)
                     return time_repr_obj

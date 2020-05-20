@@ -259,13 +259,13 @@ class ExampleTestTimeRepresentation:
         self.minute100 = minute100
 
     @classmethod
-    def from_day_frac(cls, day_frac):
+    def from_time_pair(cls, day_frac, to_utc=None):
         minutes_tot = day_frac * 10000
         hour100 = int(minutes_tot / 100)
         return cls(hour100, minutes_tot - hour100 * 100)
 
-    def to_day_frac(self):
-        return Fraction(self.hour100 * 100 + self.minute100, 10000)
+    def to_time_pair(self):
+        return Fraction(self.hour100 * 100 + self.minute100, 10000), None
 
 
 @pytest.fixture
@@ -301,13 +301,13 @@ class TestTimeRepresentationInterface:
             Time.register_new_time(123, ExampleTestTimeRepresentation)
 
     def test_030_register_new_time_repr_invalid_time_repr_class(self):
-        class NoFromTimeRepr:  # without from_rata_die
+        class NoFromTimeRepr:  # without from_rata_die  TODO: shouldn't this comment be from_time_pair?
             def __init__(self, hour100, minute100):
                 self.hour100 = hour100
                 self.minute100 = minute100
 
-            def to_day_frac(self):
-                return Fraction(self.hour100 * 100 + self.minute100, 10000)
+            def to_time_pair(self):
+                return Fraction(self.hour100 * 100 + self.minute100, 10000), None
 
         with pytest.raises(TypeError):
             Time.register_new_time("test_1", NoFromTimeRepr)
@@ -318,7 +318,7 @@ class TestTimeRepresentationInterface:
                 self.minute100 = minute100
 
             @classmethod
-            def from_day_frac(cls, day_frac):
+            def from_time_pair(cls, day_frac):
                 minutes_tot = day_frac * 10000
                 hour100 = int(minutes_tot / 100)
                 return cls(hour100, minutes_tot - hour100 * 100)
@@ -468,11 +468,11 @@ class TestTimeRepresentationInterface:
                 self.minute100 = minute100
                 self.to_utc = to_utc
 
-            def to_day_frac(self):
-                return Fraction(self.hour100 * 100 + self.minute100, 10000)
+            def to_time_pair(self):
+                return Fraction(self.hour100 * 100 + self.minute100, 10000), None
 
             @classmethod
-            def from_day_frac(cls, day_frac):
+            def from_time_pair(cls, day_frac, to_utc=None):
                 minutes_tot = day_frac * 10000
                 hour100 = int(minutes_tot / 100)
                 return cls(hour100, minutes_tot - hour100 * 100)
