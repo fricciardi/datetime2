@@ -308,8 +308,8 @@ class InternetTime:
             raise TypeError("Fraction argument expected for fraction to UTC")
         if day_frac < 0 or day_frac >= 1:
             raise ValueError("Day fraction must be equal or greater than 0 and less than 1, while it is {}.".format(day_frac))
-        if to_utc <= -1 or to_utc >= 1:
-            raise ValueError("Fraction to UTC must be greater than -1 and less than 1, while it is {}.".format(day_frac))
+        if to_utc < -1 or to_utc > 1:
+            raise ValueError("Fraction to UTC must be greater or equal to -1 and less or equal to 1, while it is {}.".format(day_frac))
         utc_time = day_frac - to_utc
         beat = (utc_time - floor(utc_time)) * 1000
         internet = cls(beat)

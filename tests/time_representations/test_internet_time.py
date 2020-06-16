@@ -151,12 +151,16 @@ class TestInternet:
             assert internet2.beat == Fraction(test_row[1])
             internet3 = InternetTime.from_time_pair(Fraction(test_row[3]), Fraction('-1/5'))
             assert internet3.beat == Fraction(test_row[1])
+            internet4 = InternetTime.from_time_pair(Fraction(test_row[0]), Fraction(1))
+            assert internet4.beat == Fraction(test_row[1])
+            internet5 = InternetTime.from_time_pair(Fraction(test_row[0]), Fraction(-1))
+            assert internet5.beat == Fraction(test_row[1])
 
     def test_011_ko_constructor_time_pair_values(self):
-        for par in (Fraction(1000001, 1000000), Fraction(1), Fraction(-1, 1000000)):
+        for par in (Fraction(1000001, 1000000), Fraction(-1, 1000000)):
             with pytest.raises(ValueError):
                 InternetTime.from_time_pair(par, Fraction(1, 2))
-        for par in (Fraction(1000001, 1000000), Fraction(1), Fraction(-1), Fraction(-1000001, 1000000)):
+        for par in (Fraction(1000001, 1000000), Fraction(-1000001, 1000000)):
             with pytest.raises(ValueError):
                 InternetTime.from_time_pair(Fraction(1, 2), par)
 
