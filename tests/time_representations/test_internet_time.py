@@ -145,12 +145,12 @@ class TestInternet:
 
     def test_011_ok_constructor_time_pair_values(self):
         for test_row in internet_time_test_data:
-            internet2 = InternetTime.from_time_pair(Fraction(test_row[0]), Fraction(0))
+            internet1 = InternetTime.from_time_pair(Fraction(test_row[0]), Fraction(0))
+            assert internet1.beat == Fraction(test_row[1])
+            internet2 = InternetTime.from_time_pair(Fraction(test_row[2]), Fraction('1/3'))
             assert internet2.beat == Fraction(test_row[1])
-            internet2 = InternetTime.from_time_pair(Fraction(test_row[0]), Fraction('1/3'))
-            assert internet2.beat == Fraction(test_row[2])
-            internet3 = InternetTime.from_time_pair(Fraction(test_row[0]), Fraction('-1/5'))
-            assert internet3.beat == Fraction(test_row[3])
+            internet3 = InternetTime.from_time_pair(Fraction(test_row[3]), Fraction('-1/5'))
+            assert internet3.beat == Fraction(test_row[1])
 
     def test_011_ko_constructor_time_pair_values(self):
         for par in (Fraction(1000001, 1000000), Fraction(1), Fraction(-1, 1000000)):
@@ -323,11 +323,11 @@ class TestInternet:
         # same thing
         internet2 = InternetTime(100)
         assert hash(internet1) == hash(internet2)
-        internet3 = InternetTime.from_time_pair(Fraction(1, 5), Fraction(-1, 10))
+        internet3 = InternetTime.from_time_pair(Fraction(1, 5), Fraction(1, 10))
         assert hash(internet1) == hash(internet3)
-        internet4 = InternetTime.from_time_pair(Fraction(9, 10), Fraction(1, 5))
+        internet4 = InternetTime.from_time_pair(Fraction(9, 10), Fraction(-1, 5))
         assert hash(internet1) == hash(internet4)
-        internet5 = InternetTime.from_time_pair(Fraction(1, 20), Fraction(-19, 20))
+        internet5 = InternetTime.from_time_pair(Fraction(1, 20), Fraction(19, 20))
         assert hash(internet1) == hash(internet5)
 
         dic = {internet1: 1}
@@ -354,9 +354,9 @@ class TestInternet:
         for test_row in internet_time_test_data:
             internet1 = InternetTime(test_row[1])
             assert internet1.to_time_pair() == (Fraction(test_row[0]), Fraction(-1, 24))
-            internet2 = InternetTime.from_time_pair(test_row[2], Fraction("-1/3"))
+            internet2 = InternetTime.from_time_pair(test_row[2], Fraction("1/3"))
             assert internet2.to_time_pair() == (Fraction(test_row[0]), Fraction(-1, 24))
-            internet3 = InternetTime.from_time_pair(test_row[3], Fraction("1/5"))
+            internet3 = InternetTime.from_time_pair(test_row[3], Fraction("-1/5"))
             assert internet3.to_time_pair() == (Fraction(test_row[0]), Fraction(-1, 24))
 
     def test_500_repr(self):

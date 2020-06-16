@@ -295,7 +295,6 @@ class InternetTime:
         except ValueError as exc:
             raise ValueError("beat must be equal or greater than 0 and less than 1000.") from exc
         self._beat = beat_fraction
-        self._day_frac = None
 
     @property
     def beat(self):
@@ -309,17 +308,15 @@ class InternetTime:
             raise TypeError("Fraction argument expected for fraction to UTC")
         if day_frac < 0 or day_frac >= 1:
             raise ValueError("Day fraction must be equal or greater than 0 and less than 1, while it is {}.".format(day_frac))
-        if to_utc <= 1 or to_utc >= 1:
+        if to_utc <= -1 or to_utc >= 1:
             raise ValueError("Fraction to UTC must be greater than -1 and less than 1, while it is {}.".format(day_frac))
-        beat = day_frac * 1000
+        utc_time = day_frac - to_utc
+        beat = (utc_time - floor(utc_time)) * 1000
         internet = cls(beat)
-        internet._day_frac = day_frac
         return internet
 
     def to_time_pair(self):
-        if self._day_frac is None:
-            self._day_frac = self._beat / 1000
-        return self._day_frac, Fraction(-1, 24)
+        return self._beat / 1000, Fraction(-1, 24)
 
     # Comparison operators
     def __eq__(self, other):
