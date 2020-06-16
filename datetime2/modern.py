@@ -1,4 +1,4 @@
-# ISO calendar in calendars package
+# ISO calendar and Internet time
 
 # Copyright (c) 2013-2020 Francesco Ricciardi
 #
@@ -132,18 +132,10 @@ for year_index in range(1, 400):
 @total_ordering
 class IsoCalendar:
     def __init__(self, year, week, day):
-        if (
-            not isinstance(year, int)
-            or not isinstance(week, int)
-            or not isinstance(day, int)
-        ):
+        if not isinstance(year, int) or not isinstance(week, int) or not isinstance(day, int):
             raise TypeError("integer argument expected")
         if week < 1 or week > IsoCalendar.weeks_in_year(year):
-            raise ValueError(
-                "Week must be between 1 and number of weeks in year, while it is {}.".format(
-                    week
-                )
-            )
+            raise ValueError("Week must be between 1 and number of weeks in year, while it is {}.".format(week))
         if day < 1 or day > 7:
             raise ValueError("Day must be between 1 and 7, while it is {}.".format(day))
         self._year = year
@@ -291,7 +283,7 @@ class IsoCalendar:
 
 
 ##############################################################################
-# Western time representation
+# Internet time representation
 #
 @total_ordering
 class InternetTime:
@@ -301,9 +293,7 @@ class InternetTime:
         except TypeError as exc:
             raise TypeError("beat is not a valid fractional value") from exc
         except ValueError as exc:
-            raise ValueError(
-                "beat must be equal or greater than 0 and less than 1000."
-            ) from exc
+            raise ValueError("beat must be equal or greater than 0 and less than 1000.") from exc
         self._beat = beat_fraction
         self._day_frac = None
 
@@ -312,24 +302,24 @@ class InternetTime:
         return self._beat
 
     @classmethod
-    def from_day_frac(cls, day_frac):
+    def from_time_pair(cls, day_frac, to_utc):
         if not isinstance(day_frac, Fraction):
-            raise TypeError("Fraction argument expected")
+            raise TypeError("Fraction argument expected for day fraction")
+        if not isinstance(to_utc, Fraction):
+            raise TypeError("Fraction argument expected for fraction to UTC")
         if day_frac < 0 or day_frac >= 1:
-            raise ValueError(
-                "Day fraction must be equal or greater than 0 and less than 1, while it is {}.".format(
-                    day_frac
-                )
-            )
+            raise ValueError("Day fraction must be equal or greater than 0 and less than 1, while it is {}.".format(day_frac))
+        if to_utc <= 1 or to_utc >= 1:
+            raise ValueError("Fraction to UTC must be greater than -1 and less than 1, while it is {}.".format(day_frac))
         beat = day_frac * 1000
         internet = cls(beat)
         internet._day_frac = day_frac
         return internet
 
-    def to_day_frac(self):
+    def to_time_pair(self):
         if self._day_frac is None:
             self._day_frac = self._beat / 1000
-        return self._day_frac
+        return self._day_frac, Fraction(-1, 24)
 
     # Comparison operators
     def __eq__(self, other):

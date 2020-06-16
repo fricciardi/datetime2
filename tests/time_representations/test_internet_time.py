@@ -1,4 +1,4 @@
-# tests for western time representation
+# tests for internet time representation
 
 # Copyright (c) 2012-2020 Francesco Ricciardi
 #
@@ -41,23 +41,21 @@ from datetime2.modern import InternetTime
 INF = float("inf")
 NAN = float("nan")
 
+    # day_frac    internet  with to_utc=1/3       with to_utc=-1/5
 internet_time_test_data = [
-    # day_frac           internet as fraction
-    # numer  denom       beat
-    # Boundary conditions around midnight
     # beat and half beat
-    ["0/1", 0],
-    ["1/1000", 1],
-    ["999/1000", 999],
-    ["1/2000", 0.5],
-    ["1999/2000", 999.5],
+    ["0/1",       0,        Fraction(1, 3),       Fraction(4, 5)],
+    ["1/1000",    1,        Fraction(1003, 3000), Fraction(801, 1000)],
+    ["999/1000",  999,      Fraction(997, 3000),  Fraction(799, 1000)],
+    ["1/2000",    0.5,      Fraction(2003, 6000), Fraction(1601, 2000)],
+    ["1999/2000", 999.5,    Fraction(1997, 6000), Fraction(1599, 2000)],
     # fractional part of day
-    ["1/10", 100],
-    ["1/100", 10],
-    ["1/1000", 1],
-    ["1/10000", "1/10"],
-    ["1/100000", "1/100"],
-    ["1/1000000", "1/1000"],
+    ["1/10",      100,      Fraction(13, 30),     Fraction(9, 10)],
+    ["1/100",     10,       Fraction(103, 300),   Fraction(81, 100)],
+    ["1/1000",    1,        Fraction(1003, 3000), Fraction(801, 1000)],
+    ["1/10000",   "1/10",   Fraction(10003, 30000), Fraction(8001, 10000)],
+    ["1/100000",  "1/100",  Fraction(100003, 300000), Fraction(80001, 100000)],
+    ["1/1000000", "1/1000", Fraction(1000003, 3000000), Fraction(800001, 1000000)]
 ]
 
 internet_time_out_of_range = [-1, 1000, "10001/10", 1001]
@@ -76,28 +74,16 @@ internet_time_millibeat = [
 
 
 class TestInternet:
-    def test_000_constructor(self):
-        for test_row in internet_time_test_data:
-            beat = test_row[1]
+    def test_000_ok_constructor_types(self):
+        for beat in (10, "11", Decimal("12"), Fraction(13, 1)):
             internet = InternetTime(beat)
-            assert internet.beat == Fraction(beat)
+            assert type(internet.beat) == Fraction
+        for beat in (111.25, "111.25", Decimal("111.25"), "445/4"):
+            internet = InternetTime(beat)
+            assert type(internet.beat) == Fraction
+            assert internet.beat == Fraction(445, 4)
 
-    def test_003_constructor_types_for_beats(self):
-        for integer_beat in (3, "3"):
-            internet = InternetTime(integer_beat)
-            assert internet.beat == 3
-        for integer_beat in (1.25, Fraction(5, 4), "1.25", Decimal("1.25"), "5/4"):
-            internet = InternetTime(integer_beat)
-            assert internet.beat == Fraction(5, 4)
-
-    def test_006_constructor_day_frac(self):
-        for test_row in internet_time_test_data:
-            day_frac = Fraction(test_row[0])
-            beat = test_row[1]
-            internet = InternetTime.from_day_frac(day_frac)
-            assert internet.beat == Fraction(beat)
-
-    def test_010_invalid_parameter_types(self):
+    def test_000_ko_constructor_types(self):
         # exception with none or two
         with pytest.raises(TypeError):
             InternetTime()
@@ -114,39 +100,75 @@ class TestInternet:
             with pytest.raises(TypeError):
                 InternetTime(par)
 
-    def test_015_invalid_parameter_types_day_frac(self):
-        # exception with none, two or four parameters
-        with pytest.raises(TypeError):
-            InternetTime.from_day_frac()
-        with pytest.raises(TypeError):
-            InternetTime.from_day_frac(1, 2)
+    def test_001_ok_constructor_values_(self):
+        for test_row in internet_time_test_data:
+            internet = InternetTime(test_row[1])
+            assert internet.beat == Fraction(test_row[0]) * 1000
 
-        # exception with non-numeric types
-        for par in ("1", (1,), [1], {1: 1}, (), [], {}, None):
-            with pytest.raises(TypeError):
-                InternetTime.from_day_frac(par)
-
-        # exception with invalid numeric types
-        for par in (1.0, Decimal(1), 1j, 1 + 1j, INF, NAN):
-            with pytest.raises(TypeError):
-                InternetTime.from_day_frac(par)
-
-    def test_020_invalid_values(self):
+    def test_001_ko_constructor_values(self):
         for test_beat in internet_time_out_of_range:
             with pytest.raises(ValueError):
                 InternetTime(test_beat)
 
-    def test_025_invalid_values_day_frac(self):
-        for num, denum in ((1, 1), (1, -1), (1000001, 1000000), (-1, 1000000)):
+    def test_010_ok_constructor_time_pair_types(self):
+        internet1 = InternetTime.from_time_pair(Fraction("3/4"), Fraction(-0.5))
+        assert type(internet1.beat) == Fraction
+        # with overflow
+        internet2 = InternetTime.from_time_pair(Fraction("3/4"), Fraction(0.5))
+        assert type(internet2.beat) == Fraction
+        # with underflow
+        internet3 = InternetTime.from_time_pair(Fraction("1/4"), Fraction(-0.5))
+        assert type(internet3.beat) == Fraction
+
+    def test_010_ko_constructor_time_pair_types(self):
+        # exception with none, one or three parameters
+        with pytest.raises(TypeError):
+            InternetTime.from_time_pair()
+        with pytest.raises(TypeError):
+            InternetTime.from_time_pair(Fraction(1))
+        with pytest.raises(TypeError):
+            InternetTime.from_time_pair(Fraction(1), Fraction(0.5), Fraction(0.5))
+
+        # exception with non-numeric types
+        for par in ("1", (1,), [1], {1: 1}, (), [], {}, None):
+            with pytest.raises(TypeError):
+                InternetTime.from_time_pair(par, Fraction(0.5))
+            with pytest.raises(TypeError):
+                InternetTime.from_time_pair(Fraction(0.5), par)
+
+        # exception with invalid numeric types
+        for par in (1, 1.0, Decimal(1), 1j, 1 + 1j, INF, NAN):
+            with pytest.raises(TypeError):
+                InternetTime.from_time_pair(par, Fraction(0.5))
+            with pytest.raises(TypeError):
+                InternetTime.from_time_pair(Fraction(0.5), par)
+
+    def test_011_ok_constructor_time_pair_values(self):
+        for test_row in internet_time_test_data:
+            internet2 = InternetTime.from_time_pair(Fraction(test_row[0]), Fraction(0))
+            assert internet2.beat == Fraction(test_row[1])
+            internet2 = InternetTime.from_time_pair(Fraction(test_row[0]), Fraction('1/3'))
+            assert internet2.beat == Fraction(test_row[2])
+            internet3 = InternetTime.from_time_pair(Fraction(test_row[0]), Fraction('-1/5'))
+            assert internet3.beat == Fraction(test_row[3])
+
+    def test_011_ko_constructor_time_pair_values(self):
+        for par in (Fraction(1000001, 1000000), Fraction(1), Fraction(-1, 1000000)):
             with pytest.raises(ValueError):
-                InternetTime.from_day_frac(Fraction(num, denum))
+                InternetTime.from_time_pair(par, Fraction(1, 2))
+        for par in (Fraction(1000001, 1000000), Fraction(1), Fraction(-1), Fraction(-1000001, 1000000)):
+            with pytest.raises(ValueError):
+                InternetTime.from_time_pair(Fraction(1, 2), par)
 
-    def test_100_write_attribute(self):
-        internet = InternetTime(10)
+    def test_100_ko_write_attribute(self):
+        internet1 = InternetTime(10)
         with pytest.raises(AttributeError):
-            internet.beat = 3
+            internet1.beat = 3
+        internet2 = InternetTime.from_time_pair(Fraction(2, 7), Fraction(0.5))
+        with pytest.raises(AttributeError):
+            internet1.beat = 3
 
-    def test_300_compare(self):
+    def test_300_ok_compare(self):
         internet1 = InternetTime(3)
         internet2 = InternetTime(3)
         assert internet1 == internet2
@@ -170,7 +192,7 @@ class TestInternet:
         assert not internet1 >= internet3
         assert not internet3 <= internet1
 
-    def test_310_compare_invalid_types(self):
+    def test_300_ko_compare_invalid_types(self):
         class SomeClass:
             pass
 
@@ -189,17 +211,7 @@ class TestInternet:
             with pytest.raises(TypeError):
                 internet >= par
         # exception with numeric types (all invalid) and other objects
-        for par in (
-            1,
-            1.0,
-            Fraction(1, 1),
-            Decimal(1),
-            1j,
-            1 + 1j,
-            INF,
-            NAN,
-            SomeClass(),
-        ):
+        for par in (1, 1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN, SomeClass()):
             assert not internet == par
             assert internet != par
             with pytest.raises(TypeError):
@@ -211,28 +223,141 @@ class TestInternet:
             with pytest.raises(TypeError):
                 internet >= par
 
+    def test_305_compare(self):
+        internet1 = InternetTime(250)
+        internet2 = InternetTime.from_time_pair(Fraction("3/4"), Fraction(0.5))
+        internet3 = InternetTime.from_time_pair(Fraction("3/4"), Fraction(-0.5))
+        internet4 = InternetTime.from_time_pair(Fraction("1/10"), Fraction(17, 20))
+        assert internet1 == internet2
+        assert internet1 <= internet2
+        assert internet1 >= internet2
+        assert internet1 == internet3
+        assert internet1 <= internet3
+        assert internet1 >= internet3
+        assert internet1 == internet4
+        assert internet1 <= internet4
+        assert internet1 >= internet4
+        assert internet2 <= internet3
+        assert internet2 >= internet3
+        assert internet2 == internet4
+        assert internet2 == internet4
+        assert internet2 <= internet4
+        assert internet2 >= internet4
+        assert internet3 == internet4
+        assert internet3 <= internet4
+        assert internet3 >= internet4
+        assert not internet1 != internet2
+        assert not internet1 < internet2
+        assert not internet1 > internet2
+        assert not internet1 != internet3
+        assert not internet1 < internet3
+        assert not internet1 > internet3
+        assert not internet1 != internet4
+        assert not internet1 < internet4
+        assert not internet1 > internet4
+        assert not internet2 != internet3
+        assert not internet2 < internet3
+        assert not internet2 > internet3
+        assert not internet2 != internet4
+        assert not internet2 < internet4
+        assert not internet2 > internet4
+        assert not internet2 != internet4
+        assert not internet2 < internet4
+        assert not internet2 > internet4
+        assert not internet3 != internet4
+        assert not internet3 < internet4
+        assert not internet3 > internet4
+
+        internet5 = InternetTime.from_time_pair(Fraction(1, 2), Fraction(0))
+        assert internet1 < internet5
+        assert internet2 < internet5
+        assert internet3 < internet5
+        assert internet4 < internet5
+        assert internet5 > internet1
+        assert internet5 > internet2
+        assert internet5 > internet3
+        assert internet5 > internet4
+        assert internet1 <= internet5
+        assert internet2 <= internet5
+        assert internet3 <= internet5
+        assert internet4 <= internet5
+        assert internet5 >= internet1
+        assert internet5 >= internet2
+        assert internet5 >= internet3
+        assert internet5 >= internet4
+        assert internet1 != internet5
+        assert internet2 != internet5
+        assert internet3 != internet5
+        assert internet4 != internet5
+        assert internet5 != internet1
+        assert internet5 != internet2
+        assert internet5 != internet3
+        assert internet5 != internet4
+        assert not internet1 == internet5
+        assert not internet2 == internet5
+        assert not internet3 == internet5
+        assert not internet4 == internet5
+        assert not internet5 == internet1
+        assert not internet5 == internet2
+        assert not internet5 == internet3
+        assert not internet5 == internet4
+        assert not internet1 > internet5
+        assert not internet2 > internet5
+        assert not internet3 > internet5
+        assert not internet4 > internet5
+        assert not internet5 < internet1
+        assert not internet5 < internet2
+        assert not internet5 < internet3
+        assert not internet5 < internet4
+        assert not internet1 >= internet5
+        assert not internet2 >= internet5
+        assert not internet3 >= internet5
+        assert not internet4 >= internet5
+        assert not internet5 <= internet1
+        assert not internet5 <= internet2
+        assert not internet5 <= internet3
+        assert not internet5 <= internet4
+
     def test_320_hash_equality(self):
-        internet1 = InternetTime(12)
+        internet1 = InternetTime(100)
         # same thing
-        internet2 = InternetTime(12)
+        internet2 = InternetTime(100)
         assert hash(internet1) == hash(internet2)
+        internet3 = InternetTime.from_time_pair(Fraction(1, 5), Fraction(-1, 10))
+        assert hash(internet1) == hash(internet3)
+        internet4 = InternetTime.from_time_pair(Fraction(9, 10), Fraction(1, 5))
+        assert hash(internet1) == hash(internet4)
+        internet5 = InternetTime.from_time_pair(Fraction(1, 20), Fraction(-19, 20))
+        assert hash(internet1) == hash(internet5)
 
         dic = {internet1: 1}
         dic[internet2] = 2
         assert len(dic) == 1
         assert dic[internet1] == 2
         assert dic[internet2] == 2
+        dic[internet3] = 2
+        assert len(dic) == 1
+        assert dic[internet3] == 2
+        dic[internet4] = 2
+        assert len(dic) == 1
+        assert dic[internet4] == 2
+        dic[internet5] = 2
+        assert len(dic) == 1
+        assert dic[internet5] == 2
 
     def test_330_bool(self):
         for test_row in internet_time_test_data:
             beat = test_row[1]
             assert InternetTime(beat)
 
-    def test_400_to_day_frac(self):
+    def test_400_to_and_from_time_pair(self):
         for test_row in internet_time_test_data:
-            day_frac = Fraction(test_row[0])
-            beat = test_row[1]
-            assert InternetTime(beat).to_day_frac() == day_frac
+            internet1 = InternetTime(test_row[1])
+            assert internet1.to_time_pair() == (Fraction(test_row[0]), Fraction(-1, 24))
+            internet2 = InternetTime.from_time_pair(test_row[2], Fraction("-1/3"))
+            assert internet2.to_time_pair() == (Fraction(test_row[0]), Fraction(-1, 24))
+            internet3 = InternetTime.from_time_pair(test_row[3], Fraction("1/5"))
+            assert internet3.to_time_pair() == (Fraction(test_row[0]), Fraction(-1, 24))
 
     def test_500_repr(self):
         import datetime2
@@ -241,9 +366,7 @@ class TestInternet:
             beat = Fraction(test_row[1])
             internet = InternetTime(beat)
             internet_repr = repr(internet)
-            assert internet_repr.startswith(
-                "datetime2.modern.InternetTime("
-            ) and internet_repr.endswith(")")
+            assert internet_repr.startswith("datetime2.modern.InternetTime(") and internet_repr.endswith(")")
             args = internet_repr[30:-1]
             assert internet == eval(internet_repr)
             assert Fraction(eval(args)) == beat
@@ -308,5 +431,5 @@ class TestInternet:
 
         assert internet2.theAnswer == 42
         assert internet2.extra == 7
-        assert internet1.to_day_frac() == internet2.to_day_frac()
+        assert internet1.to_time_pair() == internet2.to_time_pair()
         assert internet2.newmeth(-7) == internet1.beat * 2 - 7
