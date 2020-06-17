@@ -166,7 +166,7 @@ class TestInternet:
             with pytest.raises(ValueError):
                 InternetTime.from_time_pair(Fraction(1, 2), par)
 
-    def test_100_ko_write_attribute(self):
+    def test_200_ko_write_attribute(self):
         internet1 = InternetTime(10)
         with pytest.raises(AttributeError):
             internet1.beat = 3
