@@ -82,7 +82,6 @@ class TestInternet:
         for beat in (111.25, "111.25", Decimal("111.25"), "445/4"):
             internet = InternetTime(beat)
             assert isinstance(internet.beat, Fraction)
-            assert type(internet.beat) == Fraction
             assert internet.beat == Fraction(445, 4)
 
     def test_000_ko_constructor_types(self):
@@ -114,13 +113,13 @@ class TestInternet:
 
     def test_010_ok_constructor_time_pair_types(self):
         internet1 = InternetTime.from_time_pair(Fraction("3/4"), Fraction(-0.5))
-        assert type(internet1.beat) == Fraction
+        assert isinstance(internet1.beat, Fraction)
         # with overflow
         internet2 = InternetTime.from_time_pair(Fraction("3/4"), Fraction(0.5))
-        assert type(internet2.beat) == Fraction
+        assert isinstance(internet2.beat, Fraction)
         # with underflow
         internet3 = InternetTime.from_time_pair(Fraction("1/4"), Fraction(-0.5))
-        assert type(internet3.beat) == Fraction
+        assert isinstance(internet3.beat, Fraction)
 
     def test_010_ko_constructor_time_pair_types(self):
         # exception with none, one or three parameters
