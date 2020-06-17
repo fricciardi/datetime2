@@ -166,7 +166,7 @@ class TestInternet:
             with pytest.raises(ValueError):
                 InternetTime.from_time_pair(Fraction(1, 2), par)
 
-    def test_200_ko_write_attribute(self):
+    def test_200_write_attribute(self):
         internet1 = InternetTime(10)
         with pytest.raises(AttributeError):
             internet1.beat = 3
@@ -198,7 +198,8 @@ class TestInternet:
         assert not internet1 >= internet3
         assert not internet3 <= internet1
 
-    def test_300_ko_compare_invalid_types(self):
+    def test_300_ko_compare(self):
+        # we can have errors only with wrong types
         class SomeClass:
             pass
 
@@ -228,101 +229,6 @@ class TestInternet:
                 internet <= par
             with pytest.raises(TypeError):
                 internet >= par
-
-    def test_305_compare(self):
-        internet1 = InternetTime(250)
-        internet2 = InternetTime.from_time_pair(Fraction("3/4"), Fraction(0.5))
-        internet3 = InternetTime.from_time_pair(Fraction("3/4"), Fraction(-0.5))
-        internet4 = InternetTime.from_time_pair(Fraction("1/10"), Fraction(17, 20))
-        assert internet1 == internet2
-        assert internet1 <= internet2
-        assert internet1 >= internet2
-        assert internet1 == internet3
-        assert internet1 <= internet3
-        assert internet1 >= internet3
-        assert internet1 == internet4
-        assert internet1 <= internet4
-        assert internet1 >= internet4
-        assert internet2 <= internet3
-        assert internet2 >= internet3
-        assert internet2 == internet4
-        assert internet2 == internet4
-        assert internet2 <= internet4
-        assert internet2 >= internet4
-        assert internet3 == internet4
-        assert internet3 <= internet4
-        assert internet3 >= internet4
-        assert not internet1 != internet2
-        assert not internet1 < internet2
-        assert not internet1 > internet2
-        assert not internet1 != internet3
-        assert not internet1 < internet3
-        assert not internet1 > internet3
-        assert not internet1 != internet4
-        assert not internet1 < internet4
-        assert not internet1 > internet4
-        assert not internet2 != internet3
-        assert not internet2 < internet3
-        assert not internet2 > internet3
-        assert not internet2 != internet4
-        assert not internet2 < internet4
-        assert not internet2 > internet4
-        assert not internet2 != internet4
-        assert not internet2 < internet4
-        assert not internet2 > internet4
-        assert not internet3 != internet4
-        assert not internet3 < internet4
-        assert not internet3 > internet4
-
-        internet5 = InternetTime.from_time_pair(Fraction(1, 2), Fraction(0))
-        assert internet1 < internet5
-        assert internet2 < internet5
-        assert internet3 < internet5
-        assert internet4 < internet5
-        assert internet5 > internet1
-        assert internet5 > internet2
-        assert internet5 > internet3
-        assert internet5 > internet4
-        assert internet1 <= internet5
-        assert internet2 <= internet5
-        assert internet3 <= internet5
-        assert internet4 <= internet5
-        assert internet5 >= internet1
-        assert internet5 >= internet2
-        assert internet5 >= internet3
-        assert internet5 >= internet4
-        assert internet1 != internet5
-        assert internet2 != internet5
-        assert internet3 != internet5
-        assert internet4 != internet5
-        assert internet5 != internet1
-        assert internet5 != internet2
-        assert internet5 != internet3
-        assert internet5 != internet4
-        assert not internet1 == internet5
-        assert not internet2 == internet5
-        assert not internet3 == internet5
-        assert not internet4 == internet5
-        assert not internet5 == internet1
-        assert not internet5 == internet2
-        assert not internet5 == internet3
-        assert not internet5 == internet4
-        assert not internet1 > internet5
-        assert not internet2 > internet5
-        assert not internet3 > internet5
-        assert not internet4 > internet5
-        assert not internet5 < internet1
-        assert not internet5 < internet2
-        assert not internet5 < internet3
-        assert not internet5 < internet4
-        assert not internet1 >= internet5
-        assert not internet2 >= internet5
-        assert not internet3 >= internet5
-        assert not internet4 >= internet5
-        assert not internet5 <= internet1
-        assert not internet5 <= internet2
-        assert not internet5 <= internet3
-        assert not internet5 <= internet4
 
     def test_320_hash_equality(self):
         internet1 = InternetTime(100)
