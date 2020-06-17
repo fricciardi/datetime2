@@ -75,11 +75,13 @@ internet_time_millibeat = [
 
 class TestInternet:
     def test_000_ok_constructor_types(self):
-        for beat in (10, "11", Decimal("12"), Fraction(13, 1)):
+        for beat in (11, "11", Decimal("11"), Fraction(11, 1)):
             internet = InternetTime(beat)
-            assert type(internet.beat) == Fraction
+            assert isinstance(internet.beat, Fraction)
+            assert internet.beat == Fraction(11)
         for beat in (111.25, "111.25", Decimal("111.25"), "445/4"):
             internet = InternetTime(beat)
+            assert isinstance(internet.beat, Fraction)
             assert type(internet.beat) == Fraction
             assert internet.beat == Fraction(445, 4)
 
