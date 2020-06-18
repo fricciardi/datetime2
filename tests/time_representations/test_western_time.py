@@ -43,11 +43,11 @@ NAN = float('nan')
 
 western_time_test_data = [
     # day_frac           western                    as hours         as minutes         as seconds
-    # numer  denom        h   m   s                 num denum         num denum         num denum
+    #   numer denom       h   m   s                 num denum         num denum         num denum
 
     # Boundary conditions around midnight
     # hour, minute, second and their halves second
-    [       "0/1",      ( 0,  0,  0),                "0/1",            "0/1",            "0/1"],
+    [      "0/1",       ( 0,  0,  0),                "0/1",            "0/1",            "0/1"],
     [      "1/24",      ( 1,  0,  0),                "1/1",           "60/1",         "3600/1"],
     [     "23/24",      (23,  0,  0),               "23/1",         "1380/1",        "82800/1"],
     [      "1/48",      ( 0, 30,  0),                "1/2",           "30/1",         "1800/1"],
@@ -84,7 +84,7 @@ western_time_test_data = [
     [      "1/10000",   ( 0,  0, "216/25"),          "3/1250",        "18/125",        "216/25"],
     [      "1/100000",  ( 0,  0, "108/125"),         "3/12500",        "9/625",        "108/125"],
     [      "1/1000000", ( 0,  0, "54/625"),          "3/125000",       "9/6250",        "54/625"],
-    [ "999999/1000000", (23, 59, "37446/625"), "2999997/125000", "8999991/6250", "53999946/625"],
+    [ "999999/1000000", (23, 59, "37446/625"), "2999997/125000", "8999991/6250",  "53999946/625"],
     [  "99999/100000",  (23, 59, "7392/125"),   "299997/12500",   "899991/625",   "10799892/125"],
     [   "9999/10000",   (23, 59, "1284/25"),     "29997/1250",    "179982/125",    "2159784/25"],
     [    "999/1000",    (23, 58, "168/5"),        "2997/125",      "35964/25",      "431568/5"],
@@ -94,16 +94,16 @@ western_time_test_data = [
 
 western_time_out_of_range_data = [
     # negative hour, minute or second
-    [30, 10,  -1],
-    [30, -1,  20],
-    [-1, 10,  20],
+    [-1, 20,  30],
+    [10, -1,  30],
+    [10, 20,  -1],
     # values above limits
-    [30, 10,  60],
-    [30, 10,  61],
-    [30, 60,  20],
-    [30, 61,  20],
-    [24,  0,   0],
-    [25,  0,   0]
+    [24, 20,  30],
+    [25, 20,  30],
+    [10, 60,  30],
+    [10, 61,  30],
+    [10, 20,  60],
+    [10, 20,  61]
 ]
 
 western_time_microseconds = [
@@ -130,72 +130,26 @@ to_utc_test_data = [
     ["24",              Fraction(24, 1)]
 ]
 
-class TestWestern():
-    def test_000_constructor(self):
-        for test_row in western_time_test_data:
-            hour = test_row[1][0]
-            minute = test_row[1][1]
-            second = Fraction(test_row[1][2])
-            western = WesternTime(hour, minute, second)
-            assert (western.hour, western.minute, western.second) == (hour, minute, second)
 
-    def test_001_constructor_types_for_seconds(self):
+class TestWestern:
+    def test_000_ok_constructor_types(self):
+        # check all types for seconds are accepted
         for integer_second in (3, '3'):
             western = WesternTime(5, 4, integer_second)
-            assert western.to_seconds() == Fraction(18243, 1)
+            assert isinstance(western.hour, int)
+            assert western.hour == 5
+            assert isinstance(western.minute, int)
+            assert western.minute == 4
+            assert isinstance(western.second, Fraction)
+            assert western.second == Fraction(3, 1)
+            assert western.to_utc is None
         for fractional_second in (1.25, Fraction(5, 4), '1.25', Decimal('1.25'), '5/4'):
             western = WesternTime(5, 4, fractional_second)
-            assert western.to_seconds() == Fraction(72965, 4)
+            assert isinstance(western.second, Fraction)
+            assert western.second == Fraction(5, 4)
+            assert western.to_utc is None
 
-    def test_010_constructor_in_hours(self):
-        for test_row in western_time_test_data:
-            in_hours = Fraction(test_row[2])
-            hour = test_row[1][0]
-            minute = test_row[1][1]
-            second = Fraction(test_row[1][2])
-            western = WesternTime.in_hours(in_hours)
-            assert (western.hour, western.minute, western.second) == (hour, minute, second)
-
-    def test_020_constructor_in_minutes(self):
-        for test_row in western_time_test_data:
-            in_minutes = Fraction(test_row[3])
-            hour = test_row[1][0]
-            minute = test_row[1][1]
-            second = Fraction(test_row[1][2])
-            western = WesternTime.in_minutes(in_minutes)
-            assert (western.hour, western.minute, western.second) == (hour, minute, second)
-
-    def test_030_constructor_in_seconds(self):
-        for test_row in western_time_test_data:
-            in_seconds = Fraction(test_row[4])
-            hour = test_row[1][0]
-            minute = test_row[1][1]
-            second = Fraction(test_row[1][2])
-            western = WesternTime.in_seconds(in_seconds)
-            assert (western.hour, western.minute, western.second) == (hour, minute, second)
-
-    def test_070_timezone_valid(self):
-        for test_to_utc in to_utc_test_data:
-            western1 = WesternTime(1, 2, 3, to_utc=test_to_utc[0])
-            assert western1.to_utc == test_to_utc[1]
-            western2 = WesternTime.in_hours("789/123", to_utc=test_to_utc[0])
-            assert western2.to_utc == test_to_utc[1]
-            western2 = WesternTime.in_minutes("78901/123", to_utc=test_to_utc[0])
-            assert western2.to_utc == test_to_utc[1]
-            western3 = WesternTime.in_seconds("789012/123", to_utc=test_to_utc[0])
-            assert western3.to_utc == test_to_utc[1]
-
-
-    def test_090_constructor_day_frac(self):
-        for test_row in western_time_test_data:
-            day_frac = Fraction(test_row[0])
-            hour = test_row[1][0]
-            minute = test_row[1][1]
-            second = Fraction(test_row[1][2])
-            western = WesternTime.from_day_frac(day_frac)
-            assert (western.hour, western.minute, western.second) == (hour, minute, second)
-
-    def test_100_invalid_parameter_types(self):
+    def test_000_ko_constructor_types(self):
         # exception with none, two or four parameters
         with pytest.raises(TypeError):
             WesternTime()
@@ -222,12 +176,88 @@ class TestWestern():
             with pytest.raises(TypeError):
                 WesternTime(1, 1, invalid_par)
 
-    def test_110_invalid_parameter_types_in_hours(self):
-        # exception with none, two or four parameters
+    def test_001_ok_constructor_values(self):
+        for test_row in western_time_test_data:
+            hour = test_row[1][0]
+            minute = test_row[1][1]
+            second = Fraction(test_row[1][2])
+            western = WesternTime(hour, minute, second)
+            assert (western.hour, western.minute, western.second) == (hour, minute, second)
+            assert western.to_utc is None
+
+    def test_001_ko_constructor_values(self):
+        for test_row in western_time_out_of_range_data:
+            hour = test_row[0]
+            minute = test_row[1]
+            second = test_row[2]
+            with pytest.raises(ValueError):
+                WesternTime(hour, minute, second)
+
+    def test_010_ok_constr_with_utc_types(self):
+        # check all types for to_utc are accepted
+        for integer_to_utc in (13, '13'):
+            western = WesternTime(5, 4, 3, to_utc=integer_to_utc)
+            assert isinstance(western.to_utc, Fraction)
+            assert western.to_utc == Fraction(13, 1)
+        for fractional_to_utc in (1.25, Fraction(5, 4), '1.25', Decimal('1.25'), '5/4'):
+            western = WesternTime(5, 4, 3, to_utc=fractional_to_utc)
+            assert isinstance(western.to_utc, Fraction)
+            assert western.to_utc == Fraction(5, 4)
+
+    def test_010_ko_constr_with_utc_types(self):
+        # exception with unknown named parameter
+        with pytest.raises(TypeError):
+            WesternTime(1, 2, 3, invalid=0)
+
+        # exception with non-numeric types
+        for invalid_to_utc in ((1,), [1], {1: 1}, (), [], {}):
+            with pytest.raises(TypeError):
+                WesternTime(1, 2, 3, to_utc=invalid_to_utc)
+
+        # exception with invalid numeric types
+        for invalid_to_utc in (1j, 1 + 1j, INF, NAN):
+            with pytest.raises(TypeError):
+                WesternTime(1, 2, 3, to_utc=invalid_to_utc)
+
+    def test_011_ok_constr_with_utc_values(self):
+        for test_to_utc in to_utc_test_data:
+            western = WesternTime(1, 2, 3, to_utc=test_to_utc[0])
+            assert western.to_utc == test_to_utc[1]
+
+    def test_011_ko_constr_with_utc_values(self):
+        for invalid_value in (-25, -24.000001, Fraction(24_000_001, -1_000_000), Fraction(24_000_001, 1_000_000), 24.000001, 25):
+            with pytest.raises(ValueError):
+                WesternTime(1, 2, 3, to_utc=invalid_value)
+
+    def test_020_ok_constr_in_hours_types(self):
+        # check all types for seconds are accepted
+        for hours in (3, '3'):
+            western = WesternTime.in_hours(hours)
+            assert isinstance(western.hour, int)
+            assert western.hour == 3
+            assert isinstance(western.minute, int)
+            assert western.minute == 0
+            assert isinstance(western.second, Fraction)
+            assert western.second == Fraction(0)
+            assert western.to_utc is None
+        for fractional_hours in (13.125, Fraction(105, 8), '13.125', Decimal('13.125'), '105/8'):
+            western = WesternTime.in_hours(fractional_hours)
+            assert isinstance(western.hour, int)
+            assert western.hour == 13
+            assert isinstance(western.minute, int)
+            assert western.minute == 7
+            assert isinstance(western.second, Fraction)
+            assert western.second == Fraction(30)
+            assert western.to_utc is None
+
+    def test_020_ko_constr_in_hours_types(self):
+        # exception with none, three or four parameters
         with pytest.raises(TypeError):
             WesternTime.in_hours()
         with pytest.raises(TypeError):
-            WesternTime.in_hours(1, 2)
+            WesternTime.in_hours(1, 2, 3)
+        with pytest.raises(TypeError):
+            WesternTime.in_hours(1, 2, 3, 4)
         # exception with non-numeric types
         for invalid_hours in ((1,), [1], {1: 1}, (), [], {}, None):
             with pytest.raises(TypeError):
@@ -237,12 +267,84 @@ class TestWestern():
             with pytest.raises(TypeError):
                 WesternTime.in_hours(invalid_hours)
 
-    def test_120_invalid_parameter_types_in_minutes(self):
-        # exception with none, two or four parameters
+    def test_021_ok_constr_in_hours_values(self):
+        for test_row in western_time_test_data:
+            in_hours = Fraction(test_row[2])
+            hour = test_row[1][0]
+            minute = test_row[1][1]
+            second = Fraction(test_row[1][2])
+            western = WesternTime.in_hours(in_hours)
+            assert (western.hour, western.minute, western.second) == (hour, minute, second)
+
+    def test_021_ko_constr_in_hours_values(self):
+        for num, denum in ((24, 1), (1, -1), (24000001, 1000000), (-1, 1000000)):
+            with pytest.raises(ValueError):
+                WesternTime.in_hours(Fraction(num, denum))
+
+    def test_030_ok_constr_in_hours_with_utc_types(self):
+        for integer_to_utc in (13, '13'):
+            western = WesternTime.in_hours(5, to_utc=integer_to_utc)
+            assert isinstance(western.to_utc, Fraction)
+            assert western.to_utc == Fraction(13, 1)
+        for fractional_to_utc in (1.25, Fraction(5, 4), '1.25', Decimal('1.25'), '5/4'):
+            western = WesternTime.in_hours(3, to_utc=fractional_to_utc)
+            assert isinstance(western.to_utc, Fraction)
+            assert western.to_utc == Fraction(5, 4)
+
+    def test_030_ko_constr_in_hours_with_utc_types(self):
+        # exception with unknown named parameter
+        with pytest.raises(TypeError):
+            WesternTime.in_hours("789/123", invalid=0)
+
+        # exception with non-numeric types
+        for invalid_to_utc in ((1,), [1], {1: 1}, (), [], {}):
+            with pytest.raises(TypeError):
+                WesternTime.in_hours("789/123", to_utc=invalid_to_utc)
+
+        # exception with invalid numeric types
+        for invalid_to_utc in (1j, 1 + 1j, INF, NAN):
+            with pytest.raises(TypeError):
+                WesternTime.in_hours("789/123", to_utc=invalid_to_utc)
+
+    def test_031_ok_constr_in_hours_with_utc_values(self):
+        for test_to_utc in to_utc_test_data:
+            western = WesternTime.in_hours(7, to_utc=test_to_utc[0])
+            assert western.to_utc == test_to_utc[1]
+
+    def test_031_ko_constr_in_hours_with_utc_values(self):
+        for invalid_value in (-25, -24.000001, Fraction(24_000_001, -1_000_000), Fraction(24_000_001, 1_000_000), 24.000001, 25):
+            with pytest.raises(ValueError):
+                WesternTime.in_hours(7, to_utc=invalid_value)
+
+    def test_040_ok_constr_in_minutes_types(self):
+        # check all types for seconds are accepted
+        for minutes in (333, '333'):
+            western = WesternTime.in_minutes(minutes)
+            assert isinstance(western.hour, int)
+            assert western.hour == 5
+            assert isinstance(western.minute, int)
+            assert western.minute == 33
+            assert isinstance(western.second, Fraction)
+            assert western.second == Fraction(0)
+            assert western.to_utc is None
+        for fractional_minutes in (333.25, Fraction(1333, 4), '333.25', Decimal('333.25'), '1333/4'):
+            western = WesternTime.in_minutes(fractional_minutes)
+            assert isinstance(western.hour, int)
+            assert western.hour == 5
+            assert isinstance(western.minute, int)
+            assert western.minute == 33
+            assert isinstance(western.second, Fraction)
+            assert western.second == Fraction(15)
+            assert western.to_utc is None
+
+    def test_040_ko_constr_in_minutes_types(self):
+        # exception with none, three or four parameters
         with pytest.raises(TypeError):
             WesternTime.in_minutes()
         with pytest.raises(TypeError):
-            WesternTime.in_minutes(1, 2)
+            WesternTime.in_minutes(1, 2, 3)
+        with pytest.raises(TypeError):
+            WesternTime.in_minutes(1, 2, 3, 4)
         # exception with non-numeric types
         for invalid_minutes in ((1,), [1], {1: 1}, (), [], {}, None):
             with pytest.raises(TypeError):
@@ -252,124 +354,207 @@ class TestWestern():
             with pytest.raises(TypeError):
                 WesternTime.in_minutes(invalid_minutes)
 
-    def test_130_invalid_parameter_types_in_seconds(self):
-        # exception with none, two or four parameters
-        with pytest.raises(TypeError):
-            WesternTime.in_seconds()
-        with pytest.raises(TypeError):
-            WesternTime.in_seconds(1, 2)
+    def test_041_ok_constr_in_minutes_values(self):
+        for test_row in western_time_test_data:
+            in_minutes = Fraction(test_row[3])
+            hour = test_row[1][0]
+            minute = test_row[1][1]
+            second = Fraction(test_row[1][2])
+            western = WesternTime.in_minutes(in_minutes)
+            assert (western.hour, western.minute, western.second) == (hour, minute, second)
 
-        # exception with non-numeric types
-        for invalid_seconds in ((1,), [1], {1: 1}, (), [], {}, None):
-            with pytest.raises(TypeError):
-                WesternTime.in_seconds(invalid_seconds)
+    def test_041_ko_constr_in_minutes_values(self):
+        for num, denum in ((60, 1), (1, -1), (60000001, 1000000), (-1, 1000000)):
+            with pytest.raises(ValueError):
+                WesternTime.in_minutes(Fraction(num, denum))
 
-        # exception with invalid numeric types
-        for invalid_seconds in (1j, 1 + 1j, INF, NAN):
-            with pytest.raises(TypeError):
-                WesternTime.in_seconds(invalid_seconds)
+    def test_050_ok_constr_in_minutes_with_utc_types(self):
+        for integer_to_utc in (13, '13'):
+            western = WesternTime.in_minutes(333, to_utc=integer_to_utc)
+            assert isinstance(western.to_utc, Fraction)
+            assert western.to_utc == Fraction(13, 1)
+        for fractional_to_utc in (1.25, Fraction(5, 4), '1.25', Decimal('1.25'), '5/4'):
+            western = WesternTime.in_minutes(333, to_utc=fractional_to_utc)
+            assert isinstance(western.to_utc, Fraction)
+            assert western.to_utc == Fraction(5, 4)
 
-    def test_170_timezone_invalid(self):
+    def test_050_ko_constr_in_minutes_with_utc_types(self):
         # exception with unknown named parameter
         with pytest.raises(TypeError):
-            WesternTime(1, 2, 3, invalid=0)
-            WesternTime.in_hours("789/123", invalid=0)
             WesternTime.in_minutes("78901/123", invalid=0)
-            WesternTime.in_seconds("789012/123", invalid=0)
 
         # exception with non-numeric types
         for invalid_to_utc in ((1,), [1], {1: 1}, (), [], {}):
             with pytest.raises(TypeError):
-                WesternTime(1, 2, 3, to_utc=invalid_to_utc)
-            with pytest.raises(TypeError):
-                WesternTime.in_hours("789/123", to_utc=invalid_to_utc)
+                WesternTime.in_minutes("78901/123", to_utc=invalid_to_utc)
+
+        # exception with invalid numeric types
+        for invalid_to_utc in (1j, 1 + 1j, INF, NAN):
             with pytest.raises(TypeError):
                 WesternTime.in_minutes("78901/123", to_utc=invalid_to_utc)
+
+    def test_051_ok_constr_in_minutes_with_utc_values(self):
+        for test_to_utc in to_utc_test_data:
+            western = WesternTime.in_minutes(333, to_utc=test_to_utc[0])
+            assert western.to_utc == test_to_utc[1]
+
+    def test_051_ko_constr_in_minutes_with_utc_values(self):
+        for invalid_value in (-25, -24.000001, Fraction(24_000_001, -1_000_000), Fraction(24_000_001, 1_000_000), 24.000001, 25):
+            with pytest.raises(ValueError):
+                WesternTime.in_minutes(333, to_utc=invalid_value)
+
+    def test_060_ok_constr_in_seconds_types(self):
+        # check all types for seconds are accepted
+        for seconds in (33333, '33333'):
+            western = WesternTime.in_minutes(seconds)
+            assert isinstance(western.hour, int)
+            assert western.hour == 9
+            assert isinstance(western.minute, int)
+            assert western.minute == 15
+            assert isinstance(western.second, Fraction)
+            assert western.second == Fraction(33)
+            assert western.to_utc is None
+        for fractional_minutes in (33333.25, Fraction(133333, 4), '33333.25', Decimal('33333.25'), '133333/4'):
+            western = WesternTime.in_minutes(fractional_minutes)
+            assert isinstance(western.hour, int)
+            assert western.hour == 9
+            assert isinstance(western.minute, int)
+            assert western.minute == 15
+            assert isinstance(western.second, Fraction)
+            assert western.second == Fraction(61, 4)
+            assert western.to_utc is None
+
+    def test_060_ko_constr_in_seconds_types(self):
+        # exception with none, three or four parameters
+        with pytest.raises(TypeError):
+            WesternTime.in_seconds()
+        with pytest.raises(TypeError):
+            WesternTime.in_seconds(1, 2, 3)
+        with pytest.raises(TypeError):
+            WesternTime.in_seconds(1, 2, 3, 4)
+        # exception with non-numeric types
+        for invalid_minutes in ((1,), [1], {1: 1}, (), [], {}, None):
+            with pytest.raises(TypeError):
+                WesternTime.in_seconds(invalid_minutes)
+        # exception with invalid numeric types
+        for invalid_minutes in (1j, 1 + 1j, INF, NAN):
+            with pytest.raises(TypeError):
+                WesternTime.in_seconds(invalid_minutes)
+
+    def test_061_ok_constr_in_seconds_values(self):
+        for test_row in western_time_test_data:
+            in_seconds = Fraction(test_row[4])
+            hour = test_row[1][0]
+            minute = test_row[1][1]
+            second = Fraction(test_row[1][2])
+            western = WesternTime.in_seconds(in_seconds)
+            assert (western.hour, western.minute, western.second) == (hour, minute, second)
+
+    def test_061_ko_constr_in_seconds_values(self):
+        for num, denum in ((60, 1), (1, -1), (60000001, 1000000), (-1, 1000000)):
+            with pytest.raises(ValueError):
+                WesternTime.in_minutes(Fraction(num, denum))
+
+    def test_070_ok_constr_in_seconds_with_utc_types(self):
+        for integer_to_utc in (13, '13'):
+            western = WesternTime.in_seconds(33333, to_utc=integer_to_utc)
+            assert isinstance(western.to_utc, Fraction)
+            assert western.to_utc == Fraction(13, 1)
+        for fractional_to_utc in (1.25, Fraction(5, 4), '1.25', Decimal('1.25'), '5/4'):
+            western = WesternTime.in_seconds(33333, to_utc=fractional_to_utc)
+            assert isinstance(western.to_utc, Fraction)
+            assert western.to_utc == Fraction(5, 4)
+
+    def test_070_ko_constr_in_seconds_with_utc_types(self):
+        # exception with unknown named parameter
+        with pytest.raises(TypeError):
+            WesternTime.in_seconds("789012/123", invalid=0)
+
+        # exception with non-numeric types
+        for invalid_to_utc in ((1,), [1], {1: 1}, (), [], {}):
             with pytest.raises(TypeError):
                 WesternTime.in_seconds("789012/123", to_utc=invalid_to_utc)
 
         # exception with invalid numeric types
         for invalid_to_utc in (1j, 1 + 1j, INF, NAN):
             with pytest.raises(TypeError):
-                WesternTime(1, 2, 3, to_utc=invalid_to_utc)
-            with pytest.raises(TypeError):
-                WesternTime.in_hours("789/123", to_utc=invalid_to_utc)
-            with pytest.raises(TypeError):
-                WesternTime.in_minutes("78901/123", to_utc=invalid_to_utc)
-            with pytest.raises(TypeError):
                 WesternTime.in_seconds("789012/123", to_utc=invalid_to_utc)
 
-    def test_190_invalid_parameter_types_day_frac(self):
-        # exception with none, two or four parameters
+    def test_080_ok_constr_time_pair_types(self):
+        for test_row in western_time_test_data:
+            day_frac = Fraction(test_row[0])
+            western1 = WesternTime.from_time_pair(day_frac, None)
+            assert isinstance(western1.hour, int)
+            assert isinstance(western1.minute, int)
+            assert isinstance(western1.second, Fraction)
+            assert western1.to_utc is None
+            western2 = WesternTime.from_time_pair(day_frac, Fraction(3, 4))
+            assert isinstance(western2.hour, int)
+            assert isinstance(western2.minute, int)
+            assert isinstance(western2.second, Fraction)
+            assert isinstance(western2.to_utc, Fraction)
+            western3 = WesternTime.from_time_pair(day_frac, Fraction(-1, 5))
+            assert isinstance(western3.hour, int)
+            assert isinstance(western3.minute, int)
+            assert isinstance(western3.second, Fraction)
+            assert isinstance(western3.to_utc, Fraction)
+
+    def test_080_ko_constr_time_pair_types(self):
+        # exception with none, one or three parameters
         with pytest.raises(TypeError):
-            WesternTime.from_day_frac()
+            WesternTime.from_time_pair()
         with pytest.raises(TypeError):
-            WesternTime.from_day_frac(1, 2)
+            WesternTime.from_time_pair(1)
+        with pytest.raises(TypeError):
+            WesternTime.from_time_pair(1, 2, 3)
 
         # exception with non-numeric types
-        for invalid_day_frac in ("1", (1,), [1], {1: 1}, (), [], {}, None):
+        for invalid_time_pair in ("1", (1,), [1], {1: 1}, (), [], {}, None):
             with pytest.raises(TypeError):
-                WesternTime.from_day_frac(invalid_day_frac)
+                WesternTime.from_time_pair(invalid_time_pair, None)
+                WesternTime.from_time_pair(invalid_time_pair, Fraction(3, 4))
+                WesternTime.from_time_pair(Fraction(3, 4), invalid_time_pair)
 
         # exception with invalid numeric types
-        for invalid_day_frac in (1.0, Decimal(1), 1j, 1 + 1j, INF, NAN):
+        for invalid_time_pair in (1.0, Decimal(1), 1j, 1 + 1j, INF, NAN):
             with pytest.raises(TypeError):
-                WesternTime.from_day_frac(invalid_day_frac)
+                WesternTime.from_time_pair(invalid_time_pair, None)
+                WesternTime.from_time_pair(invalid_time_pair, Fraction(3, 4))
+                WesternTime.from_time_pair(Fraction(3, 4), invalid_time_pair)
 
-    def test_200_invalid_values(self):
-        for test_row in western_time_out_of_range_data:
-            hour = test_row[0]
-            minute = test_row[1]
-            second = test_row[2]
-            with pytest.raises(ValueError):
-                WesternTime(hour, minute, second)
+    def test_081_ok_constr_time_pair_values(self):
+        for test_row in western_time_test_data:
+            day_frac = Fraction(test_row[0])
+            hour = test_row[1][0]
+            minute = test_row[1][1]
+            second = Fraction(test_row[1][2])
+            western1 = WesternTime.from_time_pair(day_frac, None)
+            assert (western1.hour, western1.minute, western1.second) == (hour, minute, second)
+            western2 = WesternTime.from_time_pair(day_frac, Fraction(3, 4))
+            assert (western2.hour, western2.minute, western2.second) == (hour, minute, second)
+            western3 = WesternTime.from_time_pair(day_frac, Fraction(-1, 5))
+            assert (western3.hour, western3.minute, western3.second) == (hour, minute, second)
 
-    def test_210_invalid_values_in_hours(self):
-        for num, denum in ((24, 1), (1, -1), (24000001, 1000000), (-1, 1000000)):
-            with pytest.raises(ValueError):
-                WesternTime.in_hours(Fraction(num, denum))
-
-    def test_220_invalid_values_in_minutes(self):
-        for num, denum in ((1440, 1), (1, -1), (1440000001, 1000000), (-1, 1000000)):
-            with pytest.raises(ValueError):
-                WesternTime.in_minutes(Fraction(num, denum))
-
-    def test_230_invalid_values_in_seconds(self):
-        for num, denum in ((86400, 1), (1, -1), (86400000001, 1000000), (-1, 1000000)):
-            with pytest.raises(ValueError):
-                WesternTime.in_seconds(Fraction(num, denum))
-
-    def test_260_timezone_invalid_values(self):
-        for invalid_value in (-25, -24.000001, 24.000001, 25):
-            with pytest.raises(ValueError):
-                WesternTime(1, 2, 3, to_utc=invalid_value)
-            with pytest.raises(ValueError):
-                WesternTime.in_hours("789/123", invalid_value)
-            with pytest.raises(ValueError):
-                WesternTime.in_minutes("78901/123", invalid_value)
-            with pytest.raises(ValueError):
-                WesternTime.in_seconds("789012/123", invalid_value)
-
-    def test_290_invalid_values_day_frac(self):
+    def test_081_ko_constr_time_pair_values(self):
         for num, denum in ((1, 1), (1, -1), (1000001, 1000000), (-1, 1000000)):
             with pytest.raises(ValueError):
-                WesternTime.from_day_frac(Fraction(num, denum))
+                WesternTime.from_time_pair(Fraction(num, denum), None)
+        for num, denum in ((-1000001, 1000000), (1000001, 1000000)):
+            with pytest.raises(ValueError):
+                WesternTime.from_time_pair(Fraction(3, 5), Fraction(num, denum))
 
-    def test_300_write_attribute(self):
-        western = WesternTime(10, 10, 10)
-        with pytest.raises(AttributeError):
-            western.hour = 3
-        with pytest.raises(AttributeError):
-            western.minute = 3
-        with pytest.raises(AttributeError):
-            western.second = 3
+    def test_200_write_attribute(self):
+        for western in WesternTime(10, 10, 10), WesternTime(10, 10, 10, to_utc=10):
+            with pytest.raises(AttributeError):
+                western.hour = 3
+            with pytest.raises(AttributeError):
+                western.minute = 3
+            with pytest.raises(AttributeError):
+                western.second = 3
+            with pytest.raises(AttributeError):
+                western.to_utc = 3
 
-    def test_310_write_attribute_to_utc(self):
-        western = WesternTime(10, 10, 10, to_utc=10)
-        with pytest.raises(AttributeError):
-            western.to_utc = 3
-
-    def test_500_compare(self):
+    def test_300_ok_compare(self):
         western1 = WesternTime(2, 3, 4)
         western2 = WesternTime(2, 3, 4)
         assert western1 == western2
@@ -394,7 +579,7 @@ class TestWestern():
             assert not western1 >= western3
             assert not western3 <= western1
 
-    def test_510_compare_invalid_types(self):
+    def test_300_ko_compare(self):
         class SomeClass:
             pass
 
@@ -425,7 +610,32 @@ class TestWestern():
             with pytest.raises(TypeError):
                 western >= par
 
-    def test_520_hash_equality(self):
+    def test_310_ok_compare_with_utc(self):
+        western1 = WesternTime(2, 3, 4, to_utc=5)
+        western2 = WesternTime(2, 3, 4, to_utc=-19)
+        assert western1 == western2
+        assert western1 <= western2
+        assert western1 >= western2
+        assert not western1 != western2
+        assert not western1 < western2
+        assert not western1 > western2
+
+        for hour, minute, second, to_utc in (3, 3, 3, 5), (2, 4, 4, 5), (2, 3, 5, 5), (2, 3, 4, 6), (2, 3, 4, -18):
+            western3 = WesternTime(hour, minute, second, to_utc=to_utc)  # this is larger than western1
+            assert western1 < western3
+            assert western3 > western1
+            assert western1 <= western3
+            assert western3 >= western1
+            assert western1 != western3
+            assert western3 != western1
+            assert not western1 == western3
+            assert not western3 == western1
+            assert not western1 > western3
+            assert not western3 < western1
+            assert not western1 >= western3
+            assert not western3 <= western1
+
+    def test_320_hash_equality(self):
         western1 = WesternTime(11, 12, 13)
         # same thing
         western2 = WesternTime(11, 12, 13)
@@ -444,14 +654,46 @@ class TestWestern():
         assert len(dic) == 1
         assert dic[western3] == 2
 
-    def test_530_bool(self):
+    def test_330_hash_equality_with_utc(self):
+        western1 = WesternTime(10, 12, 13, to_utc=1)
+        # same thing
+        western2 = WesternTime(12, 12, 13, to_utc=-1)
+        assert hash(western1) == hash(western2)
+
+        dic = {western1: 1}
+        dic[western2] = 2
+        assert len(dic) == 1
+        assert dic[western1] == 2
+        assert dic[western2] == 2
+
+        western3 = WesternTime(11, 12, 13, to_utc=3).replace(to_utc=0)
+        assert hash(western1) == hash(western3)
+
+        dic[western3] = 3
+        assert len(dic) == 1
+        assert dic[western1] == 3
+        assert dic[western3] == 3
+
+    def test_340_hash_equality_mix(self):
+        western1 = WesternTime(11, 12, 13)
+        # different thing
+        western2 = WesternTime(9, 12, 13, to_utc=2)
+        assert hash(western1) != hash(western2)
+
+        western3 = western1.localize(0)
+        assert hash(western2) == hash(western3)
+
+        western4 = western2.delocalize(0)
+        assert hash(western1) == hash(western4)
+
+    def test_400_bool(self):
         for test_row in western_time_test_data:
             hour = test_row[1][0]
             minute = test_row[1][1]
             second = Fraction(test_row[1][2])
             assert WesternTime(hour, minute, second)
 
-    def test_600_to_hours(self):
+    def test_420_to_hours(self):
         for test_row in western_time_test_data:
             hour = test_row[1][0]
             minute = test_row[1][1]
@@ -459,7 +701,7 @@ class TestWestern():
             to_hours = Fraction(test_row[2])
             assert WesternTime(hour, minute, second).to_hours() == to_hours
 
-    def test_610_to_minutes(self):
+    def test_440_to_minutes(self):
         for test_row in western_time_test_data:
             hour = test_row[1][0]
             minute = test_row[1][1]
@@ -467,7 +709,7 @@ class TestWestern():
             to_minutes = Fraction(test_row[3])
             assert WesternTime(hour, minute, second).to_minutes() == to_minutes
 
-    def test_620_to_seconds(self):
+    def test_480_to_seconds(self):
         for test_row in western_time_test_data:
             hour = test_row[1][0]
             minute = test_row[1][1]
