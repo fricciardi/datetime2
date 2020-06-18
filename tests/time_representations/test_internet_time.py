@@ -165,6 +165,15 @@ class TestInternet:
             with pytest.raises(ValueError):
                 InternetTime.from_time_pair(Fraction(1, 2), par)
 
+    def test_020_to_and_from_time_pair(self):
+        for test_row in internet_time_test_data:
+            internet1 = InternetTime(test_row[1])
+            assert internet1.to_time_pair() == (Fraction(test_row[0]), Fraction(-1, 24))
+            internet2 = InternetTime.from_time_pair(test_row[2], Fraction("1/3"))
+            assert internet2.to_time_pair() == (Fraction(test_row[0]), Fraction(-1, 24))
+            internet3 = InternetTime.from_time_pair(test_row[3], Fraction("-1/5"))
+            assert internet3.to_time_pair() == (Fraction(test_row[0]), Fraction(-1, 24))
+
     def test_200_write_attribute(self):
         internet1 = InternetTime(10)
         with pytest.raises(AttributeError):
@@ -260,15 +269,6 @@ class TestInternet:
         for test_row in internet_time_test_data:
             beat = test_row[1]
             assert InternetTime(beat)
-
-    def test_400_to_and_from_time_pair(self):
-        for test_row in internet_time_test_data:
-            internet1 = InternetTime(test_row[1])
-            assert internet1.to_time_pair() == (Fraction(test_row[0]), Fraction(-1, 24))
-            internet2 = InternetTime.from_time_pair(test_row[2], Fraction("1/3"))
-            assert internet2.to_time_pair() == (Fraction(test_row[0]), Fraction(-1, 24))
-            internet3 = InternetTime.from_time_pair(test_row[3], Fraction("-1/5"))
-            assert internet3.to_time_pair() == (Fraction(test_row[0]), Fraction(-1, 24))
 
     def test_500_repr(self):
         import datetime2
