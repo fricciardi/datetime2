@@ -335,57 +335,6 @@ class WesternTime:
         return self._to_utc
 
     @classmethod
-    def in_hours(cls, hours):
-        try:
-            hour_fraction = verify_fractional_value(hours, min=0, max_excl=24)
-        except TypeError as exc:
-            raise TypeError("'hours' is not a valid fractional value") from exc
-        except ValueError as exc:
-            raise ValueError(
-                "'hours' must be equal or greater than 0 and less than 24."
-            ) from exc
-        hour = int(hour_fraction)
-        minute = int((hour_fraction - hour) * 60)
-        second = (hour_fraction - hour - Fraction(minute, 60)) * 3600
-        western = cls(hour, minute, second)
-        western._day_frac = hour_fraction / 24
-        return western
-
-    @classmethod
-    def in_minutes(cls, minutes):
-        try:
-            minute_fraction = verify_fractional_value(minutes, min=0, max_excl=1440)
-        except TypeError as exc:
-            raise TypeError("'minutes' is not a valid fractional value") from exc
-        except ValueError as exc:
-            raise ValueError(
-                "'minutes' must be equal or greater than 0 and less than 1440."
-            ) from exc
-        hour = int(minute_fraction / 60)
-        minute = int(minute_fraction - hour * 60)
-        second = (minute_fraction - hour * 60 - minute) * 60
-        western = cls(hour, minute, second)
-        western._day_frac = minute_fraction / 1440
-        return western
-
-    @classmethod
-    def in_seconds(cls, seconds):
-        try:
-            second_fraction = verify_fractional_value(seconds, min=0, max_excl=86400)
-        except TypeError as exc:
-            raise TypeError("'seconds' is not a valid fractional value") from exc
-        except ValueError as exc:
-            raise ValueError(
-                "'seconds' must be equal or greater than 0 and less than 86400."
-            ) from exc
-        hour = int(second_fraction / 3600)
-        minute = int((second_fraction - hour * 3600) / 60)
-        second = second_fraction - hour * 3600 - minute * 60
-        western = cls(hour, minute, second)
-        western._day_frac = second_fraction / 86400
-        return western
-
-    @classmethod
     def from_day_frac(cls, day_frac):
         if not isinstance(day_frac, Fraction):
             raise TypeError("Fraction argument expected")
@@ -410,15 +359,6 @@ class WesternTime:
                 + Fraction(self.hour, 24)
             )
         return self._day_frac
-
-    def to_hours(self):
-        return self.to_day_frac() * 24
-
-    def to_minutes(self):
-        return self.to_day_frac() * 1440
-
-    def to_seconds(self):
-        return self.to_day_frac() * 86400
 
     def replace(self, *, hour=None, minute=None, second=None):
         if hour is None:
