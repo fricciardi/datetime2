@@ -6,15 +6,11 @@ datetime2
 [![License](https://img.shields.io/badge/License-BSD-green.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 
-The *datetime2* module provides date and time classes to Python. It will enhance the 
-standard [datetime](http://docs.python.org/py3k/library/datetime.html) module, 
-adding the capability of constructing and representing date and time in many formats
-and removing a few limits that the original package has.
+The *datetime2* module implements the same features the standard
+[datetime](http://docs.python.org/py3k/library/datetime.html) module, and adds the 
+capability of constructing and representing date and time in many formats. 
+Additionally, it removes a few limits that the original package has.
 
-*datetime2* is a one-man, free-time work. Although I am deeply committed in completing 
-the project, do not expect regular updates on it. However, I am now using an "agile" 
-development style, so you can expect more releases. Any tagged commit will be a meaningful 
-release, and I am thinking of deploying all these releases to PyPI as well.  
 
 If you are looking for more information, check the following:
 
@@ -27,3 +23,5 @@ If you are looking for more information, check the following:
 * [wiki pages](https://github.com/fricciardi/datetime2/wiki), for further
   information on development and documentation.
   
+*datetime2* is a one-man, free-time work.  
+
