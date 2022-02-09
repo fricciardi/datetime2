@@ -1,5 +1,5 @@
 import setuptools
-from os import environ, path
+from os import path
 
 here = path.abspath(path.dirname(__file__))
 
@@ -7,9 +7,10 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'DESCRIPTION.rst')) as f:
     long_description = f.read()
 
+# TODO: All setup arguments need to be revised, also check for those to give more info on PyPI page
 setuptools.setup(
     name='datetime2',
-    version='0.7.5',
+    version='0.7.6',
 
     description='New date and time classes',
     long_description=long_description,
