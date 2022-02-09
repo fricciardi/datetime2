@@ -1,6 +1,6 @@
 # tests for ISO calendar
 
-# Copyright (c) 2013-2020 Francesco Ricciardi
+# Copyright (c) 2013-2022 Francesco Ricciardi
 #
 # All rights reserved.
 #

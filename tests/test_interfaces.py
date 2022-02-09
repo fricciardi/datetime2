@@ -1,6 +1,6 @@
 # datetime2 base class interface test
 
-# Copyright (c) 2011-2020 Francesco Ricciardi
+# Copyright (c) 2011-2022 Francesco Ricciardi
 #
 # All rights reserved.
 #
