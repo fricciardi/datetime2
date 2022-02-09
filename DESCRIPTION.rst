@@ -10,21 +10,21 @@ datetime2
 .. image:: https://img.shields.io/badge/License-BSD-green.svg
    :target: https://opensource.org/licenses/BSD-3-Clause
 
-The `datetime2 <http://pypi.org/project/datetime2>`_ module provides date and time
-classes to Python.
+The `datetime2 <http://pypi.org/project/datetime2>`_ implements the same
+features the standard
+`datetime <https://docs.python.org/3.7/library/datetime.html>`_ module has,
+and adds the capability of constructing and representing date and time
+in many formats. Additionally, it removes a few limits that the original
+package has.
 
-In addition to the features of the standard
-`datetime <https://docs.python.org/3.7/library/datetime.html>`_ module, adding the
-capability of constructing and representing date and time in many formats and
-removing a few limits that the original package has.
-
-Documentation is hosted at `ReadtheDocs <https://datetime2.readthedocs.io/en/stable/?badge=stable>`_
+Documentation is hosted at
+`ReadtheDocs <https://datetime2.readthedocs.io/en/stable/?badge=stable>`_.
 
 Code is hosted at `GitHub <http://github.com/fricciardi/datetime2>`_: the
 `wiki pages <https://github.com/fricciardi/datetime2/wiki>`_ host development
-discussions. *datetime2* is a one-man, free-time work. Although I am deeply
-committed in completing the project, do not expect regular updates (and indeed
-there weren't for two years!)
+discussions.
+
+*datetime2* is a one-man, free-time work.
 
 Project objectives
 ==================
@@ -42,9 +42,7 @@ Project objectives
   functionalities in submodules.
 
 These objectives are very long term ones, which I am setting because I think it is
-important to establish a direction for the project. Do not expect to see them
-implemented in initial versions of the module, even if you will be able to see
-traces of them early.
+important to establish a direction for the project.
 
 License
 =======
@@ -53,8 +51,8 @@ Datetime2 is distributed under the terms of the new BSD license. You are free
 to use it for commercial or non-commercial projects with little or no
 restriction, all I ask is that:
 
-  Redistributions of the code, in whole or part, retain the original
-  copyright notice and license text. You do not claim my endorsement
-  of any derived product.
+* Redistributions of the code, in whole or part, retain the original
+  copyright notice and license text.
+* You do not claim my endorsement of any derived product.
 
 For a complete text of the license see the LICENSE.txt file in the source distribution.
