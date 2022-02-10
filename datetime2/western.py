@@ -351,6 +351,32 @@ class WesternTime:
         western._day_frac = day_frac
         return western
 
+# todo: Fix from_time_pair and to_time_pair
+    @classmethod
+    def from_time_pair(cls, day_frac, to_utc):
+        ###################### DUMMY METHOD, WILL NEVER WORK AS IS ######################
+        if not isinstance(day_frac, Fraction):
+            raise TypeError("Fraction argument expected for day fraction")
+        if not isinstance(to_utc, Fraction):
+            raise TypeError("Fraction argument expected for fraction to UTC")
+        if day_frac < 0 or day_frac >= 1:
+            raise ValueError("Day fraction must be equal or greater than 0 and less than 1, while it is {}.".format(day_frac))
+        if to_utc < -1 or to_utc > 1:
+            raise ValueError("Fraction to UTC must be greater or equal to -1 and less or equal to 1, while it is {}.".format(day_frac))
+        utc_time = day_frac - to_utc
+        utc_time_normalized = utc_time - floor(utc_time) # we keep only the fraction
+        hour = int(utc_time_normalized * 24)
+        minute = int((utc_time_normalized - Fraction(hour, 24)) * 1440)
+        second = (utc_time_normalized - Fraction(hour, 24) - Fraction(minute, 1440)) * 86400
+        western = cls(hour, minute, second)
+        western._day_frac = day_frac
+        return western
+
+    def to_time_pair(self):
+        ###################### DUMMY METHOD, WILL NEVER WORK AS IS ######################
+        return self._beat / 1000, Fraction(-1, 24)
+
+
     def to_day_frac(self):
         if self._day_frac is None:
             self._day_frac = (
