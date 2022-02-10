@@ -20,8 +20,5 @@ If you are looking for more information, check the following:
 * [datetime2 PyPI page](http://pypi.org/project/datetime2), where versions are 
   uploaded;
 
-* [wiki pages](https://github.com/fricciardi/datetime2/wiki), for further
-  information on development and documentation.
-  
 *datetime2* is a one-man, free-time work.  
 

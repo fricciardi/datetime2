@@ -20,9 +20,7 @@ package has.
 Documentation is hosted at
 `ReadtheDocs <https://datetime2.readthedocs.io/en/stable/?badge=stable>`_.
 
-Code is hosted at `GitHub <http://github.com/fricciardi/datetime2>`_: the
-`wiki pages <https://github.com/fricciardi/datetime2/wiki>`_ host development
-discussions.
+Code is hosted at `GitHub <http://github.com/fricciardi/datetime2>`_.
 
 *datetime2* is a one-man, free-time work.
 
