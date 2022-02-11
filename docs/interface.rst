@@ -176,9 +176,9 @@ registered to. The following table lists all these names:
 +=========================+===========================+===========================+===========================+===========================+
 | Registration function   | ``register_new_calendar`` | ``register_new_time``     | TBD                       | TBD                       |
 +-------------------------+---------------------------+---------------------------+---------------------------+---------------------------+
-| Non-default constructor | ``from_rata_die``         | ``from_time_pair``       | TBD                       | TBD                       |
+| Non-default constructor | ``from_rata_die``         | ``from_time_pair``        | TBD                       | TBD                       |
 +-------------------------+---------------------------+---------------------------+---------------------------+---------------------------+
-| Conversion method       | ``to_rata_die``           | ``to_time_pair``         | TBD                       | TBD                       |
+| Conversion method       | ``to_rata_die``           | ``to_time_pair``          | TBD                       | TBD                       |
 +-------------------------+---------------------------+---------------------------+---------------------------+---------------------------+
 
 These methods are detailed below:
