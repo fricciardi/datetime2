@@ -101,7 +101,7 @@ class TestInternet:
             with pytest.raises(TypeError):
                 InternetTime(par)
 
-    def test_001_ok_constructor_values_(self):
+    def test_001_ok_constructor_values(self):
         for test_row in internet_time_test_data:
             internet = InternetTime(test_row[1])
             assert internet.beat == Fraction(test_row[0]) * 1000
