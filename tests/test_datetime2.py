@@ -1148,7 +1148,7 @@ class TestTime:
         assert len(dic) == 1
         assert dic[t3] == 2
 
-        t4 = Time("3/5", to_utc=0.75)
+        t4 = Time("3/5", to_utc=-0.75)
         assert hash(t1) == hash(t4)
 
         dic[t4] = 2
