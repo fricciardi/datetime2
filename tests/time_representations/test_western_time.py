@@ -230,7 +230,6 @@ class TestWestern:
             with pytest.raises(ValueError):
                 WesternTime(1, 2, 3, to_utc=invalid_value)
 
-    @pytest.mark.skip(reason="method not implemented correctly")
     def test_080_ok_constr_time_pair_types(self):
         for test_row in western_time_test_data:
             day_frac = Fraction(test_row[0])
@@ -250,7 +249,6 @@ class TestWestern:
             assert isinstance(western3.second, Fraction)
             assert isinstance(western3.to_utc, Fraction)
 
-    @pytest.mark.skip(reason="method not implemented correctly")
     def test_080_ko_constr_time_pair_types(self):
         # exception with none, one or three parameters
         with pytest.raises(TypeError):
@@ -274,7 +272,6 @@ class TestWestern:
                 WesternTime.from_time_pair(invalid_time_pair, Fraction(3, 4))
                 WesternTime.from_time_pair(Fraction(3, 4), invalid_time_pair)
 
-    @pytest.mark.skip(reason="method not implemented correctly")
     def test_081_ok_constr_time_pair_values(self):
         for test_row in western_time_test_data:
             day_frac = Fraction(test_row[0])
@@ -288,7 +285,6 @@ class TestWestern:
             western3 = WesternTime.from_time_pair(day_frac, Fraction(-1, 5))
             assert (western3.hour, western3.minute, western3.second) == (hour, minute, second)
 
-    @pytest.mark.skip(reason="method not implemented correctly")
     def test_081_ko_constr_time_pair_values(self):
         for num, denum in ((1, 1), (1, -1), (1000001, 1000000), (-1, 1000000)):
             with pytest.raises(ValueError):
