@@ -21,21 +21,21 @@ operations for date and time independently of the way they are created.
 :class:`Date` objects
 ---------------------
 
-A :class:`Date` object represents a date in an idealized calendar, just
-counting the days elapsed from Gregorian Dec 31\ :sup:`st` of year 0, i.e.
-January 1\ :sup:`st` of year 1 is day number 1, January 2\ :sup:`nd` of year 1
-is day number 2, and so on. This calendar ideally extends indefinitely in both
-directions.
+A :class:`Date` object represents a specific date. To do so it uses an
+idealized calendar, in which it counts the days elapsed from Gregorian Dec
+31\ :sup:`st` of year 0, i.e. January 1\ :sup:`st` of year 1 is day number 1,
+January 2\ :sup:`nd` of year 1 is day number 2, and so on. This calendar
+ideally extends indefinitely in both directions.
 
 There are two ways of creating a :class:`Date` instance:
 
 .. class:: Date(day_count)
 
-   Return an object that represent a date which is ``day_count - 1`` days
-   after January 1:sup:`st` of year 1 of the current Gregorian calendar.
-   The argument  is required and must be an integer; there is no
-   restriction on its numeric value. Using any other type of parameter, a
-   :exc:`TypeError` exception is raised.
+   Return an object that represent a date which is ``day_count`` days
+   after December 31\ :sup:`st` of year 0 in an ideal Gregorian calendar that
+   has no limit. The argument ``day_count``  is required and it must be an
+   integer, otherwise a :exc:`TypeError` exception is raised. There is no
+   restriction on its numeric value.
 
 .. classmethod:: Date.today()
 
@@ -120,7 +120,7 @@ Notes:
    ``==`` and ``!=``) behave similarly.
 
 (6)
-   When comparing a :class:`Datee` object and an object of another class, if
+   When comparing a :class:`Date` object and an object of another class, if
    the latter has a ``day_count`` attribute, ``NotImplemented`` is returned.
    This allows a Date-like instance to perform reflected comparison if it is
    the second operator. When the second object doesn't have a ``day_count``
@@ -134,10 +134,6 @@ Notes:
 
 :class:`Time` objects
 ---------------------
-
-.. warning:: This version of the documentation is under revision for the part
-             concerning the correction of local time for UTC. Code and tests about
-             this part are under development.
 
 An indication of time, independent of any particular day, expressed as a
 fraction of day. There might be an indication of time difference to UTC, e.g.
@@ -156,49 +152,27 @@ There are five :class:`Time` constructors:
    Return an object that represents a moment in a day as a fraction of the
    whole day, given in the ``day_frac`` argument. If needed, it is possible
    to assign to the instance an indication of the time to be added to get UTC,
-   for whatever political, algorithmic or geographic need (e.g. time zone).
-   This indication is given in the ``to_utc`` argument, which must be
-   explicitly named.
+   for whatever political, algorithmic or geographic need (e.g. time zone),
+   using the ``to_utc`` argument, which must be explicitly named.
 
    The ``day_frac`` and ``to_utc`` arguments can be anything that can
    be passed to the :class:`fractions.Fraction` constructor, i.e. an integer, a
    float, another Fraction, a Decimal number or a string representing an
-   integer, a float or a fraction. In addition, as in a Fraction object, two
-   values can be used to represent numerator and denominator of the fraction.
-   This is possible only for the ``day_frac`` argument, not for ``to_utc``.
-
-   The ``day_frac`` argument is stored in a read-only attribute with the same
-   name. In addition to the types listed above, the ``to_utc`` argument
-   can also be an object that has a ``to_utc`` method returning a
-   :class:`fractions.Fraction` value.
-
-   When a :class:`Time` instance is created giving an indication of time to
-   UTC, one of the two following cases can happen:
-
-   - ``to_utc`` is a fractional value, expressed in one of the
-     possibilities above. This value is stored in the ``to_utc`` attribute.
-
-   - ``to_utc`` is an object that has a ``to_utc`` method. This
-     method is called and its value is stored in the ``to_utc`` read-only
-     attribute.
-
-   In any case, the resulting value for ``day_frac`` must be equal or greater
-   than 0 and less than 1. The resulting value for ``to_utc`` must be equal or greater
-   than -1 and less or equal to 1. A :exc:`ValueError` exception is raised if the
-   resulting value are outside these ranges. A :exc:`TypeError` exception is
-   raised if the type of any argument is not one of the accepted types. A
-   :exc:`ZeroDivisionError` exception is raised if the denominator is 0.
+   integer, a float or a fraction. The ``day_frac`` arguments only can also be
+   passed with two values that represent numerator and denominator of the
+   fraction. The ``to_utc`` argument can also be an object that has
+   a ``to_utc`` method returning a :class:`fractions.Fraction` value.
 
 .. classmethod:: Time.now(to_utc=None)
 
    Return an aware :class:`Time` object that represents the current time.
    Without argument, the time represented in ``day_frac`` will be local
-   standard time, ``to_utc`` will be set to the difference between UTC and
+   standard time and ``to_utc`` will be set to the difference between UTC and
    local standard time.
 
    If ``to_utc`` is given, the returned object will be the current time
-   at the given time difference from UTC. ``to_utc`` will be treated as
-   in the default constructor.
+   at the given time difference from UTC. ``to_utc`` must obey the same
+   requirements of the default constructor.
 
 .. classmethod:: Time.localnow()
 
@@ -210,24 +184,20 @@ There are five :class:`Time` constructors:
    Return a naive :class:`Time` object that represents the current standard
    UTC.
 
+Two read-only attributes store the ``day_frac`` and ``to_utc`` arguments. The
+former is always a Fraction object, the latter is either a Fraction object or
+``None``, for naive time. In any case, the resulting value for ``day_frac``
+must be equal or greater than 0 and less than 1. In aware objects, the
+resulting value for ``to_utc`` must be equal or greater than -1 and less or
+equal to 1. A :exc:`ValueError` exception is raised if the resulting value are
+outside these ranges. A :exc:`TypeError` exception is raised if the type of any
+argument is not one of the accepted types. A :exc:`ZeroDivisionError`
+exception is raised if the denominator is 0. An attempt to directly set the
+values of these two attributes will raise an :exc:`AttributeError` exception.
 
 :class:`Time` instances are immutable, so they can be used as dictionary keys.
 They can also be pickled and unpickled. In boolean contexts, all :class:`Time`
 instances are considered to be true.
-
-:class:`Time` instances have two read-only attributes: an
-:exc:`AttributeError` exception is raised when trying to change any of them.
-
-.. attribute:: Time.day_frac
-
-   A Python :class:`fractions.Fraction` that represents the part of the day
-   after midnight. The value is given as a fraction of a day.
-
-.. attribute:: Time.to_utc
-
-   If not ``None``, this attribute is a Python :class:`fractions.Fraction` that
-   represents the fraction of a day that must be added to current time to get
-   UTC. The value is given as a fraction of a day.
 
 
 :class:`Time` has two instance methods:
@@ -251,9 +221,10 @@ instances are considered to be true.
 
    Applicable only to aware instances, return another :class:`Time` instance
    that identifies the same moment, but at a different time distance from UTC.
-   The ``new_to_utc`` argument has the same meaning as in the default
-   creator. If called on a naive instance, a :exc:`TypeError` exception
-   is raised. Example:
+   The ``new_to_utc`` can take the same values as in the default creator,
+   except that it cannot be ``None``, in which case a :exc:`ValueError`
+   exception is raised. If called on a naive instance, a :exc:`TypeError`
+   exception is raised. Example:
 
 .. doctest::
 
@@ -265,6 +236,9 @@ instances are considered to be true.
    1/2 of a day, 1/4 of a day to UTC
 
 .. TODO: add "localize" method to get a naive instance from an aware one
+
+.. TODO: add "at_utc" and "locally" methods to get an aware instance from a naive one
+
 
 The following table lists all available time representations and the attributes
 by which they are reachable:
