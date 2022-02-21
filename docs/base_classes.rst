@@ -162,6 +162,14 @@ There are five :class:`Time` constructors:
    passed with two values that represent numerator and denominator of the
    fraction. The ``to_utc`` argument can also be an object that has
    a ``to_utc`` method returning a :class:`fractions.Fraction` value.
+   A :exc:`TypeError` exception is raised if the type of any argument is not
+   one of the accepted types. A :exc:`ZeroDivisionError` exception is raised
+   if the denominator is 0.
+
+   The value for ``day_frac`` must be equal or greater than 0 and less than 1.
+   In aware objects, the value for ``to_utc`` must be equal or greater than -1
+   and less or equal to 1. A :exc:`ValueError` exception is raised if the
+   resulting value are outside these ranges.
 
 .. classmethod:: Time.now(to_utc=None)
 
@@ -186,14 +194,8 @@ There are five :class:`Time` constructors:
 
 Two read-only attributes store the ``day_frac`` and ``to_utc`` arguments. The
 former is always a Fraction object, the latter is either a Fraction object or
-``None``, for naive time. In any case, the resulting value for ``day_frac``
-must be equal or greater than 0 and less than 1. In aware objects, the
-resulting value for ``to_utc`` must be equal or greater than -1 and less or
-equal to 1. A :exc:`ValueError` exception is raised if the resulting value are
-outside these ranges. A :exc:`TypeError` exception is raised if the type of any
-argument is not one of the accepted types. A :exc:`ZeroDivisionError`
-exception is raised if the denominator is 0. An attempt to directly set the
-values of these two attributes will raise an :exc:`AttributeError` exception.
+``None``, for naive time. An attempt to directly set the values of these two
+attributes will raise an :exc:`AttributeError` exception.
 
 :class:`Time` instances are immutable, so they can be used as dictionary keys.
 They can also be pickled and unpickled. In boolean contexts, all :class:`Time`
