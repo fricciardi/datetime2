@@ -179,7 +179,7 @@ There are five :class:`Time` constructors:
    local standard time.
 
    If ``to_utc`` is given, the returned object will be the current time
-   at the given time difference from UTC. ``to_utc`` must obey the same
+   at the given time difference from UTC. ``to_utc`` follows the same
    requirements of the default constructor.
 
 .. classmethod:: Time.localnow()
