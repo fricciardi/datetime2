@@ -60,6 +60,10 @@ instances are considered to be true.
    Return ``R.D.`` followed by the day count. ``R.D.`` stands for Rata Die, the
    Latin for "fixed date".
 
+
+Available calendars
+^^^^^^^^^^^^^^^^^^^
+
 The following table lists all available calendars and the attributes by which
 they are reachable:
 
@@ -197,12 +201,25 @@ former is always a Fraction object, the latter is either a Fraction object or
 ``None``, for naive time. An attempt to directly set the values of these two
 attributes will raise an :exc:`AttributeError` exception.
 
+:class:`Time` objects support comparison, where *time1* is considered less
+than *time2* when the former represents a moment earlier than the latter.
+Time correction in aware instances is always taken into account. When both
+objects are :class:`Time` instances they must have the same naivety,
+otherwise :exc:`TypeError` is raised if an order comparison is attempted,
+while for equality comparisons, naive instances are never equal to aware
+instances.
+
+When comparing a :class:`Time` object and an object of another class, if the
+latter has the ``day_frac``  and ``to_utc`` attributes, ``NotImplemented`` is
+returned. This allows a Time-like instance to perform reflected comparison if
+it is the second operator. In this case, the second object is responsible for
+checking naivety.
+
 :class:`Time` instances are immutable, so they can be used as dictionary keys.
 They can also be pickled and unpickled. In boolean contexts, all :class:`Time`
 instances are considered to be true.
 
-
-:class:`Time` has two instance methods:
+Instance method:
 
 .. method:: time.__str__()
 
@@ -219,28 +236,9 @@ instances are considered to be true.
    >>> print(t2)
    1/8 of a day, -1/6 of a day to UTC
 
-.. method:: time.relocate(new_to_utc)
 
-   Applicable only to aware instances, return another :class:`Time` instance
-   that identifies the same moment, but at a different time distance from UTC.
-   The ``new_to_utc`` can take the same values as in the default creator,
-   except that it cannot be ``None``, in which case a :exc:`ValueError`
-   exception is raised. If called on a naive instance, a :exc:`TypeError`
-   exception is raised. Example:
-
-.. doctest::
-
-   >>> t1 = Time(0.25, to_utc=-0.5)
-   >>> print(t1)
-   1/4 of a day, -1/2 of a day to UTC
-   >>> t2 = t1.relocate(0.25)
-   >>> print(t2)
-   1/2 of a day, 1/4 of a day to UTC
-
-.. TODO: add "localize" method to get a naive instance from an aware one
-
-.. TODO: add "at_utc" and "locally" methods to get an aware instance from a naive one
-
+Available time representations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The following table lists all available time representations and the attributes
 by which they are reachable:
@@ -254,68 +252,4 @@ by which they are reachable:
 +----------------+----------------+------------------------------------------------+--------------------+
 
 .. TODO: add French decimal time when available
-
-Supported operations
-^^^^^^^^^^^^^^^^^^^^
-
-+-------------------------------+----------------------------------------------+
-| Operation                     | Result                                       |
-+===============================+==============================================+
-| ``time2 = time1 + timedelta`` | *time2* is ``timedelta`` time after          |
-|                               | *time1*. Reverse addition (``timedelta +     |
-|                               | time1``) is allowed. (1) (2)                 |
-+-------------------------------+----------------------------------------------+
-| ``time2 = time1 - timedelta`` | *time2* is ``timedelta`` time before         |
-|                               | *time1*. (1) (3)                             |
-+-------------------------------+----------------------------------------------+
-| ``timedelta = time1 - time2`` | A :class:`TimeDelta` object is returned      |
-|                               | representing the day fraction                |
-|                               | between *time1* and *time2*. (4)             |
-+-------------------------------+----------------------------------------------+
-| ``time1 < time2``             | *time1* is less than *time2* when the former |
-|                               | represents a moment earlier than the latter. |
-|                               | Time correction, if present, is taken into   |
-|                               | consideration. (5) (6)                       |
-+-------------------------------+----------------------------------------------+
-
-
-Notes:
-
-(1)
-   The result of this operation will always be a valid :class:`Time` instance.
-   If overflow or underflow occur, the full day part will be truncated so that
-   only the fractional part will remain. Naivety is preserved: if ``time1``
-   has a correction, this will be copied to ``time2``.
-
-(2)
-   If *timedelta* is negative, ``time2`` will be before ``time1``.
-
-(3)
-   If *timedelta* is negative, ``time2`` will be after ``time1``.
-
-(4)
-   The *timedelta* object created when subtracting two :class:`Time` instances
-   will always represent a fractional part of a day, either positive or
-   negative. ``time1`` and ``time2`` must have the same naivety; if they don't,
-   a :exc:`ValueError` exception is raised. If they are aware, correction of
-   both instances will be taken into account to generate the result. Result
-   will be more than -1 and less than 0 if ``time1`` is after than ``time2``,
-   or between 0 and 1 if ``time1`` is before than ``time2``.
-
-(5)
-   All other comparison operators (``<=``, ``>``, ``>=``, ``==`` and ``!=``)
-   behave similarly.
-
-(6)
-   If both objects to be compared are :class:`Time` instances, they must have
-   the same naivety; if they don't, a :exc:`ValueError` exception is raised.
-   When comparing a :class:`Time` object and an object of another class, if
-   the latter has a ``day_frac`` attribute, ``NotImplemented`` is returned.
-   This allows a Time-like instance to perform reflected comparison if it is
-   the second operator. In this case, the second object is responsible for
-   checking naivety. When the second object doesn't have a ``day_frac``
-   attribute, if the operator is equality(``==``) or inequality(``!=``), the
-   value returned is always :const:`False` and :const:`True` respectively.
-   If the operator is one of the other four (``<=``, ``>``, ``>=`` or
-   ``==``), a :exc:`TypeError` exception is raised.
 
