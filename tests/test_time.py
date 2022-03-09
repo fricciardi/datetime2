@@ -338,237 +338,6 @@ def test_051_get_unknown_attribute():
         t.unknown
 
 
-def test_100_valid_operations():
-    a = Time(0)
-    b = Time(0.25)
-    c = Time(0.75)
-    zero = TimeDelta(0)
-    # please remember that TimeDelta is in days
-    plus_half = TimeDelta(0.5)
-    minus_half = TimeDelta(-1.5)
-    integer = TimeDelta(3)
-
-    # Addition between Time and TimeDelta
-    # test with zero, negative and positive dates
-    assert a + zero == Time(0)
-    assert a + plus_half == Time(0.5)
-    assert a + minus_half == Time(0.5)
-    assert a + integer == Time(0)
-    assert b + zero == Time(0.25)
-    assert b + plus_half == Time(0.75)
-    assert b + minus_half == Time(0.75)
-    assert b + integer == Time(0.25)
-    assert c + zero == Time(0.75)
-    assert c + plus_half == Time(0.25)
-    assert c + minus_half == Time(0.25)
-    assert c + integer == Time(0.75)
-
-    # Reversed addition between Time and TimeDelta
-    # test with zero, negative and positive dates
-    assert zero + a == Time(0)
-    assert plus_half + a == Time(0.5)
-    assert minus_half + a == Time(0.5)
-    assert integer + a == Time(0)
-    assert zero + b == Time(0.25)
-    assert plus_half + b == Time(0.75)
-    assert minus_half + b == Time(0.75)
-    assert integer + b == Time(0.25)
-    assert zero + c == Time(0.75)
-    assert plus_half + c == Time(0.25)
-    assert minus_half + c == Time(0.25)
-    assert integer + c == Time(0.75)
-
-    # subtraction between Time and TimeDelta, reverse is not defined
-    # test with zero, negative and positive Times
-    assert a - zero == Time(0)
-    assert a - plus_half == Time(0.5)
-    assert a - minus_half == Time(0.5)
-    assert a - integer == Time(0)
-    assert b - zero == Time(0.25)
-    assert b - plus_half == Time(0.75)
-    assert b - minus_half == Time(0.75)
-    assert b - integer == Time(0.25)
-    assert c - zero == Time(0.75)
-    assert c - plus_half == Time(0.25)
-    assert c - minus_half == Time(0.25)
-    assert c - integer == Time(0.75)
-
-
-def test_101_valid_operations_w_to_utc():
-    a = Time(0, to_utc="1/3")
-    b = Time(0.25, to_utc="-1/4")
-    c = Time(0.75, to_utc="1/6")
-    zero = TimeDelta(0)
-    # note that TimeDelta is in days
-    plus_half = TimeDelta(0.5)
-    minus_half = TimeDelta(-1.5)
-    integer = TimeDelta(3)
-
-    # Addition between Time and TimeDelta
-    # test with zero, negative and positive dates
-    assert a + zero == Time(0, to_utc="1/3")
-    assert a + plus_half == Time(0.5, to_utc="1/3")
-    assert a + minus_half == Time(0.5, to_utc="1/3")
-    assert a + integer == Time(0, to_utc="1/3")
-    assert b + zero == Time(0.25, to_utc="-1/4")
-    assert b + plus_half == Time(0.75, to_utc="-1/4")
-    assert b + minus_half == Time(0.75, to_utc="-1/4")
-    assert b + integer == Time(0.25, to_utc="-1/4")
-    assert c + zero == Time(0.75, to_utc="1/6")
-    assert c + plus_half == Time(0.25, to_utc="1/6")
-    assert c + minus_half == Time(0.25, to_utc="1/6")
-    assert c + integer == Time(0.75, to_utc="1/6")
-
-    # Reversed addition between Time and TimeDelta
-    # test with zero, negative and positive dates
-    assert zero + a == Time(0, to_utc="1/3")
-    assert plus_half + a == Time(0.5, to_utc="1/3")
-    assert minus_half + a == Time(0.5, to_utc="1/3")
-    assert integer + a == Time(0, to_utc="1/3")
-    assert zero + b == Time(0.25, to_utc="-1/4")
-    assert plus_half + b == Time(0.75, to_utc="-1/4")
-    assert minus_half + b == Time(0.75, to_utc="-1/4")
-    assert integer + b == Time(0.25, to_utc="-1/4")
-    assert zero + c == Time(0.75, to_utc="1/6")
-    assert plus_half + c == Time(0.25, to_utc="1/6")
-    assert minus_half + c == Time(0.25, to_utc="1/6")
-    assert integer + c == Time(0.75, to_utc="1/6")
-
-    # subtraction between Time and TimeDelta, reverse is not defined
-    # test with zero, negative and positive Times
-    assert a - zero == Time(0, to_utc="1/3")
-    assert a - plus_half == Time(0.5, to_utc="1/3")
-    assert a - minus_half == Time(0.5, to_utc="1/3")
-    assert a - integer == Time(0, to_utc="1/3")
-    assert b - zero == Time(0.25, to_utc="-1/4")
-    assert b - plus_half == Time(0.75, to_utc="-1/4")
-    assert b - minus_half == Time(0.75, to_utc="-1/4")
-    assert b - integer == Time(0.25, to_utc="-1/4")
-    assert c - zero == Time(0.75, to_utc="1/6")
-    assert c - plus_half == Time(0.25, to_utc="1/6")
-    assert c - minus_half == Time(0.25, to_utc="1/6")
-    assert c - integer == Time(0.75, to_utc="1/6")
-
-
-def test_102_operations_and_naivety(self):
-    # addition or subtraction with timedelta preserves naivety
-    a = Time("3/8")
-    b = Time(3, 4, to_utc="1/6")
-    test_obj = DummyToUtc(-1, 8)
-    c = Time(0.25, to_utc=test_obj)
-
-    for td in (TimeDelta(0.5), TimeDelta(-0.25), TimeDelta(3), TimeDelta(-2.75)):
-        res_a_plus = a + td
-        assert res_a_plus.to_utc is None
-        res_a_minus = a - td
-        assert res_a_minus.to_utc is None
-        res_b_plus = b + td
-        assert res_b_plus.to_utc == Fraction(1, 6)
-        res_b_minus = b - td
-        assert res_b_minus.to_utc == Fraction(1, 6)
-        res_c_plus = c + td
-        assert res_c_plus.to_utc == Fraction(-1, 8)
-        res_c_plus = c - td
-        assert res_c_plus.to_utc == Fraction(-1, 8)
-
-    # time objects in a subtraction must have the same naivety
-    d = Time(1, 3)
-    dummy = a - d
-    dummy = b - c
-    with pytest.raises(ValueError):
-        dummy = a - b
-    with pytest.raises(ValueError):
-        dummy = c - d
-
-
-def test_103_disallowed_operations():
-    a = Time("3/4")
-    b = Time("2/5", to_utc="1/8")
-
-    # Add/sub int, float, string, complex, specials and containers should be illegal
-    for obj in (10, 34.5, "abc", 1 + 2j, INF, NAN, {}, [], ()):
-        with pytest.raises(TypeError):
-            a + obj
-        with pytest.raises(TypeError):
-            a - obj
-        with pytest.raises(TypeError):
-            obj + a
-        with pytest.raises(TypeError):
-            obj - a
-        with pytest.raises(TypeError):
-            b + obj
-        with pytest.raises(TypeError):
-            b - obj
-        with pytest.raises(TypeError):
-            obj + b
-        with pytest.raises(TypeError):
-            obj - b
-
-    # Reverse operations
-    with pytest.raises(TypeError):
-        TimeDelta(-0.25) - a
-    with pytest.raises(TypeError):
-        TimeDelta(-0.25) - b
-
-    for obj in (1, 1.1, Time("2/5")):
-        with pytest.raises(TypeError):
-            a * obj
-        with pytest.raises(TypeError):
-            obj * a
-        with pytest.raises(TypeError):
-            a / obj
-        with pytest.raises(TypeError):
-            obj / a
-        with pytest.raises(TypeError):
-            a // obj
-        with pytest.raises(TypeError):
-            obj // a
-        with pytest.raises(TypeError):
-            pow(a, obj)
-        with pytest.raises(TypeError):
-            pow(obj, a)
-        with pytest.raises(TypeError):
-            a ^ obj
-        with pytest.raises(TypeError):
-            obj ^ a
-        with pytest.raises(TypeError):
-            a >> obj
-        with pytest.raises(TypeError):
-            obj >> a
-        with pytest.raises(TypeError):
-            a << obj
-        with pytest.raises(TypeError):
-            obj << a
-        with pytest.raises(TypeError):
-            b * obj
-        with pytest.raises(TypeError):
-            obj * b
-        with pytest.raises(TypeError):
-            b / obj
-        with pytest.raises(TypeError):
-            obj / b
-        with pytest.raises(TypeError):
-            b // obj
-        with pytest.raises(TypeError):
-            obj // b
-        with pytest.raises(TypeError):
-            pow(b, obj)
-        with pytest.raises(TypeError):
-            pow(obj, b)
-        with pytest.raises(TypeError):
-            b ^ obj
-        with pytest.raises(TypeError):
-            obj ^ b
-        with pytest.raises(TypeError):
-            b >> obj
-        with pytest.raises(TypeError):
-            obj >> b
-        with pytest.raises(TypeError):
-            b << obj
-        with pytest.raises(TypeError):
-            obj << b
-
-
 def test_150_comparisons():
     t1 = Time("3/8")
     t2 = Time(0.375)
@@ -597,6 +366,7 @@ def test_150_comparisons():
     class TimeLike:
         def __init__(self):
             self.day_frac = Fraction(3, 4)
+            self.to_utc = 'unchecked'
 
         def __eq__(self, other):
             return self.day_frac == other.day_frac
@@ -639,10 +409,57 @@ def test_150_comparisons():
     assert t34 >= tl
     assert t45 >= tl
 
+    class SomeClass1:
+        def __init__(self):
+            self.day_frac = 'unchecked'
+
+    class SomeClass2:
+        def __init__(self):
+            self.to_utc = 'unchecked'
+
+    t = Time(0)
+
+    # exception with non-numeric types
+    for par in ("1", (1,), [1], {1: 1}, (), [], {}, None, SomeClass1(), SomeClass2()):
+        assert not (t == par)
+        assert t != par
+        with pytest.raises(TypeError):
+            t < par
+        with pytest.raises(TypeError):
+            t > par
+        with pytest.raises(TypeError):
+            t <= par
+        with pytest.raises(TypeError):
+            t >= par
+
+    # exception with numeric types (all invalid) and other objects
+    for par in (1, 1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN):
+        assert not (t == par)
+        assert t != par
+        with pytest.raises(TypeError):
+            t < par
+        with pytest.raises(TypeError):
+            t > par
+        with pytest.raises(TypeError):
+            t <= par
+        with pytest.raises(TypeError):
+            t >= par
+
+    t5 = Time(11, 24)  # this is naive
+    assert t1 != t5
+    assert not (t1 == t5)
+    with pytest.raises(TypeError):
+        t1 < t5
+        t1 <= t5
+        t1 > t5
+        t1 >= t5
+
 
 def test_151_comparisons_w_to_utc():
-    t1 = Time("7/8", to_utc="5/6")  # These value have a lot of overflows and underflows
-    t2 = Time(0.375, to_utc=Fraction(-2, 3))
+    t1 = Time("1/8", to_utc="1/3")
+    t2 = Time(0.875, to_utc=Fraction(-5, 12))  # this is equal to t1
+    t3 = Time("2/3", to_utc=0.125)             # this is larger than t1
+    t4 = Time(0.375, to_utc="-1/6")            # this is equal to t1, one day earlier, should NOT compare equal
     assert t1 == t2
     assert t1 <= t2
     assert t1 >= t2
@@ -650,7 +467,6 @@ def test_151_comparisons_w_to_utc():
     assert not (t1 < t2)
     assert not (t1 > t2)
 
-    t3 = Time("1/2", to_utc=0.25)  # this is larger than t1
     assert t1 < t3
     assert t3 > t1
     assert t1 <= t3
@@ -676,28 +492,37 @@ def test_151_comparisons_w_to_utc():
     assert not (t2 >= t3)
     assert not (t3 <= t2)
 
+    assert t1 != t4
+    assert not (t1 == t4)
+    assert t4 < t1
+    assert t4 <= t1
+    assert t1 > t4
+    assert t1 >= t4
+
     # Reverse comparison mechanism
     class TimeLike:
         def __init__(self):
-            self.day_frac = Fraction(3, 4)
+            self.day_frac = Fraction(0.75)
+            self.to_utc = Fraction("1/4")
 
+        # what follows is not a proper implementation, but it is enough for our tests
         def __eq__(self, other):
-            return self.day_frac == other.day_frac
+            return self.day_frac + self.to_utc == other.day_frac + other.to_utc
 
         def __ne__(self, other):
-            return self.day_frac != other.day_frac
+            return self.day_frac + self.to_utc != other.day_frac + other.to_utc
 
         def __lt__(self, other):
-            return self.day_frac < other.day_frac
+            return self.day_frac + self.to_utc < other.day_frac + other.to_utc
 
         def __le__(self, other):
-            return self.day_frac <= other.day_frac
+            return self.day_frac + self.to_utc <= other.day_frac + other.to_utc
 
         def __gt__(self, other):
-            return self.day_frac > other.day_frac
+            return self.day_frac + self.to_utc > other.day_frac + other.to_utc
 
         def __ge__(self, other):
-            return self.day_frac >= other.day_frac
+            return self.day_frac + self.to_utc >= other.day_frac + other.to_utc
 
     tl = TimeLike()
     # We need not implement naivety checks, which are delegated to the Time-like class, not under test
@@ -722,39 +547,15 @@ def test_151_comparisons_w_to_utc():
     assert not (t12 >= tl)
     assert t34 >= tl
     assert t45 >= tl
-
-
-def test_152_comparison_with_invalid_types():
-    class SomeClass:
-        pass
-
-    t = Time(0)
-
-    # exception with non-numeric types
-    for par in ("1", (1,), [1], {1: 1}, (), [], {}, None, SomeClass()):
-        assert not (t == par)
-        assert t != par
-        with pytest.raises(TypeError):
-            t < par
-        with pytest.raises(TypeError):
-            t > par
-        with pytest.raises(TypeError):
-            t <= par
-        with pytest.raises(TypeError):
-            t >= par
-
-    # exception with numeric types (all invalid) and other objects
-    for par in (1, 1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN):
-        assert not (t == par)
-        assert t != par
-        with pytest.raises(TypeError):
-            t < par
-        with pytest.raises(TypeError):
-            t > par
-        with pytest.raises(TypeError):
-            t <= par
-        with pytest.raises(TypeError):
-            t >= par
+    
+    t5 = Time(11, 24)  # this is naive
+    assert t5 != t1
+    assert not (t5 == t1)
+    with pytest.raises(TypeError):
+        t5 < t1
+        t5 <= t1
+        t5 > t1
+        t5 >= t1
 
 
 def test_160_hash_equality(self):
@@ -778,7 +579,7 @@ def test_160_hash_equality(self):
 
 
 def test_161_hash_equality_w_to_utc():
-    """Time instances are immutable."""
+    # Time instances are immutable
     t1 = Time("3/5", to_utc=0.25)
     t2 = Time(4, 5, to_utc="1/20")
     assert hash(t1) == hash(t2)
@@ -789,23 +590,25 @@ def test_161_hash_equality_w_to_utc():
     assert dic[t1] == 2
     assert dic[t2] == 2
 
-    t3 = Time(Decimal("0.2"), to_utc="-7/20")
-    assert hash(t1) == hash(t3)
+    t3 = Time(Decimal("0.2"), to_utc="-7/20")  # as t1, one day earlier
+    assert hash(t1) != hash(t3)
 
     dic[t3] = 2
     assert len(dic) == 1
     assert dic[t3] == 2
 
-    t4 = Time("3/5", to_utc=-0.75)
-    assert hash(t1) == hash(t4)
+    # naive and aware instances have different hashes
+    t4 = Time(4, 5)                 # as t1, without to_uts
+    t5 = Time(1, 2, to_utc="1/20")  # same to_utc as t1
+    t6 = Time(17, 20)               # "equivalent" to t1
 
-    dic[t4] = 2
-    assert len(dic) == 1
-    assert dic[t4] == 2
+    assert hash(t1) != hash(t4)
+    assert hash(t1) != hash(t5)
+    assert hash(t1) != hash(t6)
 
 
 def test_170_bool():
-    """In boolean contexts, all Time instances are considered to be true."""
+    # In boolean contexts, all Time instances are considered to be true
     for day_frac, input_values in time_test_data:
         for input_value in input_values:
             assert Time(input_value)
@@ -815,62 +618,13 @@ def test_170_bool():
 
 
 def test_171_bool_w_to_utc():
-    """In boolean contexts, all Time instances are considered to be true."""
+    # In boolean contexts, all Time instances are considered to be true
     for to_utc_frac, input_values in to_utc_test_data:
         for input_value in input_values:
             assert Time("0.2222", to_utc=input_value)
 
 
-def test_400_relocate(self):
-    """Return another Time instance that identifies the same time"""
-    # Im using a mix of values, then check that relocated instance is equal
-    for day_frac, time_input_values in time_test_data:
-        for to_utc_frac, utc_input_values in to_utc_test_data:
-            first = Time(time_input_values[0], to_utc=utc_input_values[0])
-            for new_utc_value in to_utc_strange_test_data:
-                second = first.relocate(new_utc_value)
-                diff = (first.day_frac + first.to_utc) - (
-                        second.day_frac + second.to_utc
-                )
-                # Note that for some of the test value we have an overflow/underflow,
-                # so we must implement a precise test
-                assert diff == int(diff)  # ????
-    # TODO: implement serious test for relocation (values that have overflows and underflows, numerator and denominator, to_utc)
-
-
-def test_410_relocate_invalid_type(self):
-    """Return another Time instance that identifies the same time"""
-    # relocate on naive instance
-    t1 = Time("123/456")
-    with pytest.raises(TypeError):
-        t1.relocate("1/7")
-
-    class WrongObj:
-        def __init__(self):
-            self.time_to_utc = "foo"
-
-    t2 = Time("123/456", to_utc="-78/90")
-
-    # exception with invalid parameter name
-    with pytest.raises(TypeError):
-        t2.relocate()
-    with pytest.raises(TypeError):
-        t2.relocate(1, 2)
-    with pytest.raises(TypeError):
-        t2.relocate(foobar="barfoo")
-
-    # exception with non-numeric types
-    for par in (1j, (1,), [1], {1: 1}, [], {}, None, (1, 2, 3), WrongObj()):
-        with pytest.raises(TypeError):
-            t2.relocate(par)
-
-def test_420_relocate_invalid_values(self):
-    """Return another Time instance that identifies the same time"""
-    for par in (-100, -1.00001, 1.00000001, 100):
-        with pytest.raises(ValueError):
-            Time("0.5555", to_utc=par)
-
-def test_500_repr(self):
+def test_500_repr():
     import datetime2
 
     for day_frac, input_values in time_test_data:
@@ -883,17 +637,41 @@ def test_500_repr(self):
             assert eval(args) == str(day_frac)
             assert t == eval(time_repr)
 
-def test_505_repr_to_utc(self):
-    # TODO: implement
-    pass
 
-def test_520_str(self):
+def test_501_repr_w_to_utc():
+    import datetime2
+
+    for day_frac, input_values in time_test_data:
+        for input_value in input_values:
+            t = Time("0.25", to_utc=input_value)
+            time_repr = repr(t)
+            names, args = time_repr.split("(")
+            assert names.split(".") == ["datetime2", "Time"]
+            args = args[:-1]  # drop ')'
+            assert eval(args) == f"Fraction( 1, 4), to_utc={day_frac!s}"
+            assert t == eval(time_repr)
+
+
+def test_510_str():
     for day_frac, input_values in time_test_data:
         for input_value in input_values:
             t = Time(input_value)
-            assert str(t).split(" of ")[0] == str(day_frac)
+            string = str(t)
+            assert string.endswith(" of a day")
+            assert string[:-9] == str(day_frac)
 
-def test_900_pickling(self):
+
+def test_511_str_w_to_utc():
+    for day_frac, input_values in time_test_data:
+        for input_value in input_values:
+            t = Time(0.25, to_utc=input_value)
+            string = str(t)
+            assert string.startswith("1/4 of a day, ")
+            assert string.endswith(" of a day to UTC")
+            assert string[14:-16] == str(day_frac)
+
+
+def test_900_pickling():
     for day_frac, input_values in time_test_data:
         for input_value in input_values:
             t = Time(input_value)
@@ -902,9 +680,21 @@ def test_900_pickling(self):
                 derived = pickle.loads(pickled)
                 assert t == derived
 
-def test_920_subclass1(self):
-    # check that there is no interference from the interface mechanism and from possible additional arguments
-    class T(Time):
+
+def test_901_pickling_w_to_utc():
+    for day_frac, input_values in time_test_data:
+        for input_value in input_values:
+            t = Time(0,25, input_value)
+            for protocol in range(pickle.HIGHEST_PROTOCOL + 1):
+                pickled = pickle.dumps(t, protocol)
+                derived = pickle.loads(pickled)
+                assert t == derived
+
+
+def test_920_subclass():
+    # check that there is no interference from the interface mechanism
+    # and from possible additional arguments
+    class T1(Time):
         the_answer = 42
 
         def __init__(self, *args, **kws):
@@ -913,24 +703,29 @@ def test_920_subclass1(self):
             Time.__init__(self, *args, **temp)
 
         def newmeth(self, start):
-            return start + (self.day_frac * 3) // 2
+            return (start + self.day_frac * 3) // 2
 
     t1 = Time("3/8")
-    t2 = T(0.375, extra=7)
+    t2 = T1(0.375, extra=7)
 
     assert t2.the_answer == 42
     assert t2.extra == 7
-    assert t1.day_frac == t2.day_frac
-    assert t2.newmeth(-7) == (t1.day_frac * 3) // 2 - 7
+    assert t1 == t2
+    assert t2.newmeth(1) == 1
+    assert t2.newmeth(-5) == -2
 
-def test_920_subclass2(self):
-    class T(Time):
+    t3 = Time("3/8", to_utc=0.5)
+    t4 = T1(0.375, extra=7, to_utc=0.5)
+
+    assert t4.the_answer == 42
+    assert t4.extra == 7
+    assert t3 == t4
+    assert t4.newmeth(1) == 1
+    assert t4.newmeth(-5) == -2
+
+    class T3(Time):
         pass
 
-    t_sub = T("3/4", to_utc="-1/8")
-    assert type(T.now()) is T
-    assert type(T.localnow()) is T
-    assert type(T.utcnow()) is T
-    assert type(t_sub.relocate("1/3")) is T
-    assert type(t_sub + TimeDelta(0.25)) is T
-    assert type(t_sub - TimeDelta(0.25)) is T
+    assert type(T3.now()) is T3
+    assert type(T3.localnow()) is T3
+    assert type(T3.utcnow()) is T3
