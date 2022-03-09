@@ -450,8 +450,11 @@ def test_150_comparisons():
     assert not (t1 == t5)
     with pytest.raises(TypeError):
         t1 < t5
+    with pytest.raises(TypeError):
         t1 <= t5
+    with pytest.raises(TypeError):
         t1 > t5
+    with pytest.raises(TypeError):
         t1 >= t5
 
 
@@ -553,8 +556,11 @@ def test_151_comparisons_w_to_utc():
     assert not (t5 == t1)
     with pytest.raises(TypeError):
         t5 < t1
+    with pytest.raises(TypeError):
         t5 <= t1
+    with pytest.raises(TypeError):
         t5 > t1
+    with pytest.raises(TypeError):
         t5 >= t1
 
 
@@ -647,8 +653,8 @@ def test_501_repr_w_to_utc():
             time_repr = repr(t)
             names, args = time_repr.split("(")
             assert names.split(".") == ["datetime2", "Time"]
-            args = args[:-1]  # drop ')'
-            assert eval(args) == f"Fraction( 1, 4), to_utc={day_frac!s}"
+            args = '(' + args[:-1]  # there is already a ')'
+            assert eval(args) == f"(Fraction( 1, 4), to_utc={day_frac!s})"
             assert t == eval(time_repr)
 
 
@@ -684,7 +690,7 @@ def test_900_pickling():
 def test_901_pickling_w_to_utc():
     for day_frac, input_values in time_test_data:
         for input_value in input_values:
-            t = Time(0,25, input_value)
+            t = Time(0.25, to_utc=input_value)
             for protocol in range(pickle.HIGHEST_PROTOCOL + 1):
                 pickled = pickle.dumps(t, protocol)
                 derived = pickle.loads(pickled)
