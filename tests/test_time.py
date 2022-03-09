@@ -558,8 +558,8 @@ def test_151_comparisons_w_to_utc():
         t5 >= t1
 
 
-def test_160_hash_equality(self):
-    """Time instances are immutable."""
+def test_160_hash_equality():
+    # Time instances are immutable
     t1 = Time("3/5")
     t2 = Time(3, 5)
     assert hash(t1) == hash(t2)
