@@ -278,9 +278,6 @@ class GregorianCalendar:
 
 ##############################################################################
 # Western time representation
-
-
-@total_ordering
 class WesternTime:
     def __init__(self, hour, minute, second, *, to_utc=None):
         if not isinstance(hour, int) or not isinstance(minute, int):
@@ -394,29 +391,6 @@ class WesternTime:
         if second is None:
             second = self.second
         return self.__class__(hour, minute, second)
-
-    # Comparison operators
-    def __eq__(self, other):
-        return (
-            isinstance(other, WesternTime)
-            and self.hour == other.hour
-            and self.minute == other.minute
-            and self.second == other.second
-        )
-
-    def __gt__(self, other):
-        if isinstance(other, WesternTime):
-            return (self.hour, self.minute, self.second) > (
-                other.hour,
-                other.minute,
-                other.second,
-            )
-        else:
-            return NotImplemented
-
-    # hash value
-    def __hash__(self):
-        return hash((self.hour, self.minute, self.second))
 
     def __repr__(self):
         return "datetime2.western.{}({}, {}, {})".format(
