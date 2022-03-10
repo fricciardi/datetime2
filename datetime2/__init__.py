@@ -301,11 +301,21 @@ class Time:
     @classmethod
     def now(cls, to_utc=None):
         current_moment = get_moment_complete()
-        local = cls(current_moment[1], to_utc=current_moment[2])
         if to_utc is None:
-            return local
+            return cls(current_moment[1], to_utc=current_moment[2])
         else:
-            return local.relocate(new_to_utc=to_utc)
+            if hasattr(to_utc, "time_to_utc"):
+                try:
+                    to_utc_value = to_utc.time_to_utc()
+                except Exception as any_exc:
+                    raise TypeError("Invalid object for 'to_utc' argument.") from any_exc
+            else:
+                to_utc_value = to_utc
+            valid_to_utc = verify_fractional_value(to_utc_value, min=-1, max=1)
+            delta = current_moment[2] - valid_to_utc
+            day_frac_temp = current_moment[1] + delta + 1  # +1 needed to avoid underruns
+            new_day_frac = day_frac_temp - int(day_frac_temp)  # as so we eliminate the +1 above
+            return cls(new_day_frac, to_utc=valid_to_utc)
 
     @classmethod
     def localnow(cls):
@@ -337,63 +347,25 @@ class Time:
             return "datetime2.{}('{}', to_utc='{}')".format(self.__class__.__name__, str(self.day_frac), str(self.to_utc))
 
     def __str__(self):
-        if self.to_utc:
-            return "{} of a day, {} of a day to UTC".format(str(self.day_frac), str(self.to_utc))
-        else:
+        if self.to_utc is None:
             return "{} of a day".format(str(self.day_frac))
-
-    def __add__(self, other):
-        if isinstance(other, TimeDelta):
-            total = self.day_frac + other.days
-            if self.to_utc is None:
-                return self.__class__(total - floor(total))
-            else:
-                return self.__class__(total - floor(total), to_utc=self.to_utc)
         else:
-            return NotImplemented
-
-    __radd__ = __add__
-
-    def __sub__(self, other):
-        if isinstance(other, Time):
-            if self.to_utc is None:
-                if other.to_utc is None:
-                    return TimeDelta(self.day_frac - other.day_frac)
-                else:
-                    raise ValueError
-            elif other.to_utc is not None:
-                return TimeDelta(
-                    self.day_frac + self.utc - other.day_frac - other.to_utc
-                )
-            else:
-                raise ValueError
-        elif isinstance(other, TimeDelta):
-            total = self.day_frac - other.days
-            if self.to_utc is None:
-                return self.__class__(total - floor(total))
-            else:
-                return self.__class__(total - floor(total), to_utc=self.to_utc)
-        else:
-            return NotImplemented
+            return "{} of a day, {} of a day to UTC".format(str(self.day_frac), str(self.to_utc))
 
     # Comparison operators
-    @staticmethod
-    def compute_new_time(this_instance, other_instance):
-        new_time = this_instance.day_frac + this_instance.to_utc - other_instance.to_utc
-        while new_time < 0:
-            new_time += 1
-        else:
-            while new_time >= 1:
-                new_time -= 1
-        return new_time
-
     def __eq__(self, other):
         if isinstance(other, Time):
             if self.to_utc is None:
-                return self.day_frac == other.day_frac
+                if other.to_utc is None:
+                    return self.day_frac == other.day_frac
+                else:
+                    return False
             else:
-                return Time.compute_new_time(self, other) == other.day_frac
-        elif hasattr(other, "day_frac"):
+                if other.to_utc is not None:
+                    return self.day_frac + self.to_utc == other.day_frac + other.to_utc
+                else:
+                    return False
+        elif hasattr(other, "day_frac") and hasattr(other, "to_utc"):
             return NotImplemented
         else:
             return False
@@ -401,10 +373,16 @@ class Time:
     def __ne__(self, other):
         if isinstance(other, Time):
             if self.to_utc is None:
-                return self.day_frac != other.day_frac
+                if other.to_utc is None:
+                    return self.day_frac != other.day_frac
+                else:
+                    return True
             else:
-                return Time.compute_new_time(self, other) != other.day_frac
-        elif hasattr(other, "day_frac"):
+                if other.to_utc is not None:
+                    return self.day_frac + self.to_utc != other.day_frac + other.to_utc
+                else:
+                    return True
+        elif hasattr(other, "day_frac") and hasattr(other, "to_utc"):
             return NotImplemented
         else:
             return True
@@ -412,10 +390,16 @@ class Time:
     def __gt__(self, other):
         if isinstance(other, Time):
             if self.to_utc is None:
-                return self.day_frac > other.day_frac
+                if other.to_utc is None:
+                    return self.day_frac > other.day_frac
+                else:
+                    raise TypeError("You cannot compare a naive Time instance with an aware one.")
             else:
-                return Time.compute_new_time(self, other) > other.day_frac
-        elif hasattr(other, "day_frac"):
+                if other.to_utc is not None:
+                    return self.day_frac + self.to_utc > other.day_frac + other.to_utc
+                else:
+                    raise TypeError("You cannot compare an aware Time instance with a naive one.")
+        elif hasattr(other, "day_frac") and hasattr(other, "to_utc"):
             return NotImplemented
         else:
             raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
@@ -423,22 +407,33 @@ class Time:
     def __ge__(self, other):
         if isinstance(other, Time):
             if self.to_utc is None:
-                return self.day_frac >= other.day_frac
+                if other.to_utc is None:
+                    return self.day_frac >= other.day_frac
+                else:
+                    raise TypeError("You cannot compare a naive Time instance with an aware one.")
             else:
-                return Time.compute_new_time(self, other) >= other.day_frac
-        elif hasattr(other, "day_frac"):
+                if other.to_utc is not None:
+                    return self.day_frac + self.to_utc >= other.day_frac + other.to_utc
+                else:
+                    raise TypeError("You cannot compare an aware Time instance with a naive one.")
+        elif hasattr(other, "day_frac") and hasattr(other, "to_utc"):
             return NotImplemented
         else:
-            raise TypeError(
-                "You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
+            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
 
     def __lt__(self, other):
         if isinstance(other, Time):
             if self.to_utc is None:
-                return self.day_frac < other.day_frac
+                if other.to_utc is None:
+                    return self.day_frac < other.day_frac
+                else:
+                    raise TypeError("You cannot compare a naive Time instance with an aware one.")
             else:
-                return Time.compute_new_time(self, other) < other.day_frac
-        elif hasattr(other, "day_frac"):
+                if other.to_utc is not None:
+                    return self.day_frac + self.to_utc < other.day_frac + other.to_utc
+                else:
+                    raise TypeError("You cannot compare an aware Time instance with a naive one.")
+        elif hasattr(other, "day_frac") and hasattr(other, "to_utc"):
             return NotImplemented
         else:
             raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
@@ -446,10 +441,16 @@ class Time:
     def __le__(self, other):
         if isinstance(other, Time):
             if self.to_utc is None:
-                return self.day_frac <= other.day_frac
+                if other.to_utc is None:
+                    return self.day_frac <= other.day_frac
+                else:
+                    raise TypeError("You cannot compare a naive Time instance with an aware one.")
             else:
-                return Time.compute_new_time(self, other) <= other.day_frac
-        elif hasattr(other, "day_frac"):
+                if other.to_utc is not None:
+                    return self.day_frac + self.to_utc <= other.day_frac + other.to_utc
+                else:
+                    raise TypeError("You cannot compare an aware Time instance with a naive one.")
+        elif hasattr(other, "day_frac") and hasattr(other, "to_utc"):
             return NotImplemented
         else:
             raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
@@ -459,39 +460,7 @@ class Time:
         if self.to_utc is None:
             return hash((self.day_frac, None))
         else:
-            not_normal = self.day_frac + self.to_utc
-            normal = not_normal - int(not_normal)
-            return hash(normal) if normal >= 0 else hash(1 + normal)
-
-    def relocate(self, new_to_utc):
-        if self.to_utc is None:
-            raise TypeError("Cannot relocate a naive instance.")
-        else:
-            self_at_utc = self.day_frac + self.to_utc
-            if hasattr(new_to_utc, "time_to_utc"):
-                try:
-                    new_to_utc_value = new_to_utc.time_to_utc()
-                except Exception as any_exc:
-                    raise TypeError("Invalid object for 'new_to_utc' argument.") from any_exc
-            else:
-                new_to_utc_value = new_to_utc
-            try:
-                if type(new_to_utc_value) == tuple:
-                    if len(new_to_utc_value) == 2:
-                        real_to_utc_value = Fraction(*new_to_utc_value)
-                    else:
-                        raise TypeError("New time to UTC tuple is invalid")
-                else:
-                    real_to_utc_value = Fraction(new_to_utc_value)
-            except ZeroDivisionError:
-                raise ZeroDivisionError("Time to UTC denominator cannot be zero.")
-            new_time = self_at_utc - real_to_utc_value
-            while new_time < 0:
-                new_time += 1
-            else:
-                while new_time >= 1:
-                    new_time -= 1
-            return self.__class__(new_time, to_utc=new_to_utc)
+            return hash(self.day_frac + self.to_utc)
 
     @classmethod
     def register_new_time(cls, attribute_name, time_repr_class):
