@@ -64,17 +64,21 @@ The default constructor western time is:
    The ``to_utc`` argument, if present, makes the object aware and defines the
    number of hours that must be added to it to get UTC time.
 
-A :class:`WesternTime` object has four attributes:
+A :class:`WesternTime` object has four attributes, all of which are read-only
+numbers: an attempt to change them will raise an :exc:`AttributeError`
+exception. These attributes store the corresponding values in the constructor:
 
 .. attribute:: western.hour
 
+   An integer with values between ``0`` and ``23``.
+
 .. attribute:: western.minute
+
+   An integer with values between ``0`` and ``59``.
 
 .. attribute:: western.second
 
-   These attributes are read-only numbers. The first two are integers; the
-   last one is a Python Fraction. The three attributes will respect the
-   value requirements listed in the default constructor description.
+   A Python Fraction with value grater or equal to ``0`` and less than ``60``.
 
 .. attribute:: western.to_utc
 
@@ -118,8 +122,8 @@ An instance of the :class:`WesternTime` class has the following methods:
    string. The formatting directives are a subset of those accepted by
    :meth:`datetime.date.strftime`, and their meaning does not depend on the
    underlying C library (i.e. there are no platform variations). The table
-   below lists the accepted formatting directives, all other character are not
-   interpreted.
+   below lists the accepted formatting directives, all other characters are
+   not interpreted.
 
    +-----------+-------------------------------------------+-------+
    | Directive | Meaning                                   | Notes |
@@ -148,9 +152,8 @@ An instance of the :class:`WesternTime` class has the following methods:
 Notes:
 
 (1)
-   The ``%p`` directive returns a localized string in Standard C++.
-   This is not true for :mod:`datetime2`, which only returns the
-   English string.
+   The ``%p`` directive returns a localized string in Standard C++. This is
+   not true for :mod:`datetime2`, which only returns the English string.
 
 
 .. _internet-time:
