@@ -445,7 +445,7 @@ def test_150_comparisons():
         with pytest.raises(TypeError):
             t >= par
 
-    t5 = Time(11, 24)  # this is naive
+    t5 = Time(11, 24, to_utc="1/6")  # this is aware
     assert t1 != t5
     assert not (t1 == t5)
     with pytest.raises(TypeError):
@@ -531,7 +531,7 @@ def test_151_comparisons_w_to_utc():
     # We need not implement naivety checks, which are delegated to the Time-like class, not under test
     t12 = Time(1, 2, to_utc="-1/3")
     t34 = Time("3/4", to_utc=0.25)
-    t45 = Time(4, 5, to_utc=Fraction(-1, 8))
+    t45 = Time(4, 5, to_utc=Fraction(3, 8))
     assert not (t12 == tl)
     assert t34 == tl
     assert not (t45 == tl)
@@ -576,12 +576,11 @@ def test_160_hash_equality():
     assert dic[t1] == 2
     assert dic[t2] == 2
 
-    t3 = Time("7/20") + TimeDelta(0.25)
-    assert hash(t1) == hash(t3)
+    t3 = Time(3000001, 5000000)
+    assert hash(t1) != hash(t3)
 
-    dic[t3] = 2
-    assert len(dic) == 1
-    assert dic[t3] == 2
+    dic[t3] = 3
+    assert len(dic) == 2
 
 
 def test_161_hash_equality_w_to_utc():
@@ -599,12 +598,11 @@ def test_161_hash_equality_w_to_utc():
     t3 = Time(Decimal("0.2"), to_utc="-7/20")  # as t1, one day earlier
     assert hash(t1) != hash(t3)
 
-    dic[t3] = 2
-    assert len(dic) == 1
-    assert dic[t3] == 2
+    dic[t3] = 3
+    assert len(dic) == 2
 
     # naive and aware instances have different hashes
-    t4 = Time(4, 5)                 # as t1, without to_uts
+    t4 = Time(4, 5)                 # as t1, without to_utc
     t5 = Time(1, 2, to_utc="1/20")  # same to_utc as t1
     t6 = Time(17, 20)               # "equivalent" to t1
 
@@ -653,8 +651,9 @@ def test_501_repr_w_to_utc():
             time_repr = repr(t)
             names, args = time_repr.split("(")
             assert names.split(".") == ["datetime2", "Time"]
-            args = '(' + args[:-1]  # there is already a ')'
-            assert eval(args) == f"(Fraction( 1, 4), to_utc={day_frac!s})"
+            args = '(' + args  # there is already a ')'
+            args = args.replace("to_utc=", '')
+            assert eval(args) == (str(Fraction(1, 4)), str(day_frac))
             assert t == eval(time_repr)
 
 
