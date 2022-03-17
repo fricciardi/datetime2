@@ -30,6 +30,8 @@
 __author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
 
+#TODO: better revert black fromatting
+
 import bisect
 from fractions import Fraction
 from functools import total_ordering
@@ -301,7 +303,6 @@ class WesternTime:
         self._hour = hour
         self._minute = minute
         self._second = second_fraction
-        self._day_frac = None
         if to_utc is None:
             self._to_utc = None
         else:
@@ -331,57 +332,34 @@ class WesternTime:
     def to_utc(self):
         return self._to_utc
 
-    @classmethod
-    def from_day_frac(cls, day_frac):
-        if not isinstance(day_frac, Fraction):
-            raise TypeError("Fraction argument expected")
-        if day_frac < 0 or day_frac >= 1:
-            raise ValueError(
-                "Day fraction must be equal or greater than 0 and less than 1, while it is {}.".format(
-                    day_frac
-                )
-            )
-        hour = int(day_frac * 24)
-        minute = int((day_frac - Fraction(hour, 24)) * 1440)
-        second = (day_frac - Fraction(hour, 24) - Fraction(minute, 1440)) * 86400
-        western = cls(hour, minute, second)
-        western._day_frac = day_frac
-        return western
-
 # todo: Fix from_time_pair and to_time_pair
     @classmethod
     def from_time_pair(cls, day_frac, to_utc):
-        ###################### DUMMY METHOD, WILL NEVER WORK AS IS ######################
         if not isinstance(day_frac, Fraction):
             raise TypeError("Fraction argument expected for day fraction")
-        if not isinstance(to_utc, Fraction):
-            raise TypeError("Fraction argument expected for fraction to UTC")
-        if day_frac < 0 or day_frac >= 1:
-            raise ValueError("Day fraction must be equal or greater than 0 and less than 1, while it is {}.".format(day_frac))
-        if to_utc < -1 or to_utc > 1:
-            raise ValueError("Fraction to UTC must be greater or equal to -1 and less or equal to 1, while it is {}.".format(day_frac))
-        utc_time = day_frac - to_utc
-        utc_time_normalized = utc_time - floor(utc_time) # we keep only the fraction
-        hour = int(utc_time_normalized * 24)
-        minute = int((utc_time_normalized - Fraction(hour, 24)) * 1440)
-        second = (utc_time_normalized - Fraction(hour, 24) - Fraction(minute, 1440)) * 86400
-        western = cls(hour, minute, second)
-        western._day_frac = day_frac
-        return western
+        day_frac_valid = verify_fractional_value(day_frac, min=0, max_excl=1)
+        if to_utc is None:
+            hour = int(day_frac * 24)
+            minute = int((day_frac - Fraction(hour, 24)) * 1440)
+            second = (day_frac - Fraction(hour, 24) - Fraction(minute, 1440)) * 86400
+            western = cls(hour, minute, second)
+            return western
+        else:
+            if not isinstance(to_utc, Fraction):
+                raise TypeError("Fraction argument expected for fraction to UTC")
+            to_utc_valid = verify_fractional_value(to_utc, min=-1, max=1)
+            hour = int(day_frac_valid * 24)
+            minute = int((day_frac_valid - Fraction(hour, 24)) * 1440)
+            second = (day_frac_valid - Fraction(hour, 24) - Fraction(minute, 1440)) * 86400
+            western = cls(hour, minute, second, to_utc=to_utc_valid * 24)
+            return western
 
     def to_time_pair(self):
-        ###################### DUMMY METHOD, WILL NEVER WORK AS IS ######################
-        return self._beat / 1000, Fraction(-1, 24)
-
-
-    def to_day_frac(self):
-        if self._day_frac is None:
-            self._day_frac = (
-                self._second / 86400
-                + Fraction(self.minute, 1440)
-                + Fraction(self.hour, 24)
-            )
-        return self._day_frac
+        day_frac = self._second / 86400 + Fraction(self._minute, 1440) + Fraction(self._hour, 24)
+        if self._to_utc is None:
+            return day_frac, None
+        else:
+            return day_frac, self._to_utc / 24
 
     def replace(self, *, hour=None, minute=None, second=None):
         if hour is None:
