@@ -1,5 +1,6 @@
 .idea
 dist
-build
+_build
+_build/**
 *.egg-info
 .cache
