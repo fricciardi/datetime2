@@ -42,27 +42,32 @@ in 60 minutes and each minute in 60 seconds.
 
 The default constructor western time is:
 
-.. class:: western.WesternTime(hour, minute, second, to_utc=None)
+.. class:: western.WesternTime(hour, minute, second, timezone=None)
 
    Return an object that represents the moment of a day in hour, minute and
    second elapsed from midnight. This representation does not take into
    account the possibility of one or two additional seconds that sometimes
    are added in specific dates to compensate earth rotation. All arguments
-   are required and must satisfy the following requirements:
+   except ``timezone`` are required. The following requirements must be
+   satisfied:
 
    * ``hour`` must be an integer and ``0 <= month <= 23``
    * ``minute`` must be an integer and ``0 <= minute <= 59``
    * ``second`` must be a rational number and its value must be
      ``0 <= second < 60``
-   * ``to_utc``, if present, must be a rational number and its value must be
-     ``-24 <= to_utc <= 24``
+   * ``timezone``, if present, must be a rational number and its value must be
+     ``-24 <= timezone <= 24``
+
+.. note::
+
+   The ``timezone`` parameter may change its values in future.
 
    If an argument is not of the accepted type, a :exc:`TypeError` exception
    is raised. If an argument is outside its accepted range, a
    :exc:`ValueError` exception is raised.
 
-   The ``to_utc`` argument, if present, makes the object aware and defines the
-   number of hours that must be added to it to get UTC time.
+   The ``timezone`` argument, if present, makes the object aware and defines
+   the number of hours that must be added to UTC to get local time.
 
 A :class:`WesternTime` object has four attributes, all of which are read-only
 numbers: an attempt to change them will raise an :exc:`AttributeError`
@@ -82,8 +87,8 @@ exception. These attributes store the corresponding values in the constructor:
 
 .. attribute:: western.to_utc
 
-   If this attribute is not ``None``, it is the number of hours that must be
-   added the object's time to it to get UTC time
+   If this attribute is not ``None``, it a Python Fraction with values
+   between -24 and 24.
 
 
 An instance of the :class:`WesternTime` class has the following methods:
@@ -142,6 +147,9 @@ An instance of the :class:`WesternTime` class has the following methods:
    +-----------+-------------------------------------------+-------+
    | ``%S``    | Second as a zero-padded decimal number    |       |
    |           | [00, 59].                                 |       |
+   +-----------+-------------------------------------------+-------+
+   | ``%z``    | UTC offset in the form ±HHMM[SS[.ffffff]] |       |
+   |           | (empty string if the object is naive).    |       |
    +-----------+-------------------------------------------+-------+
    | ``%f``    | Microsecond as a decimal number,          |       |
    |           | zero-padded on the left [000000, 999999]. |       |

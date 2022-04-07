@@ -207,11 +207,27 @@ These methods are detailed below:
    ``CalendarInterface`` must obey the requirements for the :mod:`datetime2`
    interface classes, otherwise a :exc:`TypeError` exception is raised.
 
+.. classmethod:: calendar_class.from_rata_die(day_count)
+
+   Return a calendar object that corresponds to the day identified by the
+   given day count.
+
 .. method:: calendar_obj.to_rata_die()
 
    Return a rata die value that corresponds to the day represented by the
    calendar instance.
 
+.. classmethod:: time_of_day_class.from_time_pair(day_frac, utcoffset)
+
+   Return a time of day object that corresponds to the moment identified by
+   the given day fraction, possibly with reference to the given UTC distance.
+
+.. method:: time_of_day_obj.to_time_pair()
+
+   Return a tuple of two values: the first one is the day fraction
+   corresponding to the moment of the day identified by the time object, the
+   second is null for naive time objects, or is a fraction of day to be added
+   to UTC to get the time of day object.
 
 
 Inner workings

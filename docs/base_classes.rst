@@ -150,40 +150,38 @@ program that uses it.
 
 There are five :class:`Time` constructors:
 
-.. class:: Time(day_frac, *, to_utc=None)
-.. class:: Time(numerator, denominator, *, to_utc=None)
+.. class:: Time(day_frac, *, utcoffset=None)
+.. class:: Time(numerator, denominator, *, utcoffset=None)
 
    Return an object that represents a moment in a day as a fraction of the
    whole day, given in the ``day_frac`` argument. If needed, it is possible
-   to assign to the instance an indication of the time to be added to get UTC,
-   for whatever political, algorithmic or geographic need (e.g. time zone),
-   using the ``to_utc`` argument, which must be explicitly named.
+   to assign to the instance an indication of the time offset from UTC, for
+   whatever political, algorithmic or geographic need (e.g. time zone), using
+   the ``utcoffset`` argument, which must be explicitly named.
 
-   The ``day_frac`` and ``to_utc`` arguments can be anything that can
+   The ``day_frac`` and ``utcoffset`` arguments can be anything that can
    be passed to the :class:`fractions.Fraction` constructor, i.e. an integer, a
    float, another Fraction, a Decimal number or a string representing an
    integer, a float or a fraction. The ``day_frac`` arguments only can also be
    passed with two values that represent numerator and denominator of the
-   fraction. The ``to_utc`` argument can also be an object that has
-   a ``to_utc`` method returning a :class:`fractions.Fraction` value.
-   A :exc:`TypeError` exception is raised if the type of any argument is not
-   one of the accepted types. A :exc:`ZeroDivisionError` exception is raised
-   if the denominator is 0.
+   fraction. A :exc:`TypeError` exception is raised if the type of any
+   argument is not one of the accepted types. A :exc:`ZeroDivisionError`
+   exception is raised if the denominator is 0.
 
    The value for ``day_frac`` must be equal or greater than 0 and less than 1.
-   In aware objects, the value for ``to_utc`` must be equal or greater than -1
-   and less or equal to 1. A :exc:`ValueError` exception is raised if the
+   The value for ``utcoffset`` in aware objects must be equal or greater than
+   -1 and less or equal to 1. A :exc:`ValueError` exception is raised if the
    resulting value are outside these ranges.
 
-.. classmethod:: Time.now(to_utc=None)
+.. classmethod:: Time.now(utcoffset=None)
 
    Return an aware :class:`Time` object that represents the current time.
    Without argument, the time represented in ``day_frac`` will be local
-   standard time and ``to_utc`` will be set to the difference between UTC and
-   local standard time.
+   standard time and ``utcoffset`` will be set to the difference between
+   local standard time and UTC.
 
-   If ``to_utc`` is given, the returned object will be the current time
-   at the given time difference from UTC. ``to_utc`` follows the same
+   If ``utcoffset`` is given, the returned object will be the current time
+   at the given time difference from UTC. ``utcoffset`` follows the same
    requirements of the default constructor.
 
 .. classmethod:: Time.localnow()
@@ -196,10 +194,10 @@ There are five :class:`Time` constructors:
    Return a naive :class:`Time` object that represents the current standard
    UTC.
 
-Two read-only attributes store the ``day_frac`` and ``to_utc`` arguments. The
-former is always a Fraction object, the latter is either a Fraction object or
-``None``, for naive time. An attempt to directly set the values of these two
-attributes will raise an :exc:`AttributeError` exception.
+Two read-only attributes store the ``day_frac`` and ``utcoffset`` arguments.
+The former is always a Fraction object, the latter is either a Fraction
+object or ``None``, for naive time. An attempt to directly set the values of
+these two attributes will raise an :exc:`AttributeError` exception.
 
 :class:`Time` objects support comparison, where *time1* is considered less
 than *time2* when the former represents a moment earlier than the latter.
@@ -210,10 +208,10 @@ while for equality comparisons, naive instances are never equal to aware
 instances.
 
 When comparing a :class:`Time` object and an object of another class, if the
-latter has the ``day_frac``  and ``to_utc`` attributes, ``NotImplemented`` is
-returned. This allows a Time-like instance to perform reflected comparison if
-it is the second operator. In this case, the second object is responsible for
-checking naivety.
+latter has the ``day_frac``  and ``utcoffset`` attributes, ``NotImplemented``
+is returned. This allows a Time-like instance to perform reflected comparison
+if it is the second operator. In this case, the second object is responsible
+for checking naivety.
 
 :class:`Time` instances are immutable, so they can be used as dictionary keys.
 They can also be pickled and unpickled. In boolean contexts, all :class:`Time`
@@ -229,12 +227,12 @@ Instance method:
 
 .. doctest::
 
-   >>> t1 = Time((4, 12))
+   >>> t1 = Time(4, 12)
    >>> print(t1)
    1/3 of a day
-   >>> t2 = Time((3, 24), to_utc=(-4, 24))
+   >>> t2 = Time(3, 24, utcoffset=(-4, 24))
    >>> print(t2)
-   1/8 of a day, -1/6 of a day to UTC
+   1/8 of a day, -1/6 of a day from UTC
 
 
 Available time representations
@@ -250,6 +248,4 @@ by which they are reachable:
 +----------------+----------------+------------------------------------------------+--------------------+
 | Internet       | ``internet``   | :ref:`InternetTime <internet-time>`            | datetime2.modern   |
 +----------------+----------------+------------------------------------------------+--------------------+
-
-.. TODO: add French decimal time when available
 

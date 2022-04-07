@@ -16,172 +16,182 @@
 Overview
 ========
 
-.. TODO: change this again, remove any description of internal representation
+The definition of a moment in history is independent from the way it is
+represented in different cultures. There are indeed many calendars in which
+the same day is represented in different ways. The :mod:`datetime2` module
+detaches operations on date and time objects from their representation, and
+also allows to add other representations at run time. The module does all
+this in an efficient and syntactically clear way.
 
-A moment in history is independent from the way it is represented in different
-cultures. There are indeed many calendars in which the same day is represented
-in different ways. The :mod:`datetime2` module detaches operations on time or
-date objects from their representation, and also allows to add other
-representations at run time. The module does all this in an efficient and
-syntactically clear way.
-
-A very simple internal representation has been chosen so that it becomes easy
-to convert this internal representation to the many different calendars. The
-idea, inspired by the excellent book "Calendrical Calculations"[#book]_, is to
-identify each day by simply counting the days starting with 1 for January
-1\ :sup:`st` of year 1, 2 for January 2\ :sup:`nd` is day 2, and so on. Using
-the the :mod:`datetime2` module we write:
+We can create a date object by calling the relevant access attribute of the
+base class :class:`Date`:
 
 .. doctest::
 
-   >>> d1 = Date(1)       # January 1st, 1
-   >>> d2 = Date(737109)  # February 19th, 2019
+   >>> d1 = Date.gregorian(1965, 3, 1)  # Gregorian: 1965-03-01
+   >>> d2 = Date.iso(2011, 23, 4)      # ISO: 2011-W23-4
 
-However entering dates in this way is nearly useless, but the module comes in
-help. E.g. we can use the Gregorian calendar or the ISO calendar:
-
-.. doctest::
-
-   >>> d3 = Date.gregorian(1965, 3, 1)  # Gregorian: 1965-03-01
-   >>> d4 = Date.iso(2011, 1, 1)        # ISO: 2011-W01-1
-
-Similarly, each :class:`Date` object can be printed with the internal
-representation:
-
-.. doctest::
-
-   >>> print(d3)
-   717396
-   >>> print(d4)
-   734140
-
-And again, this way of using the day is nearly useless. But you can use
-attributes also on :class:`Date` objects to access different representations:
+Each of these date objects can be printed and has its own attributes and
+methods:
 
 .. doctest::
 
    >>> print(d1.gregorian)
-   0001-01-01
-   >>> print(d2.gregorian)
-   2019-02-19
-   >>> print(d4.gregorian)
-   2011-01-03
-   >>> print(d1.iso)
-   0001-W01-1
-   >>> print(d2.iso)
-   2019-W08-2
-   >>> print(d3.iso)
-   1965-W09-1
-
-As you can see, it is not required to use the same calendar with which an
-object has been created. Each calendar also presents different attributes
-that can be accessed as usual. These may be components of the date, like in:
-
-.. doctest::
-
-   >>> print(d2.gregorian.year)
-   2019
-   >>> print(d3.iso.week)
-   9
-
-But also other date attributes:
-
-.. doctest::
-
-   >>> print(d3.gregorian.weekday())
+   1965-03-01
+   >>> print(d1.gregorian.month)
+   3
+   >>> print(d1.gregorian.weekday())
    1
-   >>> print(d3.gregorian.day_of_year())
-   60
+   >>> print(d2.iso)
+   2011-W23-4
+   >>> print(d2.iso.week)
+   23
+   >>> print(d2.iso.day_of_year())
+   158
 
-Finally, :class:`Date` objects can often be created with other constructors:
-
-.. doctest::
-
-   >>> print(Date.gregorian.year_day(2020, 120).gregorian)  # the 120th day of 2020
-   2020-04-29
-
-Although there exist much less time representations, the :mod:`datetime2`
-module uses the same reasoning to represent the time of the day: a moment of
-the day is represented as a fraction of the day, starting from midnight. In
-the following examples we use the Decimal Time, a subdivision of days in 10
-hours of 100 minutes, each minute being 100 seconds.
+What makes :mod:`datetime2` powerful is that we can mix these attributes,
+independently from how they were built:
 
 .. doctest::
 
-   >>> t1 = Time((7, 10))
+   >>> print(d1.iso)
+   1965-W09-1
+   >>> print(d1.iso.week)
+   9
+   >>> print(d1.iso.day_of_year())
+   57
+   >>> print(d2.gregorian)
+   2011-06-09
+   >>> print(d2.gregorian.month)
+   6
+   >>> print(d2.gregorian.weekday())
+   4
+
+Currently (version |release|) the calendars listed below are available.
+Custom representations can be added at run time.
+
++-------------------+---------------------+-----------------------------------------+
+| Module            | Access attribute    | Calendar                                |
++===================+=====================+=========================================+
+| datetime2.western | `gregorian`         | :ref:`Gregorian <gregorian-calendar>`   |
++-------------------+---------------------+-----------------------------------------+
+| datetime2.modern  | `iso`               | :ref:`ISO <iso-calendar>`               |
++-------------------+---------------------+-----------------------------------------+
+
+
+Similarly, we can have different representations also for time. They can be
+mixed like in dates:
+
+.. doctest::
+
+   >>> t1 = Time.western(15, 47, 16)
+   >>> t2 = Time.internet(895)
    >>> print(t1.western)
-   16:48:00
-   >>> print(t1.decimal)
-   7:00:00
+   15:47:16
+   >>> print(t1.internet)
+   @657
+   >>> print(t2.western)
+   21:28:48
+   >>> print(t2.western.minute)
+   28
 
-As with dates, also time can be entered and printed with different
-representations, and also the time of day representations have attributes,
-methods and alternate constructors:
+Currently (version |release|) the time of day listed below are available.
+Again, custom time of day can be added at run time.
+
++-------------------+---------------------+-----------------------------------------+
+| Module            | Access attribute    | Time of day                             |
++===================+=====================+=========================================+
+| datetime2.western | `western`           | :ref:`Western <western-time>`           |
++-------------------+---------------------+-----------------------------------------+
+| datetime2.modern  | `internet`          | :ref:`Internet <internet-time>`         |
++-------------------+---------------------+-----------------------------------------+
+
+
+Internal representation
+=======================
+
+In order to be able to convert between the different calendars and between
+the different times of day, a generic and culturally independent way of
+internally representing them has been chosen. For calendars, the idea,
+inspired by the excellent book "Calendrical Calculations"[#book]_, is to
+identify each day by simply counting the days starting with 1 for January
+1\ :sup:`st` of year 1, 2 for January 2\ :sup:`nd` is day 2, and so on. Using
+the :mod:`datetime2` module we write:
 
 .. doctest::
 
-   >>> t2 = Time.western(15, 47, 16)
-   >>> t3 = Time.decimal(4, 83, 18)
-   >>> print(t2.decimal)
-   6:55:06
+   >>> d3 = Date(1)
+   >>> d4 = Date(737109)
+
+These dates can then be handled like above:
+
+.. doctest::
+
+   >>> print(d3.gregorian)
+   0001-01-01
+   >>> print(d3.iso)
+   0001-W01-1
+   >>> print(d4.gregorian)
+   2019-02-19
+   >>> print(d4.iso)
+   2019-W08-2
+
+Similarly, each :class:`Date` object can be printed with the internal
+representation (even if it is of little use):
+
+.. doctest::
+
+   >>> print(d1)
+   R.D. 717396
+   >>> print(d2)
+   R.D. 734297
+
+Where ``R.D.`` stands for Rata Die, the Latin for "fixed date".
+
+There is also a generic time of day internal representation: a moment of the
+day is represented as a fraction of the day, starting from midnight.
+
+.. doctest::
+
+   >>> t3 = Time(7, 10)
+   >>> t4 = Time(0.796875)
    >>> print(t3.western)
-   11:35:46
-   >>> print(t3.western.minute)
-   35
-   >>> print(t3.western.to_hours())
-   Fraction(72477, 6250)
-   >>> t4 = Time.western.in_minutes(1000)
-   >>> print(t4)
-   25/36 of a day
+   16:48:00
+   >>> print(t3.internet)
+   @700
    >>> print(t4.western)
-   16:40:00
-   >>> print(t4.decimal)
-   6:94:44
+   19:07:30
+   >>> print(t4.internet)
+   @796
 
-The reference between time objects can be either implicit time, i.e. depending
-on implementation (it usually is the local time,but can also be UTC). It is
-also possible to have an explicit reference to UTC, passed as an additional
-parameter to the object constructor. In the first case the  :class:`Time`
-object is said to be "naive", in the second case it is said to be "aware".
-
-As in dates and time classes, also the time to UTC is indicated by a
-culturally independent value, i.e. a fraction of a day. Additional time
-representations can support naive references, or are implicitly aware.
+And again we can print the internal time of day:
 
 .. doctest::
 
-   >>> t5 = Time('2/3', to_utc=(1, 12))
-   >>> print(t8)
-   2/3 of a day, 1/12 of a day to UTC
-   >>> print(t5.western)
-   16:00:00+02
-   >>> t6 = Time.internet(456)
-   >>> print(t6.western)
-   10:56:03+01
+   >>> print(t1)
+   14209/21600 of a day
+   >>> print(t2)
+   179/200 of a day, 1/24 of a day from UTC
 
-The :ref:`Internet time <internet-time>` is by definition on Basel time zone.
-This is equivalent to central Europe time zone, but doesnt have daylight
-saving time.
+(Remember that ``t2`` was created from Internet time, and Internet time
+objects are always aware
 
-Other prominent features of the :mod:`datetime2` module are the ability to
-add other representations at run time and the fact that representations do
-not consume memory unless they are effectively used (this is especially
-important for calendars, where many representation exists [#many]_ ).
+UTC offset
+==========
 
-Currently (version |release|) the following calendars and time representations
-are available:
+The reference between time objects can be either implicit time, i.e.
+depending on implementation (it usually is the local time, but can also be
+UTC). In the :mod:`datetime2` module, it is also possible to have an explicit
+reference to UTC, passed as an additional parameter to :class:`Time` and
+:class:`DateTime` object constructors. An instance that has been created with
+this explicit reference is said to be "aware",  without the object is said to
+be "naive".
 
-+-------------------+-----------------------------------------+----------------------------------------------------+
-| Module            | Calendar(s)                             | Time representation(s)                             |
-+===================+=========================================+====================================================+
-| datetime2.western | :ref:`Gregorian <gregorian-calendar>`   | :ref:`Western <western-time>`                      |
-+-------------------+-----------------------------------------+----------------------------------------------------+
-| datetime2.modern  | :ref:`ISO <iso-calendar>`               | :ref:`Internet <internet-time>`                    |
-+-------------------+-----------------------------------------+----------------------------------------------------+
+In some of the time of day representations of this module, the UTC offset is
+implicit. E.g., :ref:`Internet time <internet-time>` is by definition on
+Basel time zone, e.g. UTC+1. This means that only aware :class:`Time` objects
+can have such time representations.
 
-
-.. [#many] Well, this should be read as "will exist", since current version
-           (|release|) only has two of them.
 
 .. [#book] "Calendrical Calculations: The Ultimate Edition",  E. M. Reingold, N. Dershowitz, Cambridge University
            Press, 2018, and all its previous versions
