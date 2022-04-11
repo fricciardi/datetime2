@@ -21,7 +21,7 @@ implemented to give access to a wide variety of calendars and time
 representations.
 
 When used on the base class, the attribute behaves as a constructor of the
-base class:
+base class, but with the arguments of the specific representation:
 
 .. doctest::
 
@@ -33,7 +33,7 @@ base class:
    datetime2.Time('15547/21600')
 
 When used on a base class instance, the attribute allows to see the instance
-using with a specific representation, or tu use methods defined for that
+using a specific representation, or to call methods defined for that
 specific representation:
 
 .. doctest::
@@ -51,7 +51,7 @@ specific representation:
    >>> t.western.minute
    37
 
-The atttribute gives access to what is called an "interface class". The
+The attribute gives access to what is called an "interface class". The
 interface class is the one that manages converting a specific representation
 (e.g. the Gregorian calendar) to the base class. The :ref:`all-calendars`
 chapter lists all available interface classes for calendars. The
@@ -88,6 +88,9 @@ instances of the base class instead, as shown in this example:
 
 .. doctest::
 
+   >>> greg = GregorianCalendar.year_day(2012, 366)
+   >>> greg
+   GregorianCalendar(2012, 12, 31)
    >>> d1 = Date.gregorian.year_day(2012, 366)
    >>> d1
    datetime2.Date(734868)
@@ -204,7 +207,7 @@ These methods are detailed below:
    ``access_attribute`` isn't a valid identifier, a :exc:`ValueError` exception
    is raised.
 
-   ``CalendarInterface`` must obey the requirements for the :mod:`datetime2`
+   ``TimeInterface`` must obey the requirements for the :mod:`datetime2`
    interface classes, otherwise a :exc:`TypeError` exception is raised.
 
 .. classmethod:: calendar_class.from_rata_die(day_count)
@@ -236,7 +239,7 @@ Inner workings
 At registration time, some magic needs to be performed to obtain the wanted
 results:
 
-* A new class in created on the fly, inheriting from the interface class.
+* A new class is created on the fly, inheriting from the interface class.
   The new class changes the default constructor so it returns a base
   class instance when called. Since all other constructors use the default
   one (see the requirements above), all constructors of the new class return

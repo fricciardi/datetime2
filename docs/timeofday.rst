@@ -24,12 +24,10 @@ from the time of day class descriptions below.
 
 .. TODO: if we will be keeping all time representations on a page, a ToC here will be useful
 
-In the following we will call a rational number anything that can be
+In the following we define as *rational number* anything that can be
 passed to the :class:`fractions.Fraction` constructor, i.e. an integer, a
 float, another Fraction, a Decimal number or a string representing an integer,
-a float or a fraction. In addition, it is also possible to use a 2-value tuple
-with integer values. This tuple represents the numerator and denominator of a
-fraction that will be passed to the :class:`fractions.Fraction` constructor.
+a float or a fraction.
 
 .. _western-time:
 
@@ -58,10 +56,6 @@ The default constructor western time is:
    * ``timezone``, if present, must be a rational number and its value must be
      ``-24 <= timezone <= 24``
 
-.. note::
-
-   The ``timezone`` parameter may change its values in future.
-
    If an argument is not of the accepted type, a :exc:`TypeError` exception
    is raised. If an argument is outside its accepted range, a
    :exc:`ValueError` exception is raised.
@@ -69,23 +63,27 @@ The default constructor western time is:
    The ``timezone`` argument, if present, makes the object aware and defines
    the number of hours that must be added to UTC to get local time.
 
+.. note::
+
+   The ``timezone`` parameter may change its values in future.
+
 A :class:`WesternTime` object has four attributes, all of which are read-only
 numbers: an attempt to change them will raise an :exc:`AttributeError`
 exception. These attributes store the corresponding values in the constructor:
 
-.. attribute:: western.hour
+.. attribute:: WesternTime.hour
 
    An integer with values between ``0`` and ``23``.
 
-.. attribute:: western.minute
+.. attribute:: WesternTime.minute
 
    An integer with values between ``0`` and ``59``.
 
-.. attribute:: western.second
+.. attribute:: WesternTime.second
 
    A Python Fraction with value grater or equal to ``0`` and less than ``60``.
 
-.. attribute:: western.to_utc
+.. attribute:: WesternTime.timezone
 
    If this attribute is not ``None``, it a Python Fraction with values
    between -24 and 24.
@@ -93,13 +91,14 @@ exception. These attributes store the corresponding values in the constructor:
 
 An instance of the :class:`WesternTime` class has the following methods:
 
-.. method:: western.replace(hour, minute, second)
+.. method:: western.replace(hour, minute, second, *, timezone)
 
    Returns a new :class:`WesternTime` object with the same value, except
    for those parameters given new values by whichever keyword arguments are
-   specified. All values are optional; if used, they must respect the
-   requirements of the default constructor, otherwise a :exc:`TypeError` or
-   :exc:`ValueError` exception is raised. For example:
+   specified. The value, if given, they must respect the same requirements
+   of the default constructor, otherwise a :exc:`TypeError` or
+   :exc:`ValueError` exception is raised. ``timezone`` parameter can be
+   replaced only for aware instances. For example:
 
 .. doctest::
 
@@ -110,18 +109,26 @@ An instance of the :class:`WesternTime` class has the following methods:
       Traceback (most recent call last):
         |
       ValueError: Hour must be between 0 and 23, while it is 24.
+      >>> my_time.replace(timezone=1)
+      Traceback (most recent call last):
+        |
+      TypeError: Can replace timezone only in aware instances.
 
-.. method:: western_time.__str__()
+.. method:: WesternTime.__str__()
 
-   Return a string representing the time with the 'HH:MM:SS' format. Any
-   decimal will be truncated from the number of seconds. For example:
+   For a naive instance, return a string representing the time with the
+   'HH:MM:SS' format. For an aware instance, the format is
+   'HH:MM:SS+HH:MM'. The number of seconds in the time part and the number of
+   minutes in the timezone part will be truncated. For example:
 
 .. doctest::
 
       >>> str(WesternTime(12, 44, 14.8))
       '12:44:14'
+      >>> str(WesternTime(12, 34, 56.7, timezone=12.256))
+      '12:34:56+12:15'
 
-.. method:: western_time.cformat(format)
+.. method:: WesternTime.cformat(format)
 
    Return a string representing the time, controlled by an explicit format
    string. The formatting directives are a subset of those accepted by
@@ -148,11 +155,11 @@ An instance of the :class:`WesternTime` class has the following methods:
    | ``%S``    | Second as a zero-padded decimal number    |       |
    |           | [00, 59].                                 |       |
    +-----------+-------------------------------------------+-------+
-   | ``%z``    | UTC offset in the form ±HHMM[SS[.ffffff]] |       |
-   |           | (empty string if the object is naive).    |       |
-   +-----------+-------------------------------------------+-------+
    | ``%f``    | Microsecond as a decimal number,          |       |
    |           | zero-padded on the left [000000, 999999]. |       |
+   +-----------+-------------------------------------------+-------+
+   | ``%z``    | UTC offset in the form ±HHMM[SS[.ffffff]] |       |
+   |           | (empty string if the object is naive).    |       |
    +-----------+-------------------------------------------+-------+
    | ``%%``    | A literal ``'%'`` character.              |       |
    +-----------+-------------------------------------------+-------+
@@ -177,24 +184,26 @@ the Internet time.
 
 The default constructor for Internet time is:
 
-.. class:: InternetTime(beat)
+.. class:: InternetTime(beat, aware=True)
 
    Return an object that represents the time in thousandths of a day. The
    ``beat`` argument is required and must be a rational number; its value must
    be equal or greater than 0 and less than 1000. If the argument is not a
    Python number, a :exc:`TypeError` exception is raised. If the argument
    is outside its accepted range, a :exc:`ValueError` exception is raised.
+   If the ``aware`` argument is anything but ``True``, a naive instance will
+   be created.
 
 An :class:`InternetTime` object has one attribute:
 
-.. attribute:: internet_time.beat
+.. attribute:: InternetTime.beat
 
    This attribute is a read-only Python Fraction greater than or equal 0 and
    less than 1000.
 
 and the following methods:
 
-.. method:: internet_time.__str__()
+.. method:: InternetTime.__str__()
 
    Return a string representing the moment of the day in beats, '@BBB' format.
    For example:
@@ -204,7 +213,7 @@ and the following methods:
       >>> str(InternetTime(345.25))
       '@345'
 
-.. method:: internet_time.cformat(format)
+.. method:: InternetTime.cformat(format)
 
    Return a string representing the Internet time, controlled by an explicit
    format string with formatting directives close to that used in C. The table

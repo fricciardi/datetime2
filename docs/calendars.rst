@@ -22,7 +22,7 @@ a :exc:`TypeError` exception.
 Description of the comparison operators and interface methods is then omitted
 from the calendar class descriptions below.
 
-.. TODO: if we will be keeping all calendars on a page, a ToC here will be useful
+.. TODO: if we will be keeping all calendars on a page, a ToC here will be useful and even more we may need it to identify the module of each calendar
 
 .. _gregorian-calendar:
 
@@ -97,8 +97,9 @@ methods:
 
 .. method:: GregorianCalendar.day_of_year()
 
-   Return the day of the year as an integer, from 1 to 365 or 366 (in leap years).
-   For example, ``GregorianCalendar(2008, 3, 1).day_of_year() == 61``.
+   Return the number of days elapsed since January 1\ :sup:`st`. The result
+   is a number from 1 to 365 or 366 (in leap years). For example,
+   ``GregorianCalendar(2008, 3, 1).day_of_year() == 61``.
 
 .. method:: GregorianCalendar.replace(year, month, day)
 
@@ -220,8 +221,6 @@ ISO 8601 Calendar
 <http://www.staff.science.uu.nl/~gent0113/calendar/isocalendar.htm>`_.
 
 The constructor of an ISO calendar is:
-
-.. currentmodule:: datetime2.modern
 
 .. class:: IsoCalendar(year, week, day)
 

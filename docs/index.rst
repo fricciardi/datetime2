@@ -20,8 +20,8 @@ The definition of a moment in history is independent from the way it is
 represented in different cultures. There are indeed many calendars in which
 the same day is represented in different ways. The :mod:`datetime2` module
 detaches operations on date and time objects from their representation, and
-also allows to add other representations at run time. The module does all
-this in an efficient and syntactically clear way.
+allows to add other representations at run time. The module does all this in
+an efficient and syntactically clear way.
 
 We can create a date object by calling the relevant access attribute of the
 base class :class:`Date`:
@@ -29,7 +29,7 @@ base class :class:`Date`:
 .. doctest::
 
    >>> d1 = Date.gregorian(1965, 3, 1)  # Gregorian: 1965-03-01
-   >>> d2 = Date.iso(2011, 23, 4)      # ISO: 2011-W23-4
+   >>> d2 = Date.iso(2011, 23, 4)       # ISO: 2011-W23-4
 
 Each of these date objects can be printed and has its own attributes and
 methods:
@@ -50,7 +50,7 @@ methods:
    158
 
 What makes :mod:`datetime2` powerful is that we can mix these attributes,
-independently from how they were built:
+independently from how the date object was built:
 
 .. doctest::
 
@@ -68,7 +68,6 @@ independently from how they were built:
    4
 
 Currently (version |release|) the calendars listed below are available.
-Custom representations can be added at run time.
 
 +-------------------+---------------------+-----------------------------------------+
 | Module            | Access attribute    | Calendar                                |
@@ -85,7 +84,7 @@ mixed like in dates:
 .. doctest::
 
    >>> t1 = Time.western(15, 47, 16)
-   >>> t2 = Time.internet(895)
+   >>> t2 = Time.internet(895, False)
    >>> print(t1.western)
    15:47:16
    >>> print(t1.internet)
@@ -96,7 +95,6 @@ mixed like in dates:
    28
 
 Currently (version |release|) the time of day listed below are available.
-Again, custom time of day can be added at run time.
 
 +-------------------+---------------------+-----------------------------------------+
 | Module            | Access attribute    | Time of day                             |
@@ -171,10 +169,7 @@ And again we can print the internal time of day:
    >>> print(t1)
    14209/21600 of a day
    >>> print(t2)
-   179/200 of a day, 1/24 of a day from UTC
-
-(Remember that ``t2`` was created from Internet time, and Internet time
-objects are always aware
+   179/200 of a day
 
 UTC offset
 ==========
@@ -190,12 +185,16 @@ be "naive".
 In some of the time of day representations of this module, the UTC offset is
 implicit. E.g., :ref:`Internet time <internet-time>` is by definition on
 Basel time zone, e.g. UTC+1. This means that only aware :class:`Time` objects
-can have such time representations.
+can have such time representations[#itime]_.
 
 
-.. [#book] "Calendrical Calculations: The Ultimate Edition",  E. M. Reingold, N. Dershowitz, Cambridge University
-           Press, 2018, and all its previous versions
+.. [#book] "Calendrical Calculations: The Ultimate Edition",  E. M. Reingold,
+           N. Dershowitz, Cambridge University Press, 2018, and all its
+           previous versions
 
+.. [#itime] For the examples in this page, the
+            :ref:`Internet time <internet-time>` instance has been created
+            with a flag that makes it naive.
 
 .. seealso::
 
@@ -209,8 +208,8 @@ can have such time representations.
       Time access and conversions.
 
 
-Indices and tables
-==================
+Index
+=====
 
 .. toctree::
 

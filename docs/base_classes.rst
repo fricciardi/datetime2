@@ -140,13 +140,13 @@ Notes:
 ---------------------
 
 An indication of time, independent of any particular day, expressed as a
-fraction of day. There might be an indication of time difference to UTC, e.g.
-due to time zone or daylight saving time. This time difference is expressed as
-fraction of a day and represents the time to be added to local time to get UTC.
-If there is this indication, the :class:`Time` object is said to be "aware" and
-it is used to represent a precise moment (regardless of the day). An object
-without indication is said to be "naive", and its interpretation is left to the
-program that uses it.
+fraction of day. There might be an indication of time difference from UTC,
+e.g. due to time zone or daylight saving time. This time difference is
+expressed as fraction of a day and represents the time to be added to local
+time to get UTC. If there is this indication, the :class:`Time` object is
+said to be "aware" and it is used to represent a precise moment (regardless
+of the day). An object without indication is said to be "naive", and its
+interpretation is left to the program that uses it.
 
 There are five :class:`Time` constructors:
 
@@ -170,8 +170,8 @@ There are five :class:`Time` constructors:
 
    The value for ``day_frac`` must be equal or greater than 0 and less than 1.
    The value for ``utcoffset`` in aware objects must be equal or greater than
-   -1 and less or equal to 1. A :exc:`ValueError` exception is raised if the
-   resulting value are outside these ranges.
+   -1 and less or equal to 1. A :exc:`ValueError` exception is raised if
+   values are outside these ranges.
 
 .. classmethod:: Time.now(utcoffset=None)
 
