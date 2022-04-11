@@ -40,7 +40,7 @@ in 60 minutes and each minute in 60 seconds.
 
 The default constructor western time is:
 
-.. class:: western.WesternTime(hour, minute, second, timezone=None)
+.. class:: WesternTime(hour, minute, second, timezone=None)
 
    Return an object that represents the moment of a day in hour, minute and
    second elapsed from midnight. This representation does not take into
@@ -91,7 +91,7 @@ exception. These attributes store the corresponding values in the constructor:
 
 An instance of the :class:`WesternTime` class has the following methods:
 
-.. method:: western.replace(hour, minute, second, *, timezone)
+.. method:: WesternTime.replace(hour, minute, second, *, timezone)
 
    Returns a new :class:`WesternTime` object with the same value, except
    for those parameters given new values by whichever keyword arguments are

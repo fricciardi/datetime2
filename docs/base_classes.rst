@@ -219,7 +219,7 @@ instances are considered to be true.
 
 Instance method:
 
-.. method:: time.__str__()
+.. method:: Time.__str__()
 
    Return the string ``<fraction> of a day``, where *fraction* is the value of
    the ``day_frac`` attribute. Time correction, if present, is represented as
