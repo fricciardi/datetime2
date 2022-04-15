@@ -249,3 +249,72 @@ by which they are reachable:
 | Internet       | ``internet``   | :ref:`InternetTime <internet-time>`            | datetime2.modern   |
 +----------------+----------------+------------------------------------------------+--------------------+
 
+Supported operations
+^^^^^^^^^^^^^^^^^^^^
+
++-------------------------------+----------------------------------------------+
+| Operation                     | Result                                       |
++===============================+==============================================+
+| ``time2 = time1 + timedelta`` | *time2* is ``timedelta`` time after          |
+|                               | *time1*. Reverse addition (``timedelta +     |
+|                               | time1``) is allowed. (1) (2)                 |
++-------------------------------+----------------------------------------------+
+| ``time2 = time1 - timedelta`` | *time2* is ``timedelta`` time before         |
+|                               | *time1*. (1) (3)                             |
++-------------------------------+----------------------------------------------+
+| ``timedelta = time1 - time2`` | A :class:`TimeDelta` object is returned      |
+|                               | representing the day fraction                |
+|                               | between *time1* and *time2*. (4)             |
++-------------------------------+----------------------------------------------+
+| ``time1 < time2``             | *time1* is less than *time2* when the former |
+|                               | represents a moment earlier than the latter. |
+|                               | Time correction, if present, is taken into   |
+|                               | consideration. (5) (6)                       |
++-------------------------------+----------------------------------------------+
+
+
+Notes:
+
+(1)
+   The result of this operation will always be a valid :class:`Time` instance.
+   If overflow or underflow occur, the full day part will be truncated so that
+   only the fractional part will remain. Naivety is preserved: if ``time1``
+   has a UTC offset, this will be copied to ``time2``.
+
+(2)
+   If *timedelta* is negative, ``time2`` will be before ``time1``.
+
+(3)
+   If *timedelta* is negative, ``time2`` will be after ``time1``.
+
+(4)
+   The *timedelta* object created when subtracting two :class:`Time` instances
+   will always represent a fractional part of a day, either positive or
+   negative. ``time1`` and ``time2`` must have the same naivety; if they don't,
+   a :exc:`ValueError` exception is raised. If they are aware, UTC offset of
+   both instances will be taken into account to generate the result. Result
+   will always be equal or greater to -0.5 and less than 0.5.
+
+(5)
+   All other comparison operators (``<=``, ``>``, ``>=``, ``==`` and ``!=``)
+   behave similarly.
+
+(6)
+   If both objects to be compared are :class:`Time` instances, they must have
+   the same naivety; if they don't, a :exc:`ValueError` exception is raised.
+   When comparing a :class:`Time` object and an object of another class, if
+   the latter has a ``day_frac`` attribute, ``NotImplemented`` is returned.
+   This allows a Time-like instance to perform reflected comparison if it is
+   the second operator. In this case, the second object is responsible for
+   checking naivety. When the second object doesn't have a ``day_frac``
+   attribute, if the operator is equality(``==``) or inequality(``!=``), the
+   value returned is always :const:`False` and :const:`True` respectively.
+   If the operator is one of the other four (``<=``, ``>``, ``>=`` or
+   ``==``), a :exc:`TypeError` exception is raised.
+
+
+.. note::
+   Given the rules above it, if ``time1`` and ``time2`` are aware instances,
+   ``time1 + (time2 - time1)`` compares equal to ``time2``, but it will have
+   the same ``day_frac`` value only if the UTC offsets of ``time1`` and
+   ``time2``are equal.
