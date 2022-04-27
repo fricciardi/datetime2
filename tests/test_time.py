@@ -203,8 +203,8 @@ def test_03_constructor_now():
             break
         count += 1
     assert count < 3, "Unable to get at least one a correct Time.now()"
-    # I am commenting the code to test to_utc, because I have no independent way of testing it
-    # assert int(time_now.to_utc) == Fraction(time.localtime().tm_gmtoff, 86400)
+    # I am commenting the code to test utcoffset, because I have no independent way of testing it
+    # assert int(time_now.utcoffset) == Fraction(time.localtime().tm_gmtoff, 86400)
 
 
 def test_04_constructor_now_w_utcoffset():
@@ -229,7 +229,7 @@ def test_04_constructor_now_w_utcoffset():
                 if int(time_now.day_frac * 86400) == datetime_frac_seconds:
                     break
                 count += 1
-            assert count < 3, "Unable to get at least one a correct Time.now(to_utc=0)"
+            assert count < 3, "Unable to get at least one a correct Time.now(utcoffset=0)"
             assert time_now.utcoffset == utcoffset_frac
 
     # a TypeError exception is raised if the argument type is not one of the accepted types
@@ -377,7 +377,7 @@ def test_12_bool():
         for input_value in input_values:
             assert Time(input_value[0], input_value[1])
     # with utcoffset
-    for to_utc_frac, input_values in utcoffset_test_data:
+    for utcoffset_frac, input_values in utcoffset_test_data:
         for input_value in input_values:
             assert Time("0.2222", utcoffset=input_value)
 
@@ -820,7 +820,7 @@ def test_42_comparisons_with_utcoffset():
     assert not (t3 < t1)
     assert not (t1 >= t3)
     assert not (t3 <= t1)
-    assert t2 < t3  # repeating the tests with an instance with negative to_utc
+    assert t2 < t3  # repeating the tests with an instance with negative utcoffset
     assert t3 > t2
     assert t2 <= t3
     assert t3 >= t2
@@ -844,26 +844,26 @@ def test_42_comparisons_with_utcoffset():
     class TimeLike:
         def __init__(self):
             self.day_frac = Fraction(0.75)
-            self.to_utc = Fraction("1/4")
+            self.utcoffset = Fraction("1/4")
 
         # what follows is not a proper implementation, but it is enough for our tests
         def __eq__(self, other):
-            return self.day_frac + self.to_utc == other.day_frac + other.to_utc
+            return self.day_frac + self.utcoffset == other.day_frac + other.utcoffset
 
         def __ne__(self, other):
-            return self.day_frac + self.to_utc != other.day_frac + other.to_utc
+            return self.day_frac + self.utcoffset != other.day_frac + other.utcoffset
 
         def __lt__(self, other):
-            return self.day_frac + self.to_utc < other.day_frac + other.to_utc
+            return self.day_frac + self.utcoffset < other.day_frac + other.utcoffset
 
         def __le__(self, other):
-            return self.day_frac + self.to_utc <= other.day_frac + other.to_utc
+            return self.day_frac + self.utcoffset <= other.day_frac + other.utcoffset
 
         def __gt__(self, other):
-            return self.day_frac + self.to_utc > other.day_frac + other.to_utc
+            return self.day_frac + self.utcoffset > other.day_frac + other.utcoffset
 
         def __ge__(self, other):
-            return self.day_frac + self.to_utc >= other.day_frac + other.to_utc
+            return self.day_frac + self.utcoffset >= other.day_frac + other.utcoffset
 
     tl = TimeLike()
     # We need not implement naivety checks, which are delegated to the Time-like class, not under test
