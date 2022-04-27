@@ -124,8 +124,9 @@ def test_11_pickling():
             assert d == unpickled
 
     class Derived(Date):
-        def __init__(self, dummy):
+        def __init__(self, day_count, dummy):
             self.dummy = dummy
+            Date.__init__(self, day_count)
 
         def __eq__(self, other):
             return self.dummy == other.dummy and Date.__eq__(self, other)
@@ -147,7 +148,7 @@ def test_12_bool():
         assert Date(day_count)
 
 
-def test_21_attribute():
+def test_20_attribute():
     # the day_count attribute is read-only
     d = Date(1)
     with pytest.raises(AttributeError):
@@ -182,7 +183,7 @@ def test_31_str():
     for day_count in date_test_data:
         d = Date(day_count)
         s = str(d)
-        assert a[:5] == 'R.D. '
+        assert s[:5] == 'R.D. '
         assert int(s[5:]) == day_count
 
 
@@ -424,7 +425,8 @@ def test_91_subclass2():
     class D(Date):
         pass
 
-    d_sub = D(102030)
     assert type(D.today()) is D
+
+    d_sub = D(102030)
     assert type(d_sub + TimeDelta(1)) is D
     assert type(d_sub - TimeDelta(1)) is D
