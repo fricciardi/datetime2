@@ -37,13 +37,19 @@ There are two ways of creating a :class:`Date` instance:
    integer, otherwise a :exc:`TypeError` exception is raised. There is no
    restriction on its numeric value.
 
+..
+   tests in test_date.py:
+   - test_00_constructor_default
+
+
 .. classmethod:: Date.today()
 
    Return a :class:`Date` object that represents the current local date.
 
-:class:`Date` instances are immutable, so they can be used as dictionary keys.
-They can also be pickled and unpickled. In boolean contexts, all :class:`Date`
-instances are considered to be true.
+..
+   tests in test_date.py:
+   - test_02_constructor_today
+
 
 :class:`Date` instances have one attribute:
 
@@ -53,12 +59,32 @@ instances are considered to be true.
    January 1\ :sup:`st`, year 1. This attribute is read-only: an
    :exc:`AttributeError` exception is raised when trying to change it.
 
+..
+   tests in test_date.py:
+   - test_20_attribute
+
+:class:`Date` instances are immutable, so they can be used as dictionary keys.
+When two aware instances indicate the same time, even if they have different
+UTC offsets, the have the same hash. The hash function takes into consideration also that They can also be pickled and unpickled.
+In boolean contexts, all :class:`Date` instances are considered to be true.
+
+..
+   tests in test_date.py:
+   - test_10_hash_equality
+   - test_11_pickling
+   - test_12_bool
+
 :class:`Date` has one instance method:
 
 .. method:: Date.__str__()
 
    Return ``R.D.`` followed by the day count. ``R.D.`` stands for Rata Die, the
    Latin for "fixed date".
+
+..
+   tests in test_date.py:
+   - test_30_repr
+   - test_31_str
 
 
 Available calendars
@@ -128,11 +154,22 @@ Notes:
    the latter has a ``day_count`` attribute, ``NotImplemented`` is returned.
    This allows a Date-like instance to perform reflected comparison if it is
    the second operator. When the second object doesn't have a ``day_count``
-   attribute, if the operator is equality(``==``) or inequality(``!=``), the
+   attribute, if the operator is equality (``==``) or inequality (``!=``), the
    value returned is always :const:`False` and :const:`True` respectively.
    If the operator is one of the other four (``<=``, ``>``, ``>=`` or
    ``==``), a :exc:`TypeError` exception is raised.
 
+..
+   tests in test_date.py:
+   - test_40_operations
+   - test_41_comparisons
+
+
+
+..
+   other tests in test_date.py:
+   - test_90_subclass1
+   - test_91_subclass2
 
 
 
@@ -173,6 +210,12 @@ There are five :class:`Time` constructors:
    -1 and less or equal to 1. A :exc:`ValueError` exception is raised if
    values are outside these ranges.
 
+..
+   tests in test_time.py:
+   - test_00_constructor_default
+   - test_01_constructor_default_numden
+   - test_02_constructor_default_w_utcoffset
+
 .. classmethod:: Time.now(utcoffset=None)
 
    Return an aware :class:`Time` object that represents the current time.
@@ -184,24 +227,41 @@ There are five :class:`Time` constructors:
    at the given time difference from UTC. ``utcoffset`` follows the same
    requirements of the default constructor.
 
+..
+   tests in test_time.py:
+   - test_03_constructor_now
+   - test_04_constructor_now_w_utcoffset
+
 .. classmethod:: Time.localnow()
 
    Return a naive :class:`Time` object that represents the current local
    standard time.
+
+..
+   tests in test_time.py:
+   - test_05_constructor_localnow
 
 .. classmethod:: Time.utcnow()
 
    Return a naive :class:`Time` object that represents the current standard
    UTC.
 
+..
+   tests in test_time.py:
+   - test_06_constructor_utcnow
+
 Two read-only attributes store the ``day_frac`` and ``utcoffset`` arguments.
 The former is always a Fraction object, the latter is either a Fraction
 object or ``None``, for naive time. An attempt to directly set the values of
 these two attributes will raise an :exc:`AttributeError` exception.
 
+..
+   tests in test_time.py:
+   - test_20_attributes
+
 :class:`Time` objects support comparison, where *time1* is considered less
 than *time2* when the former represents a moment earlier than the latter.
-Time correction in aware instances is always taken into account. When both
+UTC offset in aware instances is always taken into account. When both
 objects are :class:`Time` instances they must have the same naivety,
 otherwise :exc:`TypeError` is raised if an order comparison is attempted,
 while for equality comparisons, naive instances are never equal to aware
@@ -213,17 +273,27 @@ is returned. This allows a Time-like instance to perform reflected comparison
 if it is the second operator. In this case, the second object is responsible
 for checking naivety.
 
+..
+   tests in test_time.py:
+   - test_41_comparisons
+   - test_42_comparisons_with_utcoffset
+
 :class:`Time` instances are immutable, so they can be used as dictionary keys.
 They can also be pickled and unpickled. In boolean contexts, all :class:`Time`
 instances are considered to be true.
+
+..
+   tests in test_time.py:
+   - test_10_hash_equality
+   - test_11_pickling
+   - test_12_bool
 
 Instance method:
 
 .. method:: Time.__str__()
 
    Return the string ``<fraction> of a day``, where *fraction* is the value of
-   the ``day_frac`` attribute. Time correction, if present, is represented as
-   well:
+   the ``day_frac`` attribute. UTC offset, if present, is represented as well:
 
 .. doctest::
 
@@ -233,6 +303,11 @@ Instance method:
    >>> t2 = Time(3, 24, utcoffset=(-4, 24))
    >>> print(t2)
    1/8 of a day, -1/6 of a day from UTC
+
+..
+   tests in test_time.py:
+   - test_30_repr
+   - test_31_str
 
 
 Available time representations
@@ -268,10 +343,15 @@ Supported operations
 +-------------------------------+----------------------------------------------+
 | ``time1 < time2``             | *time1* is less than *time2* when the former |
 |                               | represents a moment earlier than the latter. |
-|                               | Time correction, if present, is taken into   |
-|                               | consideration. (5) (6)                       |
+|                               | UTC offset, if present, is taken into        |
+|                               | consideration. (5) (6) (7)                   |
 +-------------------------------+----------------------------------------------+
 
+..
+   tests in test_time.py:
+   - test_40_operations
+   - test_42_operations_and_naivety
+   - test_43_time_subtraction
 
 Notes:
 
@@ -288,12 +368,12 @@ Notes:
    If *timedelta* is negative, ``time2`` will be after ``time1``.
 
 (4)
-   The *timedelta* object created when subtracting two :class:`Time` instances
-   will always represent a fractional part of a day, either positive or
-   negative. ``time1`` and ``time2`` must have the same naivety; if they don't,
-   a :exc:`ValueError` exception is raised. If they are aware, UTC offset of
-   both instances will be taken into account to generate the result. Result
-   will always be equal or greater to -0.5 and less than 0.5.
+   The *timedelta* object created when subtracting two :class:`Time`
+   instances will always represent a fractional part of a day, with the
+   ``days`` attribute value greater than -0.5 and less or equal to 0.5.
+   ``time1`` and ``time2`` must have the same naivety; if they don't, a
+   :exc:`ValueError` exception is raised. If they are aware, UTC offset of
+   both instances will be taken into account to generate the result.
 
 (5)
    All other comparison operators (``<=``, ``>``, ``>=``, ``==`` and ``!=``)
@@ -302,13 +382,15 @@ Notes:
 (6)
    If both objects to be compared are :class:`Time` instances, they must have
    the same naivety; if they don't, a :exc:`ValueError` exception is raised.
+
+(7)
    When comparing a :class:`Time` object and an object of another class, if
    the latter has a ``day_frac`` attribute, ``NotImplemented`` is returned.
    This allows a Time-like instance to perform reflected comparison if it is
    the second operator. In this case, the second object is responsible for
-   checking naivety. When the second object doesn't have a ``day_frac``
-   attribute, if the operator is equality(``==``) or inequality(``!=``), the
-   value returned is always :const:`False` and :const:`True` respectively.
+   checking naivety. If the second object doesn't have a ``day_frac``
+   attribute, if the operator is equality (``==``) or inequality (``!=``),
+   the value returned is always :const:`False` and :const:`True` respectively.
    If the operator is one of the other four (``<=``, ``>``, ``>=`` or
    ``==``), a :exc:`TypeError` exception is raised.
 
@@ -317,4 +399,11 @@ Notes:
    Given the rules above it, if ``time1`` and ``time2`` are aware instances,
    ``time1 + (time2 - time1)`` compares equal to ``time2``, but it will have
    the same ``day_frac`` value only if the UTC offsets of ``time1`` and
-   ``time2``are equal.
+   ``time2`` are equal.
+
+
+..
+   other tests in test_time.py:
+   - test_90_subclass1
+   - test_91_subclass2
+
