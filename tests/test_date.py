@@ -115,6 +115,8 @@ def test_10_hash_equality():
 
 
 def test_11_pickling():
+    global der
+
     for day_count in date_test_data:
         d = Date(day_count)
         for protocol in range(pickle.HIGHEST_PROTOCOL + 1):

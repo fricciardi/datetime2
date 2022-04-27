@@ -446,7 +446,7 @@ class Time:
         if self.utcoffset is None:
             return hash((self.day_frac, None))
         else:
-            return hash(self.day_frac + self.utcoffset)
+            return hash(self.day_frac - self.utcoffset)
 
     @classmethod
     def register_new_time(cls, attribute_name, time_repr_class):

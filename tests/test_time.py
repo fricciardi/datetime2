@@ -331,6 +331,8 @@ def test_10_hash_equality():
 
 
 def test_11_pickling():
+    global der
+
     # without utcoffset
     for day_frac, input_values in time_test_data:
         for input_value in input_values:
@@ -444,7 +446,7 @@ def test_31_str():
             string = str(t)
             assert string.startswith("1/4 of a day, ")
             assert string.endswith(" of a day from UTC")
-            assert string[14:-16] == str(day_frac)
+            assert string[14:-18] == str(day_frac)
 
 
 def test_40_operations():
