@@ -31,6 +31,11 @@ __author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
 # TODO: change all .format( to formatted string literal. Check also in other source files
 
+# TODO: remove all uses of __class__
+
+# TODO: better revert black fromatting
+
+
 import time
 from fractions import Fraction
 from math import floor
@@ -337,6 +342,43 @@ class Time:
             return "{} of a day".format(str(self.day_frac))
         else:
             return "{} of a day, {} of a day from UTC".format(str(self.day_frac), str(self.utcoffset))
+
+    # Math operators
+    def __add__(self, other):
+        if isinstance(other, TimeDelta):
+            total = self.day_frac + other.days
+            return type(self)(total - floor(total), utcoffset=self.utcoffset)
+        else:
+            return NotImplemented
+
+    __radd__ = __add__
+
+    def __sub__(self, other):
+        if isinstance(other, Time):
+            if self.utcoffset:
+                if other.utcoffset is None:
+                    raise ValueError("You cannot mix naive and aware instances.")
+                self_utc = self.day_frac - self.utcoffset
+                other_utc = other.day_frac -  other.utcoffset
+                delta = self_utc - other_utc
+            else:
+                if other.utcoffset is not None:
+                    raise ValueError("You cannot mix naive and aware instances.")
+                delta = self.day_frac - other.day_frac
+            if delta <= Fraction(-1, 2):
+                delta += 1
+                while delta <= Fraction(-1, 2):
+                    delta += 1
+            elif delta > Fraction(1, 2):
+                delta -= 1
+                while delta > Fraction(1, 2):
+                    delta -= 1
+            return TimeDelta(delta)
+        elif isinstance(other, TimeDelta):
+            total = self.day_frac - other.days
+            return type(self)(total - floor(total), utcoffset=self.utcoffset)
+        else:
+            return NotImplemented
 
     # Comparison operators
     def __eq__(self, other):
