@@ -44,7 +44,7 @@ from . import western, modern
 #
 def get_moment_complete():
     """Return local date and time as day_count, local time as day fraction, and,
-    if possible, distance to UTC as fraction of a day."""
+    if possible, distance from UTC as fraction of a day."""
     try:
         moment_ns = (
             time.time_ns()
@@ -299,8 +299,8 @@ class Time:
         else:
             valid_utcoffset = verify_fractional_value(utcoffset, min=-1, max=1)
             delta = current_moment[2] - valid_utcoffset
-            day_frac_temp = current_moment[1] + delta + 1  # +1 needed to avoid underruns
-            new_day_frac = day_frac_temp - int(day_frac_temp)  # as so we eliminate the +1 above
+            day_frac_temp = current_moment[1] - delta + 2  # +2 needed to avoid underruns
+            new_day_frac = day_frac_temp - int(day_frac_temp)  # as so we eliminate the +2 above
             return cls(new_day_frac, utcoffset=valid_utcoffset)
 
     @classmethod
@@ -311,12 +311,12 @@ class Time:
     @classmethod
     def utcnow(cls):
         current_moment = get_moment_complete()
-        now = current_moment[1] + current_moment[2]
-        if now < 0:
-            now += 1
-        elif now >= 1:
-            now -= 1
-        return cls(now)
+        utcnow = current_moment[1] - current_moment[2]
+        if utcnow < 0:
+            utcnow += 1
+        elif utcnow >= 1:
+            utcnow -= 1
+        return cls(utcnow)
 
     @property
     def day_frac(self):
@@ -348,7 +348,7 @@ class Time:
                     return False
             else:
                 if other.utcoffset is not None:
-                    return self.day_frac + self.utcoffset == other.day_frac + other.utcoffset
+                    return self.day_frac - self.utcoffset == other.day_frac - other.utcoffset
                 else:
                     return False
         elif hasattr(other, "day_frac") and hasattr(other, "utcoffset"):
@@ -365,7 +365,7 @@ class Time:
                     return True
             else:
                 if other.utcoffset is not None:
-                    return self.day_frac + self.utcoffset != other.day_frac + other.utcoffset
+                    return self.day_frac - self.utcoffset != other.day_frac - other.utcoffset
                 else:
                     return True
         elif hasattr(other, "day_frac") and hasattr(other, "utcoffset"):
@@ -382,7 +382,7 @@ class Time:
                     raise TypeError("You cannot compare a naive Time instance with an aware one.")
             else:
                 if other.utcoffset is not None:
-                    return self.day_frac + self.utcoffset > other.day_frac + other.utcoffset
+                    return self.day_frac - self.utcoffset > other.day_frac - other.utcoffset
                 else:
                     raise TypeError("You cannot compare an aware Time instance with a naive one.")
         elif hasattr(other, "day_frac") and hasattr(other, "utcoffset"):
@@ -399,7 +399,7 @@ class Time:
                     raise TypeError("You cannot compare a naive Time instance with an aware one.")
             else:
                 if other.utcoffset is not None:
-                    return self.day_frac + self.utcoffset >= other.day_frac + other.utcoffset
+                    return self.day_frac - self.utcoffset >= other.day_frac - other.utcoffset
                 else:
                     raise TypeError("You cannot compare an aware Time instance with a naive one.")
         elif hasattr(other, "day_frac") and hasattr(other, "utcoffset"):
@@ -416,7 +416,7 @@ class Time:
                     raise TypeError("You cannot compare a naive Time instance with an aware one.")
             else:
                 if other.utcoffset is not None:
-                    return self.day_frac + self.utcoffset < other.day_frac + other.utcoffset
+                    return self.day_frac - self.utcoffset < other.day_frac - other.utcoffset
                 else:
                     raise TypeError("You cannot compare an aware Time instance with a naive one.")
         elif hasattr(other, "day_frac") and hasattr(other, "utcoffset"):
@@ -433,7 +433,7 @@ class Time:
                     raise TypeError("You cannot compare a naive Time instance with an aware one.")
             else:
                 if other.utcoffset is not None:
-                    return self.day_frac + self.utcoffset <= other.day_frac + other.utcoffset
+                    return self.day_frac - self.utcoffset <= other.day_frac - other.utcoffset
                 else:
                     raise TypeError("You cannot compare an aware Time instance with a naive one.")
         elif hasattr(other, "day_frac") and hasattr(other, "utcoffset"):
