@@ -729,25 +729,25 @@ def test_41_comparisons():
     tl = TimeLike()
     t5 = Time(1, 2)
     t6 = Time("3/4")
-    t6 = Time(4, 5)
+    t7 = Time(4, 5)
     assert not (t5 == tl)
     assert t6 == tl
-    assert not (t6 == tl)
+    assert not (t7 == tl)
     assert t5 != tl
     assert not (t6 != tl)
-    assert t6 != tl
+    assert t7 != tl
     assert t5 < tl
     assert not (t6 < tl)
-    assert not (t6 < tl)
+    assert not (t7 < tl)
     assert t5 <= tl
     assert t6 <= tl
-    assert not (t6 <= tl)
+    assert not (t7 <= tl)
     assert not (t5 > tl)
     assert not (t6 > tl)
-    assert t6 > tl
+    assert t7 > tl
     assert not (t5 >= tl)
     assert t6 >= tl
-    assert t6 >= tl
+    assert t7 >= tl
 
     class SomeClass1:
         def __init__(self):
@@ -785,9 +785,12 @@ def test_41_comparisons():
         with pytest.raises(TypeError):
             t0 >= par
 
-    t8 = Time(11, 24, utcoffset="1/6")  # this is aware
+    # mixing aware and naive instances
+    t8 = Time(11, 24, utcoffset="1/6")
     assert t1 != t8
+    assert t8 != t1
     assert not (t1 == t8)
+    assert not (t8 == t1)
     with pytest.raises(TypeError):
         t1 < t8
     with pytest.raises(TypeError):
@@ -796,13 +799,21 @@ def test_41_comparisons():
         t1 > t8
     with pytest.raises(TypeError):
         t1 >= t8
+    with pytest.raises(TypeError):
+        t8 < t1
+    with pytest.raises(TypeError):
+        t8 <= t1
+    with pytest.raises(TypeError):
+        t8 > t1
+    with pytest.raises(TypeError):
+        t8 >= t1
 
 
 def test_42_comparisons_with_utcoffset():
-    t1 = Time("1/8", utcoffset="1/3")
-    t2 = Time(0.875, utcoffset=Fraction(-5, 12))  # this is equal to t1
+    t1 = Time("1/8", utcoffset="-1/3")
+    t2 = Time(0.875, utcoffset=Fraction(5, 12))  # this is equal to t1
     t3 = Time("2/3", utcoffset=0.125)  # this is larger than t1
-    t4 = Time(0.375, utcoffset="-1/6")  # this is equal to t1, one day earlier, should NOT compare equal
+    t4 = Time("1/6", utcoffset="17/24")  # this is equal to t1, one day earlier, should compare equal
     assert t1 == t2
     assert t1 <= t2
     assert t1 >= t2
