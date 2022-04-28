@@ -224,7 +224,7 @@ def test_04_constructor_now_w_utcoffset():
                         datetime_now.hour * 3600
                         + datetime_now.minute * 60
                         + datetime_now.second
-                        - utcoffset_seconds
+                        + utcoffset_seconds
                 )
                 if int(time_now.day_frac * 86400) == datetime_frac_seconds:
                     break
@@ -288,7 +288,7 @@ def test_06_constructor_utcnow():
         if int(time_now.day_frac * 86400) == datetime_frac_seconds:
             break
         count += 1
-    assert count < 3, "Unable to get at least one a correct Time.localnow()"
+    assert count < 3, "Unable to get at least one a correct Time.utcnow()"
     assert time_now.utcoffset is None
 
 
