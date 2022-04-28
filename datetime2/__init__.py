@@ -66,8 +66,8 @@ def get_moment_complete():
         + Fraction(moment.tm_sec, 86400)
         + Fraction(nanoseconds, 86_400_000_000_000)
     )
-    to_utc = -Fraction(moment.tm_gmtoff, 86400)
-    return day_count, day_frac, to_utc
+    utcoffset = Fraction(moment.tm_gmtoff, 86400)
+    return day_count, day_frac, utcoffset
 
 
 ##############################################################################
@@ -482,7 +482,7 @@ class Time:
                     return self.modified_time_repr_class
                 else:
                     assert self.attr_name not in instance.__dict__
-                    time_obj = self.modified_time_repr_class.from_time_pair(instance.day_frac, to_utc=instance.utcoffset)
+                    time_obj = self.modified_time_repr_class.from_time_pair(instance.day_frac, utcoffset=instance.utcoffset)
                     time_repr_obj = getattr(time_obj, self.attr_name)
                     setattr(instance, self.attr_name, time_repr_obj)
                     return time_repr_obj

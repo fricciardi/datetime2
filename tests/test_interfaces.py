@@ -490,13 +490,13 @@ def test_110_naivety_is_preserved():
     Time.register_new_time("test_1", NaivetyCheck)
 
     t1 = Time("17/24")
-    assert t1.test_1.to_utc is None
+    assert t1.test_1.utcoffset is None
 
-    t2 = Time("17/24", to_utc=0)
-    assert t2.test_1.to_utc is not None
+    t2 = Time("17/24", utcoffset=0)
+    assert t2.test_1.utcoffset is not None
 
     t3 = Time.test_1(11, 12)
-    assert t3.to_utc is None
+    assert t3.utcoffset is None
 
     t4 = Time.test_1(11, 12, to_utc=0)
-    assert t4.to_utc is not None
+    assert t4.utcoffset is not None
