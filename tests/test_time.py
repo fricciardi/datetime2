@@ -311,8 +311,8 @@ def test_10_hash_equality():
 
     # now with utcoffset
     # Time instances are immutable
-    t4 = Time("3/5", utcoffset=0.25)
-    t5 = Time(4, 5, utcoffset="1/20")
+    t4 = Time("3/5", utcoffset=-0.25)
+    t5 = Time(4, 5, utcoffset="-1/20")
     assert hash(t4) == hash(t5)    # t4 and t5 indicate the same time
     assert hash(t4) != hash(t1)
     assert hash(t4) != hash(t2)
@@ -322,7 +322,7 @@ def test_10_hash_equality():
     dic[t5] = 5
     assert dic[t4] == 5
 
-    t6 = Time(Decimal("0.2"), utcoffset="-7/20")  # as t4, one day earlier
+    t6 = Time(Decimal("0.2"), utcoffset="-13/20")  # as t4, one day earlier
     assert hash(t6) == hash(t4)
     assert dic[t6] == 5
     dic[t6] = 6
@@ -331,7 +331,7 @@ def test_10_hash_equality():
 
 
 def test_11_pickling():
-    global der
+    global Derived
 
     # without utcoffset
     for day_frac, input_values in time_test_data:

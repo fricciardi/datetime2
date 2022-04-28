@@ -115,7 +115,7 @@ def test_10_hash_equality():
 
 
 def test_11_pickling():
-    global der
+    global Derived
 
     for day_count in date_test_data:
         d = Date(day_count)
