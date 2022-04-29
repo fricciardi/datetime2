@@ -29,8 +29,9 @@
 
 __author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
+# TODO: remove all uses of __class__
 
-#TODO: better revert black fromatting
+ #TODO: better revert black fromatting
 
 import bisect
 from fractions import Fraction

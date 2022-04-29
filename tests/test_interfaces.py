@@ -29,6 +29,8 @@
 
 __author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
+# TODO: remove all uses of __class__
+
 from fractions import Fraction
 import pytest
 
