@@ -215,360 +215,380 @@ iso_invalid_data = [
     (   4,  54, 1)   # long year
 ]
 
-class TestISO():
-    def test_000_constructor(self):
-        for test_row in iso_test_data:
-            year = test_row[1]
-            week = test_row[2]
-            day = test_row[3]
-            iso = IsoCalendar(year, week, day)
-            assert iso.year == year
-            assert iso.week == week
-            assert iso.day == day
+def test_000_constructor():
+    for test_row in iso_test_data:
+        year = test_row[1]
+        week = test_row[2]
+        day = test_row[3]
+        iso = IsoCalendar(year, week, day)
+        assert iso.year == year
+        assert iso.week == week
+        assert iso.day == day
 
-    def test_005_constructor_rata_die(self):
-        for test_row in iso_test_data:
-            rd = test_row[0]
-            year = test_row[1]
-            week = test_row[2]
-            day = test_row[3]
-            iso_rd = IsoCalendar.from_rata_die(rd)
-            assert iso_rd.year == year
-            assert iso_rd.week == week
-            assert iso_rd.day == day
 
-    def test_010_invalid_parameter_types(self):
-        # exception with none, two or four parameters
+def test_005_constructor_rata_die():
+    for test_row in iso_test_data:
+        rd = test_row[0]
+        year = test_row[1]
+        week = test_row[2]
+        day = test_row[3]
+        iso_rd = IsoCalendar.from_rata_die(rd)
+        assert iso_rd.year == year
+        assert iso_rd.week == week
+        assert iso_rd.day == day
+
+
+def test_010_invalid_parameter_types():
+    # exception with none, two or four parameters
+    with pytest.raises(TypeError):
+        IsoCalendar()
+    with pytest.raises(TypeError):
+        IsoCalendar(1, 2)
+    with pytest.raises(TypeError):
+        IsoCalendar(1, 2, 3, 4)
+    # exception with non-numeric types
+    for par in ("1", (1,), [1], {1:1}, (), [], {}, None):
         with pytest.raises(TypeError):
-            IsoCalendar()
+            IsoCalendar(par, 1, 1)
         with pytest.raises(TypeError):
-            IsoCalendar(1, 2)
+            IsoCalendar(1, par, 1)
         with pytest.raises(TypeError):
-            IsoCalendar(1, 2, 3, 4)
-        # exception with non-numeric types
-        for par in ("1", (1,), [1], {1:1}, (), [], {}, None):
-            with pytest.raises(TypeError):
-                IsoCalendar(par, 1, 1)
-            with pytest.raises(TypeError):
-                IsoCalendar(1, par, 1)
-            with pytest.raises(TypeError):
-                IsoCalendar(1, par, 1)
-        # exception with invalid numeric types
-        for par in (1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN):
-            with pytest.raises(TypeError):
-                IsoCalendar(par, 1, 1)
-            with pytest.raises(TypeError):
-                IsoCalendar(1, par, 1)
-            with pytest.raises(TypeError):
-                IsoCalendar(1, par, 1)
-
-    def test_015_invalid_parameter_types_rata_die(self):
-        # exception with none, two or four parameters
+            IsoCalendar(1, par, 1)
+    # exception with invalid numeric types
+    for par in (1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN):
         with pytest.raises(TypeError):
-            IsoCalendar.from_rata_die()
+            IsoCalendar(par, 1, 1)
         with pytest.raises(TypeError):
-            IsoCalendar.from_rata_die(1, 2)
-        # exception with non-numeric types
-        for par in ("1", (1,), [1], {1:1}, (), [], {}, None):
-            with pytest.raises(TypeError):
-                IsoCalendar.from_rata_die(par)
-        # exception with invalid numeric types
-        for par in (1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN):
-            with pytest.raises(TypeError):
-                IsoCalendar.from_rata_die(par)
-
-    def test_020_invalid_values(self):
-        for test_row in iso_invalid_data:
-            year = test_row[0]
-            week = test_row[1]
-            day = test_row[2]
-            with pytest.raises(TypeError):
-                IsoCalendar.from_rata_die(year, week, day)
-
-    def test_040_write_attribute(self):
-        iso = IsoCalendar(1, 1, 1)
-        with pytest.raises(AttributeError):
-            iso.year = 3
-        with pytest.raises(AttributeError):
-            iso.week = 3
-        with pytest.raises(AttributeError):
-            iso.day = 3
-
-    def test_200_long_years(self):
-        # long years
-        for year in (-2847, -2424, -2002, -1974, -1546, -1118, -689, -261,
-                     167, 595, 1024, 1452, 1880, 2308, 2731):
-            assert IsoCalendar.is_long_year(year)
-            assert IsoCalendar.weeks_in_year(year) == 53
-        # short years
-        for year in (-2845, -2422, -2000, -1972, -1544, -1116, -687, -259,
-                     169, 597, 1026, 1454, 1882, 2310, 2733):
-            assert not IsoCalendar.is_long_year(year)
-            assert IsoCalendar.weeks_in_year(year) == 52
-
-    def test_300_compare(self):
-        iso1 = IsoCalendar(2, 3, 4)
-        iso2 = IsoCalendar(2, 3, 4)
-        assert iso1 == iso2
-        assert iso1 <= iso2
-        assert iso1 >= iso2
-        assert not iso1 != iso2
-        assert not iso1 < iso2
-        assert not iso1 > iso2
-
-        for year, week, day in (3, 3, 3), (2, 4, 4), (2, 3, 5):
-            iso3 = IsoCalendar(year, week, day)   # this is larger than iso1
-            assert iso1 < iso3
-            assert iso3 > iso1
-            assert iso1 <= iso3
-            assert iso3 >= iso1
-            assert iso1 != iso3
-            assert iso3 != iso1
-            assert not iso1 == iso3
-            assert not iso3 == iso1
-            assert not iso1 > iso3
-            assert not iso3 < iso1
-            assert not iso1 >= iso3
-            assert not iso3 <= iso1
-
-    def test_310_compare_invalid_types(self):
-        class SomeClass:
-            pass
-
-        iso = IsoCalendar(2, 3, 4)
-
-        # exception with non-numeric types
-        for par in ("1", (1,), [1], {1:1}, (), [], {}, None):
-            assert not iso == par
-            assert iso != par
-            with pytest.raises(TypeError):
-                iso < par
-            with pytest.raises(TypeError):
-                iso > par
-            with pytest.raises(TypeError):
-                iso <= par
-            with pytest.raises(TypeError):
-                iso >= par
-        # exception with numeric types (all invalid) and other objects
-        for par in (1, 1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN, SomeClass()):
-            assert not iso == par
-            assert iso != par
-            with pytest.raises(TypeError):
-                iso < par
-            with pytest.raises(TypeError):
-                iso > par
-            with pytest.raises(TypeError):
-                iso <= par
-            with pytest.raises(TypeError):
-                iso >= par
-
-    def test_320_hash_equality(self):
-        iso1 = IsoCalendar(2000, 12, 3)
-        # same thing
-        iso2 = IsoCalendar(2000, 12, 3)
-        assert hash(iso1) == hash(iso2)
-
-        dic = {iso1: 1}
-        dic[iso2] = 2
-        assert len(dic) == 1
-        assert dic[iso1] == 2
-        assert dic[iso2] == 2
-
-        iso3 = IsoCalendar(200, 12, 3).replace(year = 2000)
-        assert hash(iso1) == hash(iso3)
-
-        dic[iso3] = 2
-        assert len(dic) == 1
-        assert dic[iso3] == 2
-
-    def test_330_bool(self):
-        for test_row in iso_test_data:
-            year = test_row[1]
-            week = test_row[2]
-            day = test_row[3]
-            assert IsoCalendar(year, week, day)
-
-    def test_400_to_rata_die(self):
-        for test_row in iso_test_data:
-            year = test_row[1]
-            week = test_row[2]
-            day = test_row[3]
-            rd = test_row[0]
-            assert IsoCalendar(year, week, day).to_rata_die() == rd
-
-    def test_410_day_of_year(self):
-        for test_row in iso_test_data:
-            year = test_row[1]
-            week = test_row[2]
-            day = test_row[3]
-            doy = test_row[4]
-            assert IsoCalendar(year, week, day).day_of_year() == doy
-
-    def test_420_replace(self):
-        for test_row in iso_test_data[:33]:   # take Calendrical Calculations tests data only (other may make replace fail, as in the next tests method)
-            year = test_row[1]
-            week = test_row[2]
-            day = test_row[3]
-            iso = IsoCalendar(year, week, day)
-            assert iso.replace() == IsoCalendar(year, week, day)
-            assert iso.replace(year = 11) == IsoCalendar(11, week, day)
-            assert iso.replace(week = 10) == IsoCalendar(year, 10, day)
-            assert iso.replace(day = 2) == IsoCalendar(year, week, 2)
-            assert iso.replace(week = 10, year = 11) == IsoCalendar(11, 10, day)
-            assert iso.replace(day = 3, year = 11) == IsoCalendar(11, week, 3)
-            assert iso.replace(day = 4, week = 10) == IsoCalendar(year, 10, 4)
-            assert iso.replace(day = 1, week = 10, year = 11) == IsoCalendar(11, 10, 1)
-
-    def test_423_replace_invalid_types(self):
-        iso = IsoCalendar(11, 10, 4)
-        # exception for positional parameters
+            IsoCalendar(1, par, 1)
         with pytest.raises(TypeError):
-            iso.replace(1)
-        # exception with non-numeric types
-        for par in ("1", (1,), [1], {1:1}, (), [], {}):
-            with pytest.raises(TypeError):
-                iso.replace(year=par)
-            with pytest.raises(TypeError):
-                iso.replace(week=par)
-            with pytest.raises(TypeError):
-                iso.replace(day=par)
-        # exception with invalid numeric types
-        for par in (1.0, Fraction(1, 1), Decimal(1), 1j):
-            with pytest.raises(TypeError):
-                iso.replace(year=par)
-            with pytest.raises(TypeError):
-                iso.replace(week=par)
-            with pytest.raises(TypeError):
-                iso.replace(day=par)
-
-    def test_426_replace_invalid_values(self):
-        iso1 = IsoCalendar(11, 10, 4)
-        with pytest.raises(ValueError):
-            iso1.replace(week=0)
-        with pytest.raises(ValueError):
-            iso1.replace(day=0)
-        with pytest.raises(ValueError):
-            iso1.replace(week=-1)
-        with pytest.raises(ValueError):
-            iso1.replace(day=-1)
-        with pytest.raises(ValueError):
-            iso1.replace(week=54)
-        with pytest.raises(ValueError):
-            iso1.replace(day=8)
-        iso2 = IsoCalendar(1, 9, 2)   # short year
-        with pytest.raises(ValueError):
-            iso2.replace(week=53)
-        iso3 = IsoCalendar(4, 9, 2)   # long year
-        with pytest.raises(ValueError):
-            iso3.replace(week=54)
-
-    def test_500_repr(self):
-        import datetime2
-        for test_row in iso_test_data:
-            year = test_row[1]
-            week = test_row[2]
-            day = test_row[3]
-            iso = IsoCalendar(year, week, day)
-            iso_repr = repr(iso)
-            names, args = iso_repr.split('(')
-            assert names.split('.') == ['datetime2', 'modern', 'IsoCalendar']
-            args = args[:-1] # drop ')'
-            for found, expected in zip(args.split(','), (year, week, day)):
-                assert int(found) == expected
-            assert iso == eval(iso_repr)
-
-    def test_520_str(self):
-        for test_row in iso_test_data:
-            year = test_row[1]
-            week = test_row[2]
-            day = test_row[3]
-            iso = IsoCalendar(year, week, day)
-            if year < 0:
-                expected = '-'
-                year = -year
-            else:
-                expected = ''
-            ys = str(year)
-            if len(ys) < 4:
-                expected += ('000' + ys)[-4:]
-            else:
-                expected += ys
-            expected += '-W' + ('0' + str(week))[-2:]
-            expected += '-' + str(day)
-            assert str(iso) == expected
-
-    def test_530_cformat_numbers(self):
-        for test_row in iso_test_data:
-            year = test_row[1]
-            week = test_row[2]
-            day = test_row[3]
-            doy = test_row[4]
-            iso = IsoCalendar(year, week, day)
-            assert iso.cformat('%j') == '{:03d}'.format(doy)
-            assert iso.cformat('%w') == '{:1d}'.format(day)
-            assert iso.cformat('%W') == '{:02d}'.format(week)
-            assert iso.cformat('%y') == ('{:04d}'.format(year))[-2:]
-            if year >= 0:
-                assert iso.cformat('%Y') == '{:04d}'.format(year)
-            else:
-                assert iso.cformat('%Y') == '-{:04d}'.format(-year)
-
-    def test_540_cformat_names(self):
-        weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-        abbr_weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-        for test_row in iso_test_data:
-            year = test_row[1]
-            week = test_row[2]
-            day = test_row[3]
-            iso = IsoCalendar(year, week, day)
-            assert iso.cformat('%a') == abbr_weekdays[day - 1]
-            assert iso.cformat('%A') == weekdays[day - 1]
+            IsoCalendar(1, par, 1)
 
 
-    def test_560_cformat_percent(self):
-        iso = IsoCalendar(1, 2, 3)
-        assert iso.cformat('%') == '%'
-        assert iso.cformat('%%') == '%'
-        assert iso.cformat('%%%') == '%%'
-        assert iso.cformat('abcd%') == 'abcd%'
-        assert iso.cformat('%k') == '%k'
-        assert iso.cformat('a%k') == 'a%k'
-        assert iso.cformat('%k%') == '%k%'
+def test_015_invalid_parameter_types_rata_die():
+    # exception with none, two or four parameters
+    with pytest.raises(TypeError):
+        IsoCalendar.from_rata_die()
+    with pytest.raises(TypeError):
+        IsoCalendar.from_rata_die(1, 2)
+    # exception with non-numeric types
+    for par in ("1", (1,), [1], {1:1}, (), [], {}, None):
+        with pytest.raises(TypeError):
+            IsoCalendar.from_rata_die(par)
+    # exception with invalid numeric types
+    for par in (1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN):
+        with pytest.raises(TypeError):
+            IsoCalendar.from_rata_die(par)
 
-    def test_570_cformat_invalid_type(self):
-        iso = IsoCalendar(1, 2, 3)
-        for par in (1, (1,), [1], {1:1}, None):
-            with pytest.raises(TypeError):
-                iso.cformat(par)
 
-    def test_900_pickling(self):
-        for test_row in iso_test_data:
-            year = test_row[1]
-            week = test_row[2]
-            day = test_row[3]
-            iso = IsoCalendar(year, week, day)
-            for protocol in range(pickle.HIGHEST_PROTOCOL + 1):
-                pickled = pickle.dumps(iso, protocol)
-                derived = pickle.loads(pickled)
-                assert iso == derived
+def test_020_invalid_values():
+    for test_row in iso_invalid_data:
+        year = test_row[0]
+        week = test_row[1]
+        day = test_row[2]
+        with pytest.raises(TypeError):
+            IsoCalendar.from_rata_die(year, week, day)
 
-    def test_920_subclass(self):
 
-        class I(IsoCalendar):
-            theAnswer = 42
+def test_040_write_attribute():
+    iso = IsoCalendar(1, 1, 1)
+    with pytest.raises(AttributeError):
+        iso.year = 3
+    with pytest.raises(AttributeError):
+        iso.week = 3
+    with pytest.raises(AttributeError):
+        iso.day = 3
 
-            def __init__(self, *args, **kws):
-                temp = kws.copy()
-                self.extra = temp.pop('extra')
-                IsoCalendar.__init__(self, *args, **temp)
 
-            def newmeth(self, start):
-                return start + self.year + self.week
+def test_200_long_years():
+    # long years
+    for year in (-2847, -2424, -2002, -1974, -1546, -1118, -689, -261,
+                 167, 595, 1024, 1452, 1880, 2308, 2731):
+        assert IsoCalendar.is_long_year(year)
+        assert IsoCalendar.weeks_in_year(year) == 53
+    # short years
+    for year in (-2845, -2422, -2000, -1972, -1544, -1116, -687, -259,
+                 169, 597, 1026, 1454, 1882, 2310, 2733):
+        assert not IsoCalendar.is_long_year(year)
+        assert IsoCalendar.weeks_in_year(year) == 52
 
-        iso1 = IsoCalendar(2003, 14, 4)
-        iso2 = I(2003, 14, 4, extra = 7)
 
-        assert iso2.theAnswer == 42
-        assert iso2.extra == 7
-        assert iso1.to_rata_die() == iso2.to_rata_die()
-        assert iso2.newmeth(-7) == iso1.year + iso1.week - 7
+def test_300_compare():
+    iso1 = IsoCalendar(2, 3, 4)
+    iso2 = IsoCalendar(2, 3, 4)
+    assert iso1 == iso2
+    assert iso1 <= iso2
+    assert iso1 >= iso2
+    assert not iso1 != iso2
+    assert not iso1 < iso2
+    assert not iso1 > iso2
+
+    for year, week, day in (3, 3, 3), (2, 4, 4), (2, 3, 5):
+        iso3 = IsoCalendar(year, week, day)   # this is larger than iso1
+        assert iso1 < iso3
+        assert iso3 > iso1
+        assert iso1 <= iso3
+        assert iso3 >= iso1
+        assert iso1 != iso3
+        assert iso3 != iso1
+        assert not iso1 == iso3
+        assert not iso3 == iso1
+        assert not iso1 > iso3
+        assert not iso3 < iso1
+        assert not iso1 >= iso3
+        assert not iso3 <= iso1
+
+
+def test_310_compare_invalid_types():
+    class SomeClass:
+        pass
+
+    iso = IsoCalendar(2, 3, 4)
+
+    # exception with non-numeric types
+    for par in ("1", (1,), [1], {1:1}, (), [], {}, None):
+        assert not iso == par
+        assert iso != par
+        with pytest.raises(TypeError):
+            iso < par
+        with pytest.raises(TypeError):
+            iso > par
+        with pytest.raises(TypeError):
+            iso <= par
+        with pytest.raises(TypeError):
+            iso >= par
+    # exception with numeric types (all invalid) and other objects
+    for par in (1, 1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN, SomeClass()):
+        assert not iso == par
+        assert iso != par
+        with pytest.raises(TypeError):
+            iso < par
+        with pytest.raises(TypeError):
+            iso > par
+        with pytest.raises(TypeError):
+            iso <= par
+        with pytest.raises(TypeError):
+            iso >= par
+
+
+def test_320_hash_equality():
+    iso1 = IsoCalendar(2000, 12, 3)
+    # same thing
+    iso2 = IsoCalendar(2000, 12, 3)
+    assert hash(iso1) == hash(iso2)
+
+    dic = {iso1: 1}
+    dic[iso2] = 2
+    assert len(dic) == 1
+    assert dic[iso1] == 2
+    assert dic[iso2] == 2
+
+    iso3 = IsoCalendar(200, 12, 3).replace(year = 2000)
+    assert hash(iso1) == hash(iso3)
+
+    dic[iso3] = 2
+    assert len(dic) == 1
+    assert dic[iso3] == 2
+
+
+def test_330_bool():
+    for test_row in iso_test_data:
+        year = test_row[1]
+        week = test_row[2]
+        day = test_row[3]
+        assert IsoCalendar(year, week, day)
+
+
+def test_400_to_rata_die():
+    for test_row in iso_test_data:
+        year = test_row[1]
+        week = test_row[2]
+        day = test_row[3]
+        rd = test_row[0]
+        assert IsoCalendar(year, week, day).to_rata_die() == rd
+
+
+def test_410_day_of_year():
+    for test_row in iso_test_data:
+        year = test_row[1]
+        week = test_row[2]
+        day = test_row[3]
+        doy = test_row[4]
+        assert IsoCalendar(year, week, day).day_of_year() == doy
+
+
+def test_420_replace():
+    for test_row in iso_test_data[:33]:   # take Calendrical Calculations tests data only (other may make replace fail, as in the next tests method)
+        year = test_row[1]
+        week = test_row[2]
+        day = test_row[3]
+        iso = IsoCalendar(year, week, day)
+        assert iso.replace() == IsoCalendar(year, week, day)
+        assert iso.replace(year = 11) == IsoCalendar(11, week, day)
+        assert iso.replace(week = 10) == IsoCalendar(year, 10, day)
+        assert iso.replace(day = 2) == IsoCalendar(year, week, 2)
+        assert iso.replace(week = 10, year = 11) == IsoCalendar(11, 10, day)
+        assert iso.replace(day = 3, year = 11) == IsoCalendar(11, week, 3)
+        assert iso.replace(day = 4, week = 10) == IsoCalendar(year, 10, 4)
+        assert iso.replace(day = 1, week = 10, year = 11) == IsoCalendar(11, 10, 1)
+
+
+def test_423_replace_invalid_types():
+    iso = IsoCalendar(11, 10, 4)
+    # exception for positional parameters
+    with pytest.raises(TypeError):
+        iso.replace(1)
+    # exception with non-numeric types
+    for par in ("1", (1,), [1], {1:1}, (), [], {}):
+        with pytest.raises(TypeError):
+            iso.replace(year=par)
+        with pytest.raises(TypeError):
+            iso.replace(week=par)
+        with pytest.raises(TypeError):
+            iso.replace(day=par)
+    # exception with invalid numeric types
+    for par in (1.0, Fraction(1, 1), Decimal(1), 1j):
+        with pytest.raises(TypeError):
+            iso.replace(year=par)
+        with pytest.raises(TypeError):
+            iso.replace(week=par)
+        with pytest.raises(TypeError):
+            iso.replace(day=par)
+
+
+def test_426_replace_invalid_values():
+    iso1 = IsoCalendar(11, 10, 4)
+    with pytest.raises(ValueError):
+        iso1.replace(week=0)
+    with pytest.raises(ValueError):
+        iso1.replace(day=0)
+    with pytest.raises(ValueError):
+        iso1.replace(week=-1)
+    with pytest.raises(ValueError):
+        iso1.replace(day=-1)
+    with pytest.raises(ValueError):
+        iso1.replace(week=54)
+    with pytest.raises(ValueError):
+        iso1.replace(day=8)
+    iso2 = IsoCalendar(1, 9, 2)   # short year
+    with pytest.raises(ValueError):
+        iso2.replace(week=53)
+    iso3 = IsoCalendar(4, 9, 2)   # long year
+    with pytest.raises(ValueError):
+        iso3.replace(week=54)
+
+
+def test_500_repr():
+    import datetime2
+    for test_row in iso_test_data:
+        year = test_row[1]
+        week = test_row[2]
+        day = test_row[3]
+        iso = IsoCalendar(year, week, day)
+        iso_repr = repr(iso)
+        names, args = iso_repr.split('(')
+        assert names.split('.') == ['datetime2', 'modern', 'IsoCalendar']
+        args = args[:-1] # drop ')'
+        for found, expected in zip(args.split(','), (year, week, day)):
+            assert int(found) == expected
+        assert iso == eval(iso_repr)
+
+
+def test_520_str():
+    for test_row in iso_test_data:
+        year = test_row[1]
+        week = test_row[2]
+        day = test_row[3]
+        iso = IsoCalendar(year, week, day)
+        if year < 0:
+            expected = '-'
+            year = -year
+        else:
+            expected = ''
+        ys = str(year)
+        if len(ys) < 4:
+            expected += ('000' + ys)[-4:]
+        else:
+            expected += ys
+        expected += '-W' + ('0' + str(week))[-2:]
+        expected += '-' + str(day)
+        assert str(iso) == expected
+
+
+def test_530_cformat_numbers():
+    for test_row in iso_test_data:
+        year = test_row[1]
+        week = test_row[2]
+        day = test_row[3]
+        doy = test_row[4]
+        iso = IsoCalendar(year, week, day)
+        assert iso.cformat('%j') == '{:03d}'.format(doy)
+        assert iso.cformat('%w') == '{:1d}'.format(day)
+        assert iso.cformat('%W') == '{:02d}'.format(week)
+        assert iso.cformat('%y') == ('{:04d}'.format(year))[-2:]
+        if year >= 0:
+            assert iso.cformat('%Y') == '{:04d}'.format(year)
+        else:
+            assert iso.cformat('%Y') == '-{:04d}'.format(-year)
+
+
+def test_540_cformat_names():
+    weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    abbr_weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    for test_row in iso_test_data:
+        year = test_row[1]
+        week = test_row[2]
+        day = test_row[3]
+        iso = IsoCalendar(year, week, day)
+        assert iso.cformat('%a') == abbr_weekdays[day - 1]
+        assert iso.cformat('%A') == weekdays[day - 1]
+
+
+def test_560_cformat_percent():
+    iso = IsoCalendar(1, 2, 3)
+    assert iso.cformat('%') == '%'
+    assert iso.cformat('%%') == '%'
+    assert iso.cformat('%%%') == '%%'
+    assert iso.cformat('abcd%') == 'abcd%'
+    assert iso.cformat('%k') == '%k'
+    assert iso.cformat('a%k') == 'a%k'
+    assert iso.cformat('%k%') == '%k%'
+
+
+def test_570_cformat_invalid_type():
+    iso = IsoCalendar(1, 2, 3)
+    for par in (1, (1,), [1], {1:1}, None):
+        with pytest.raises(TypeError):
+            iso.cformat(par)
+
+
+def test_900_pickling():
+    for test_row in iso_test_data:
+        year = test_row[1]
+        week = test_row[2]
+        day = test_row[3]
+        iso = IsoCalendar(year, week, day)
+        for protocol in range(pickle.HIGHEST_PROTOCOL + 1):
+            pickled = pickle.dumps(iso, protocol)
+            derived = pickle.loads(pickled)
+            assert iso == derived
+
+
+def test_920_subclass():
+    class I(IsoCalendar):
+        theAnswer = 42
+
+        def __init__(self, *args, **kws):
+            temp = kws.copy()
+            self.extra = temp.pop('extra')
+            IsoCalendar.__init__(self, *args, **temp)
+
+        def newmeth(self, start):
+            return start + self.year + self.week
+
+    iso1 = IsoCalendar(2003, 14, 4)
+    iso2 = I(2003, 14, 4, extra = 7)
+
+    assert iso2.theAnswer == 42
+    assert iso2.extra == 7
+    assert iso1.to_rata_die() == iso2.to_rata_die()
+    assert iso2.newmeth(-7) == iso1.year + iso1.week - 7
