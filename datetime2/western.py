@@ -31,7 +31,7 @@ __author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
 # TODO: remove all uses of __class__
 
- #TODO: better revert black fromatting
+ #TODO: better revert black formatting
 
 import bisect
 from fractions import Fraction
@@ -282,7 +282,7 @@ class GregorianCalendar:
 ##############################################################################
 # Western time representation
 class WesternTime:
-    def __init__(self, hour, minute, second, *, to_utc=None):
+    def __init__(self, hour, minute, second, *, timezone=None):
         if not isinstance(hour, int) or not isinstance(minute, int):
             raise TypeError("Hour and minute must be integer")
         if hour < 0 or hour > 23:
@@ -304,18 +304,18 @@ class WesternTime:
         self._hour = hour
         self._minute = minute
         self._second = second_fraction
-        if to_utc is None:
-            self._to_utc = None
+        if timezone is None:
+            self._timezone = None
         else:
             try:
-                candidate_to_utc = verify_fractional_value(to_utc, min=-24, max=+24)
+                candidate_timezone = verify_fractional_value(timezone, min=-24, max=+24)
             except TypeError as exc:
                 raise TypeError("Time zone is not a valid fractional value") from exc
             except ValueError as exc:
                 raise ValueError(
                     "Time zone must be greater than -24 and less than 24."
                 ) from exc
-            self._to_utc = candidate_to_utc
+            self._timezone = candidate_timezone
 
     @property
     def hour(self):
@@ -330,54 +330,68 @@ class WesternTime:
         return self._second
 
     @property
-    def to_utc(self):
-        return self._to_utc
+    def timezone(self):
+        return self._timezone
 
 # todo: Fix from_time_pair and to_time_pair
     @classmethod
-    def from_time_pair(cls, day_frac, to_utc):
+    def from_time_pair(cls, day_frac, timezone):
         if not isinstance(day_frac, Fraction):
             raise TypeError("Fraction argument expected for day fraction")
         day_frac_valid = verify_fractional_value(day_frac, min=0, max_excl=1)
-        if to_utc is None:
+        if timezone is None:
             hour = int(day_frac * 24)
             minute = int((day_frac - Fraction(hour, 24)) * 1440)
             second = (day_frac - Fraction(hour, 24) - Fraction(minute, 1440)) * 86400
             western = cls(hour, minute, second)
             return western
         else:
-            if not isinstance(to_utc, Fraction):
-                raise TypeError("Fraction argument expected for fraction to UTC")
-            to_utc_valid = verify_fractional_value(to_utc, min=-1, max=1)
+            if not isinstance(timezone, Fraction):
+                raise TypeError("Fraction argument expected for fraction from UTC")
+            timezone_valid = verify_fractional_value(timezone, min=-1, max=1)
             hour = int(day_frac_valid * 24)
             minute = int((day_frac_valid - Fraction(hour, 24)) * 1440)
             second = (day_frac_valid - Fraction(hour, 24) - Fraction(minute, 1440)) * 86400
-            western = cls(hour, minute, second, to_utc=to_utc_valid * 24)
+            western = cls(hour, minute, second, timezone=timezone_valid * 24)
             return western
 
     def to_time_pair(self):
         day_frac = self._second / 86400 + Fraction(self._minute, 1440) + Fraction(self._hour, 24)
-        if self._to_utc is None:
+        if self._timezone is None:
             return day_frac, None
         else:
-            return day_frac, self._to_utc / 24
+            return day_frac, self._timezone / 24
 
-    def replace(self, *, hour=None, minute=None, second=None):
+    def replace(self, *, hour=None, minute=None, second=None, timezone=None):
         if hour is None:
             hour = self.hour
         if minute is None:
             minute = self.minute
         if second is None:
             second = self.second
-        return self.__class__(hour, minute, second)
+        if timezone is None:
+            return type(self)(hour, minute, second, timezone=self.timezone)
+        else:
+            if self.timezone is None:
+                raise TypeError("Can replace timezone only in aware instances.")
+            else:
+                return type(self)(hour, minute, second, timezone=timezone)
 
     def __repr__(self):
-        return "datetime2.western.{}({}, {}, {})".format(
-            self.__class__.__name__, self.hour, self.minute, repr(self.second)
-        )
+        if self.timezone is None:
+            return "datetime2.western.{}({}, {}, {})".format(self.__class__.__name__, self.hour, self.minute, repr(self.second))
+        else:
+            return f"datetime2.western.{type(self).__name__}({self.hour}, {self.minute}, {self.second!r}, timezone={self.timezone!r})"
 
     def __str__(self):
-        return "{:02d}:{:02d}:{:02d}".format(self.hour, self.minute, int(self.second))
+        time_str = f"{self.hour:02d}:{self.minute:02d}:{int(self.second):02d}"
+        if self.timezone is None:
+            return time_str
+        else:
+            tz_hour = int(self.timezone)
+            hour_rest = (self.timezone - tz_hour) * 60
+            tz_minute = int(hour_rest)
+            return f"{time_str}{tz_hour:+02d}:{tz_minute:02d}"
 
     format_functions = {
         "H": lambda self: "{:02d}".format(self.hour),
@@ -402,6 +416,29 @@ class WesternTime:
             for part in format_parts[1:]:
                 if part == "":  # special case: last char is '%'
                     value = "%"
+                elif part == 'z':  # this case is too complex to fit in a lambda
+                    if self.timezone is None:
+                        value = ''
+                    else:
+                        if self.timezone < 0:
+                            tz_sign = '-'
+                            abs_timezone = -self.timezone
+                        else:
+                            tz_sign = '+'
+                            abs_timezone = self.timezone
+                        tz_hour = int(abs_timezone)
+                        remainder_in_minutes = (abs_timezone - tz_hour) * 60
+                        tz_minute = int(remainder_in_minutes)
+                        remainder_in_seconds = (remainder_in_minutes - tz_minute) * 60
+                        tz_second = int(remainder_in_seconds)
+                        remainder_in_microseconds = (remainder_in_seconds - tz_second) * 1_000_000
+                        tz_microsecond = int(remainder_in_microseconds)
+                        if tz_microsecond > 0:
+                            value = f"{tz_sign}{tz_hour:02d}:{tz_minute:02d}:{tz_second:02d}.{tz_microsecond:06d}"
+                        elif tz_second > 0:
+                            value = f"{tz_sign}{tz_hour:02d}:{tz_minute:02d}:{tz_second:02d}"
+                        else:
+                            value = f"{tz_sign}{tz_hour:02d}:{tz_minute:02d}"
                 else:
                     try:
                         value = self.format_functions[part[0]](self)
@@ -411,3 +448,15 @@ class WesternTime:
                 chunk_pieces.append(part[1:])
             output_pieces.append("".join(chunk_pieces))
         return "%".join(output_pieces)
+
+    def __eq__(self, other):
+        if self.timezone is None:
+            if other.timezone is None:
+                return self.hour == other.hour and self.minute == other.minute and self.second == other.second
+            else:
+                return False
+        else:
+            if other.timezone is not None:
+                return self.hour == other.hour and self.minute == other.minute and self.second == other.second and self.timezone == other.timezone
+            else:
+                return False

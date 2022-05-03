@@ -65,7 +65,7 @@ The default constructor western time is:
 
 .. note::
 
-   The ``timezone`` parameter may change its values in future.
+   The ``timezone`` parameter is likely to change its values in future.
 
 A :class:`WesternTime` object has four attributes, all of which are read-only
 numbers: an attempt to change them will raise an :exc:`AttributeError`
@@ -179,7 +179,7 @@ Internet time
 The Internet Time (or beat time) is a decimal time concept introduced in 1998,
 marketed by a large Swiss watch company, and divides the day in 1000 parts,
 called "beats". A beat is equivalent to 1 minute and 26.4 seconds. A `Wikipedia
-article <http://en.wikipedia.org/wiki/Swatch_Internet_Time>`_ well describes
+article <http://en.wikipedia.org/wiki/Swatch_Internet_Time>`_ describes
 the Internet time.
 
 The default constructor for Internet time is:
@@ -198,8 +198,8 @@ An :class:`InternetTime` object has one attribute:
 
 .. attribute:: InternetTime.beat
 
-   This attribute is a read-only Python Fraction greater than or equal 0 and
-   less than 1000.
+   This attribute is a read-only Python Fraction greater than or equal to 0
+   and less than 1000.
 
 and the following methods:
 

@@ -391,13 +391,13 @@ def test_32_cformat():
 
     # microseconds
     for fraction, microseconds in western_time_microseconds:
-        western = WesternTime.in_seconds(Fraction(fraction))
+        western = WesternTime(12, 34, Fraction(fraction) + 56)
         assert western.cformat('%f') == microseconds
 
     # timezone
     for test_cformat_timezone in timezone_cformat_test_data:
         western = WesternTime(1, 2, 3, timezone=test_cformat_timezone[0])
-        assert str(western) == f"01:02:03{test_cformat_timezone[1]}"
+        assert western.cformat('%z') == test_cformat_timezone[1]
 
     # percent
     western = WesternTime(1, 2, 3)
@@ -494,11 +494,11 @@ def test_51_replace():
     with pytest.raises(TypeError):
         western.replace(second=NAN)
     with pytest.raises(ValueError):
-        western.replace(timezone='-24000001/1000000')
+        western_t.replace(timezone='-24000001/1000000')
     with pytest.raises(ValueError):
-        western.replace(timezone='24000001/1000000')
+        western_t.replace(timezone='24000001/1000000')
     with pytest.raises(TypeError):
-        western.replace(timezone=NAN)
+        western_t.replace(timezone=NAN)
 
     # replacing timezone in a naive instance
     with pytest.raises(TypeError):
