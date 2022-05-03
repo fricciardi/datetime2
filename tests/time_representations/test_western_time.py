@@ -339,7 +339,8 @@ def test_30_repr():
         western_repr = repr(western)
         assert western_repr.startswith('datetime2.western.WesternTime(') and western_repr.endswith(')')
         args = western_repr[30:-1]
-        found_hour, found_minute, found_second, found_timezone = args.split(',', 3)
+        found_hour, found_minute, second_and_timezone = args.split(',', 2)
+        found_second, found_timezone = second_and_timezone.split(', timezone=')
         assert western == eval(western_repr)
         assert int(found_hour.strip()) == 1
         assert int(found_minute.strip()) == 2
