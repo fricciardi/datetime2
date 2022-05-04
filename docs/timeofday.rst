@@ -180,19 +180,18 @@ The Internet Time (or beat time) is a decimal time concept introduced in 1998,
 marketed by a large Swiss watch company, and divides the day in 1000 parts,
 called "beats". A beat is equivalent to 1 minute and 26.4 seconds. A `Wikipedia
 article <http://en.wikipedia.org/wiki/Swatch_Internet_Time>`_ describes
-the Internet time.
+the Internet time. The Internet time is aware by definition.
 
 The default constructor for Internet time is:
 
-.. class:: InternetTime(beat, aware=True)
+.. class:: InternetTime(beat)
 
    Return an object that represents the time in thousandths of a day. The
    ``beat`` argument is required and must be a rational number; its value must
    be equal or greater than 0 and less than 1000. If the argument is not a
-   Python number, a :exc:`TypeError` exception is raised. If the argument
+   rational number, a :exc:`TypeError` exception is raised. If the argument
    is outside its accepted range, a :exc:`ValueError` exception is raised.
-   If the ``aware`` argument is anything but ``True``, a naive instance will
-   be created.
+
 
 An :class:`InternetTime` object has one attribute:
 
@@ -233,3 +232,6 @@ Notes:
 
 (1)
    One thousandth of a beat is a millionth of a day, i.e. 86.4 milliseconds.
+
+
+.. TODO: Add French decimal time, needed for the overview page of documentation
