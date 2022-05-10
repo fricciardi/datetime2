@@ -232,6 +232,3 @@ Notes:
 
 (1)
    One thousandth of a beat is a millionth of a day, i.e. 86.4 milliseconds.
-
-
-.. TODO: Add French decimal time, needed for the overview page of documentation
