@@ -83,16 +83,27 @@ mixed like in dates:
 
 .. doctest::
 
-   >>> t1 = Time.western(15, 47, 16)
-   >>> t2 = Time.internet(895, False)
+   >>> t1 = Time.western(15, 47, 16, timezone=-6)
+   >>> t2 = Time.internet(895)
    >>> print(t1.western)
-   15:47:16
+   15:47:16-06:00
    >>> print(t1.internet)
-   @657
+   @949
    >>> print(t2.western)
-   21:28:48
+   21:28:48+01:00
    >>> print(t2.western.minute)
    28
+
+The reference between time objects can be either implicit time, i.e.
+depending on implementation (it usually is the local time, but can also be
+UTC). In the :mod:`datetime2` module, it is also possible to have an explicit
+reference to UTC, passed as an additional parameter to the constructors of
+:class:`Time` (like in assignment to ``t1`` above) and :class:`DateTime`.
+
+Many representations of the time of day of this module are aware by
+definition, so in those cases the UTC offset is implicit. E.g.,
+the :ref:`Internet time <internet-time>` representation used above is by
+definition on Basel time zone (UTC+1).
 
 Currently (version |release|) the time of day listed below are available.
 
@@ -147,54 +158,36 @@ representation (even if it is of little use):
 Where ``R.D.`` stands for Rata Die, the Latin for "fixed date".
 
 There is also a generic time of day internal representation: a moment of the
-day is represented as a fraction of the day, starting from midnight.
+day is represented as a fraction of the day, starting from midnight. Time of
+day can have the indication of the offset from UTC (see below), in which case
+the instance is said to be *aware*. When no such indication is given, the
+instance is said to be *naive*. To make a :class:`Time` instance aware, just
+pass the optional ``utcoffset`` parameter in the constructor. Also this
+parameter is passed as a fraction of a day.
 
 .. doctest::
 
    >>> t3 = Time(7, 10)
-   >>> t4 = Time(0.796875)
+   >>> t4 = Time(0.796875, utcoffset="1/4")
    >>> print(t3.western)
    16:48:00
-   >>> print(t3.internet)
-   @700
    >>> print(t4.western)
-   19:07:30
+   19:07:30+06:00
    >>> print(t4.internet)
-   @796
+   @588
 
 And again we can print the internal time of day:
 
 .. doctest::
 
    >>> print(t1)
-   14209/21600 of a day
+   14209/21600 of a day, -1/4 of a day from UTC
    >>> print(t2)
-   179/200 of a day
-
-UTC offset
-==========
-
-The reference between time objects can be either implicit time, i.e.
-depending on implementation (it usually is the local time, but can also be
-UTC). In the :mod:`datetime2` module, it is also possible to have an explicit
-reference to UTC, passed as an additional parameter to :class:`Time` and
-:class:`DateTime` object constructors. An instance that has been created with
-this explicit reference is said to be "aware",  without the object is said to
-be "naive".
-
-In some of the time of day representations of this module, the UTC offset is
-implicit. E.g., :ref:`Internet time <internet-time>` is by definition on
-Basel time zone, e.g. UTC+1. This means that only aware :class:`Time` objects
-can have such time representations[#itime]_.
+   179/200 of a day, 1/24 of a day from UTC
 
 
 .. [#book] "Calendrical Calculations: The Ultimate Edition",  E. M. Reingold,
-           N. Dershowitz, Cambridge University Press, 2018, and all its
-           previous versions
-
-.. [#itime] For the examples in this page, the
-            :ref:`Internet time <internet-time>` instance has been created
-            with a flag that makes it naive.
+           N. Dershowitz, Cambridge University Press, 2018
 
 .. seealso::
 
