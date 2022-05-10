@@ -36,7 +36,7 @@ __author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
 def verify_value(arguments, min=None, max=None, min_excl=None, max_excl=None):
     """Raised exceptions:
-    - RuntimeError: if both min and min:excl, or max and max_excl are provided.
+    - RuntimeError: if both min and min_excl, or max and max_excl are provided.
     - TypeError: if tuple argument for fraction is invalid or has worng values
                  (0 denominator, NaN or similar)
     - ValueError: if fractional value does not observe condition(s)."""
