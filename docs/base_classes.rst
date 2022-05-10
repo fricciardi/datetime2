@@ -300,7 +300,7 @@ Instance method:
    >>> t1 = Time(4, 12)
    >>> print(t1)
    1/3 of a day
-   >>> t2 = Time(3, 24, utcoffset=(-4, 24))
+   >>> t2 = Time(3, 24, utcoffset="-4/24")
    >>> print(t2)
    1/8 of a day, -1/6 of a day from UTC
 
