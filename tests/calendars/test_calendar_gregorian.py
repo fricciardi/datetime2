@@ -218,7 +218,8 @@ gregorian_invalid_data = [
 ]
 
 
-def test_000_constructor():
+def test_00_constructor():
+    # valid data
     for test_row in gregorian_test_data:
         year = test_row[2][0]
         month = test_row[2][1]
@@ -226,28 +227,6 @@ def test_000_constructor():
         greg = GregorianCalendar(year, month, day)
         assert (greg.year, greg.month, greg.day) == (year, month, day)
 
-
-def test_003_constructor_year_day():
-    for test_row in gregorian_test_data:
-        year = test_row[2][0]
-        month = test_row[2][1]
-        day = test_row[2][2]
-        doy = test_row[3]
-        greg_yd = GregorianCalendar.year_day(year, doy)
-        assert (greg_yd.year, greg_yd.month, greg_yd.day) == (year, month, day)
-
-
-def test_006_constructor_rata_die():
-    for test_row in gregorian_test_data:
-        rd = test_row[0]
-        year = test_row[2][0]
-        month = test_row[2][1]
-        day = test_row[2][2]
-        greg_rd = GregorianCalendar.from_rata_die(rd)
-        assert (greg_rd.year, greg_rd.month, greg_rd.day) == (year, month, day)
-
-
-def test_010_invalid_parameter_types():
     # exception with none, two or four parameters
     with pytest.raises(TypeError):
         GregorianCalendar()
@@ -255,6 +234,7 @@ def test_010_invalid_parameter_types():
         GregorianCalendar(1, 2)
     with pytest.raises(TypeError):
         GregorianCalendar(1, 2, 3, 4)
+
     # exception with non-numeric types
     for par in ("1", (1,), [1], {1: 1}, (), [], {}, None):
         with pytest.raises(TypeError):
@@ -263,6 +243,7 @@ def test_010_invalid_parameter_types():
             GregorianCalendar(1, par, 1)
         with pytest.raises(TypeError):
             GregorianCalendar(1, 1, par)
+
     # exception with invalid numeric types
     for par in (1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN):
         with pytest.raises(TypeError):
@@ -272,8 +253,25 @@ def test_010_invalid_parameter_types():
         with pytest.raises(TypeError):
             GregorianCalendar(1, 1, par)
 
+    # invalid values
+    for test_row in gregorian_invalid_data:
+        year = test_row[0]
+        month = test_row[1]
+        day = test_row[2]
+        with pytest.raises(ValueError):
+            GregorianCalendar(year, month, day)
 
-def test_013_invalid_parameter_types_year_day():
+
+def test_02_constructor_year_day():
+    # valid data
+    for test_row in gregorian_test_data:
+        year = test_row[2][0]
+        month = test_row[2][1]
+        day = test_row[2][2]
+        doy = test_row[3]
+        greg_yd = GregorianCalendar.year_day(year, doy)
+        assert (greg_yd.year, greg_yd.month, greg_yd.day) == (year, month, day)
+
     # exception with none, two or four parameters
     with pytest.raises(TypeError):
         GregorianCalendar.year_day()
@@ -286,6 +284,7 @@ def test_013_invalid_parameter_types_year_day():
             GregorianCalendar.year_day(par, 1)
         with pytest.raises(TypeError):
             GregorianCalendar.year_day(1, par)
+
     # exception with invalid numeric types
     for par in (1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN):
         with pytest.raises(TypeError):
@@ -293,39 +292,40 @@ def test_013_invalid_parameter_types_year_day():
         with pytest.raises(TypeError):
             GregorianCalendar.year_day(1, par)
 
+    #invalid values
+    for year, day_count in ((1, 0), (1, -1), (1, 366), (4, 367)):
+        with pytest.raises(ValueError):
+            GregorianCalendar.year_day(year, day_count)
 
-def test_016_invalid_parameter_types_rata_die():
+
+def test_09_constructor_rata_die():
+    # valid data
+    for test_row in gregorian_test_data:
+        rd = test_row[0]
+        year = test_row[2][0]
+        month = test_row[2][1]
+        day = test_row[2][2]
+        greg_rd = GregorianCalendar.from_rata_die(rd)
+        assert (greg_rd.year, greg_rd.month, greg_rd.day) == (year, month, day)
+
     # exception with none, two or four parameters
     with pytest.raises(TypeError):
         GregorianCalendar.from_rata_die()
     with pytest.raises(TypeError):
         GregorianCalendar.from_rata_die(1, 2)
+
     # exception with non-numeric types
     for par in ("1", (1,), [1], {1: 1}, (), [], {}, None):
         with pytest.raises(TypeError):
             GregorianCalendar.from_rata_die(par)
+
     # exception with invalid numeric types
     for par in (1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN):
         with pytest.raises(TypeError):
             GregorianCalendar.from_rata_die(par)
 
 
-def test_020_invalid_values():
-    for test_row in gregorian_invalid_data:
-        year = test_row[0]
-        month = test_row[1]
-        day = test_row[2]
-        with pytest.raises(ValueError):
-            GregorianCalendar(year, month, day)
-
-
-def test_023_invalid_values_year_day():
-    for year, day_count in ((1, 0), (1, -1), (1, 366), (4, 367)):
-        with pytest.raises(ValueError):
-            GregorianCalendar.year_day(year, day_count)
-
-
-def test_100_write_attribute():
+def test_20_attribute():
     greg = GregorianCalendar(1, 1, 1)
     with pytest.raises(AttributeError):
         greg.year = 3
@@ -335,7 +335,7 @@ def test_100_write_attribute():
         greg.day = 3
 
 
-def test_200_leap_years():
+def test_21_leap_years():
     # leap years
     for year in (-10000, -2000, -1996, -804, -800, -104, -4, 0,
                  10000, 2000, 1996, 804, 800, 104, 4):
@@ -348,93 +348,110 @@ def test_200_leap_years():
         assert GregorianCalendar.days_in_year(year) == 365
 
 
-def test_300_compare():
-    greg1 = GregorianCalendar(2, 3, 4)
-    greg2 = GregorianCalendar(2, 3, 4)
-    assert greg1 == greg2
-    assert greg1 <= greg2
-    assert greg1 >= greg2
-    assert not greg1 != greg2
-    assert not greg1 < greg2
-    assert not greg1 > greg2
+def test_30_repr():
+    import datetime2
 
-    for year, month, day in (3, 3, 3), (2, 4, 4), (2, 3, 5):
-        greg3 = GregorianCalendar(year, month, day)  # this is larger than greg1
-        assert greg1 < greg3
-        assert greg3 > greg1
-        assert greg1 <= greg3
-        assert greg3 >= greg1
-        assert greg1 != greg3
-        assert greg3 != greg1
-        assert not greg1 == greg3
-        assert not greg3 == greg1
-        assert not greg1 > greg3
-        assert not greg3 < greg1
-        assert not greg1 >= greg3
-        assert not greg3 <= greg1
-
-
-def test_310_compare_invalid_types():
-    class SomeClass:
-        pass
-
-    greg = GregorianCalendar(2, 3, 4)
-
-    # exception with non-numeric types
-    for par in ("1", (1,), [1], {1: 1}, (), [], {}, None):
-        assert not greg == par
-        assert greg != par
-        with pytest.raises(TypeError):
-            greg < par
-        with pytest.raises(TypeError):
-            greg > par
-        with pytest.raises(TypeError):
-            greg <= par
-        with pytest.raises(TypeError):
-            greg >= par
-    # exception with numeric types (all invalid) and other objects
-    for par in (1, 1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN, SomeClass()):
-        assert not greg == par
-        assert greg != par
-        with pytest.raises(TypeError):
-            greg < par
-        with pytest.raises(TypeError):
-            greg > par
-        with pytest.raises(TypeError):
-            greg <= par
-        with pytest.raises(TypeError):
-            greg >= par
-
-
-def test_320_hash_equality():
-    greg1 = GregorianCalendar(2000, 12, 31)
-    # same thing
-    greg2 = GregorianCalendar(2000, 12, 31)
-    assert hash(greg1) == hash(greg2)
-
-    dic = {greg1: 1}
-    dic[greg2] = 2
-    assert len(dic) == 1
-    assert dic[greg1] == 2
-    assert dic[greg2] == 2
-
-    greg3 = GregorianCalendar(200, 12, 31).replace(year = 2000)
-    assert hash(greg1) == hash(greg3)
-
-    dic[greg3] = 2
-    assert len(dic) == 1
-    assert dic[greg3] == 2
-
-
-def test_330_bool():
     for test_row in gregorian_test_data:
         year = test_row[2][0]
         month = test_row[2][1]
         day = test_row[2][2]
-        assert GregorianCalendar(year, month, day)
+        greg = GregorianCalendar(year, month, day)
+        greg_repr = repr(greg)
+        names, args = greg_repr.split('(')
+        assert names.split('.') == ['datetime2', 'western', 'GregorianCalendar']
+        args = args[:-1]  # drop ')'
+        for found, expected in zip(args.split(','), (year, month, day)):
+            assert int(found) == expected
+        assert greg == eval(greg_repr)
 
 
-def test_400_to_rata_die():
+def test_31_str():
+    for test_row in gregorian_test_data:
+        year = test_row[2][0]
+        month = test_row[2][1]
+        day = test_row[2][2]
+        greg = GregorianCalendar(year, month, day)
+        if year < 0:
+            expected = '-'
+            year = -year
+        else:
+            expected = ''
+        ys = str(year)
+        if len(ys) < 4:
+            expected += ('000' + ys)[-4:]
+        else:
+            expected += ys
+        expected += '-' + ('0' + str(month))[-2:]
+        expected += '-' + ('0' + str(day))[-2:]
+        assert str(greg) == expected
+
+
+def test_32_cformat():
+    # check numbers
+    for test_row in gregorian_test_data:
+        wday = test_row[1]
+        year = test_row[2][0]
+        month = test_row[2][1]
+        day = test_row[2][2]
+        doy = test_row[3]
+        greg = GregorianCalendar(year, month, day)
+        assert greg.cformat('%d') == '{:02d}'.format(day)
+        assert greg.cformat('%j') == '{:03d}'.format(doy)
+        assert greg.cformat('%m') == '{:02d}'.format(month)
+        assert greg.cformat('%w') == '{:d}'.format(wday)
+        if year >= 0:
+            assert greg.cformat('%y') == ('0' + str(year))[-2:]
+            assert greg.cformat('%Y') == '{:04d}'.format(year)
+        else:
+            assert greg.cformat('%y') == ('0' + str(-year))[-2:]
+            assert greg.cformat('%Y') == '-{:04d}'.format(-year)
+
+    # check names
+    weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    abbr_weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    months = ['January', 'February', 'March', 'April', 'May', 'June',
+              'July', 'August', 'September', 'October', 'November', 'December']
+    abbr_months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    for test_row in gregorian_test_data:
+        wday = test_row[1]
+        year = test_row[2][0]
+        month = test_row[2][1]
+        day = test_row[2][2]
+        greg = GregorianCalendar(year, month, day)
+        assert greg.cformat('%a') == abbr_weekdays[wday - 1]
+        assert greg.cformat('%A') == weekdays[wday - 1]
+        assert greg.cformat('%b') == abbr_months[month - 1]
+        assert greg.cformat('%B') == months[month - 1]
+
+    # check week numbers
+    for test_row in gregorian_test_data:
+        year = test_row[2][0]
+        month = test_row[2][1]
+        day = test_row[2][2]
+        WNS = test_row[4]
+        WNM = test_row[5]
+        greg = GregorianCalendar(year, month, day)
+        assert greg.cformat('%U')== WNS
+        assert greg.cformat('%W') == WNM
+
+    # check percent
+    greg = GregorianCalendar(1, 2, 3)
+    assert greg.cformat('%') == '%'
+    assert greg.cformat('%%') == '%'
+    assert greg.cformat('%%%') == '%%'
+    assert greg.cformat('abcd%') == 'abcd%'
+    assert greg.cformat('%k') == '%k'
+    assert greg.cformat('a%k') == 'a%k'
+    assert greg.cformat('%k%') == '%k%'
+
+    # invlaid parameter
+    greg = GregorianCalendar(1, 2, 3)
+    for par in (1, (1,), [1], {1: 1}, None):
+        with pytest.raises(TypeError):
+            greg.cformat(par)
+
+
+def test_50_to_rata_die():
     for test_row in gregorian_test_data:
         year = test_row[2][0]
         month = test_row[2][1]
@@ -443,25 +460,8 @@ def test_400_to_rata_die():
         assert GregorianCalendar(year, month, day).to_rata_die() == rd
 
 
-def test_410_weekday():
-    for test_row in gregorian_test_data:
-        year = test_row[2][0]
-        month = test_row[2][1]
-        day = test_row[2][2]
-        weekday = test_row[1]
-        assert GregorianCalendar(year, month, day).weekday() == weekday
-
-
-def test_420_day_of_year():
-    for test_row in gregorian_test_data:
-        year = test_row[2][0]
-        month = test_row[2][1]
-        day = test_row[2][2]
-        doy = test_row[3]
-        assert GregorianCalendar(year, month, day).day_of_year() == doy
-
-
-def test_430_replace():
+def test_51_replace():
+    # valid values
     for test_row in gregorian_test_data[:33]:   # take Calendrical Calculations tests data only (other may make replace fail, as in the next tests method)
         year = test_row[2][0]
         month = test_row[2][1]
@@ -476,8 +476,7 @@ def test_430_replace():
         assert greg.replace(day=9, month=10) == GregorianCalendar(year, 10, 9)
         assert greg.replace(day=9, month=10, year=11) == GregorianCalendar(11, 10, 9)
 
-
-def test_433_replace_invalid_types():
+    # invalid types
     greg = GregorianCalendar(11, 10, 9)
     # exception for positional parameters
     with pytest.raises(TypeError):
@@ -499,8 +498,7 @@ def test_433_replace_invalid_types():
         with pytest.raises(TypeError):
             greg.replace(day=par)
 
-
-def test_436_replace_invalid_values():
+    # invalid values
     greg1 = GregorianCalendar(11, 10, 9)
     with pytest.raises(ValueError):
         greg1.replace(month=0)
@@ -537,141 +535,20 @@ def test_436_replace_invalid_values():
             greg7.replace(day=day)
 
 
-def test_500_repr():
-    import datetime2
+def test_52_weekday():
     for test_row in gregorian_test_data:
         year = test_row[2][0]
         month = test_row[2][1]
         day = test_row[2][2]
-        greg = GregorianCalendar(year, month, day)
-        greg_repr = repr(greg)
-        names, args = greg_repr.split('(')
-        assert names.split('.') == ['datetime2', 'western', 'GregorianCalendar']
-        args = args[:-1]  # drop ')'
-        for found, expected in zip(args.split(','), (year, month, day)):
-            assert int(found) == expected
-        assert greg == eval(greg_repr)
+        weekday = test_row[1]
+        assert GregorianCalendar(year, month, day).weekday() == weekday
 
 
-def test_520_str():
+def test_53_day_of_year():
     for test_row in gregorian_test_data:
-        year = test_row[2][0]
-        month = test_row[2][1]
-        day = test_row[2][2]
-        greg = GregorianCalendar(year, month, day)
-        if year < 0:
-            expected = '-'
-            year = -year
-        else:
-            expected = ''
-        ys = str(year)
-        if len(ys) < 4:
-            expected += ('000' + ys)[-4:]
-        else:
-            expected += ys
-        expected += '-' + ('0' + str(month))[-2:]
-        expected += '-' + ('0' + str(day))[-2:]
-        assert str(greg) == expected
-
-
-def test_530_cformat_numbers():
-    for test_row in gregorian_test_data:
-        wday = test_row[1]
         year = test_row[2][0]
         month = test_row[2][1]
         day = test_row[2][2]
         doy = test_row[3]
-        greg = GregorianCalendar(year, month, day)
-        assert greg.cformat('%d') == '{:02d}'.format(day)
-        assert greg.cformat('%j') == '{:03d}'.format(doy)
-        assert greg.cformat('%m') == '{:02d}'.format(month)
-        assert greg.cformat('%w') == '{:d}'.format(wday)
-        if year >= 0:
-            assert greg.cformat('%y') == ('0' + str(year))[-2:]
-            assert greg.cformat('%Y') == '{:04d}'.format(year)
-        else:
-            assert greg.cformat('%y') == ('0' + str(-year))[-2:]
-            assert greg.cformat('%Y') == '-{:04d}'.format(-year)
-
-
-def test_540_cformat_names():
-    weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-    abbr_weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-    months = ['January', 'February', 'March', 'April', 'May', 'June',
-              'July', 'August', 'September', 'October', 'November', 'December']
-    abbr_months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    for test_row in gregorian_test_data:
-        wday = test_row[1]
-        year = test_row[2][0]
-        month = test_row[2][1]
-        day = test_row[2][2]
-        greg = GregorianCalendar(year, month, day)
-        assert greg.cformat('%a') == abbr_weekdays[wday - 1]
-        assert greg.cformat('%A') == weekdays[wday - 1]
-        assert greg.cformat('%b') == abbr_months[month - 1]
-        assert greg.cformat('%B') == months[month - 1]
-
-
-def test_550_cformat_week_number():
-    for test_row in gregorian_test_data:
-        year = test_row[2][0]
-        month = test_row[2][1]
-        day = test_row[2][2]
-        WNS = test_row[4]
-        WNM = test_row[5]
-        greg = GregorianCalendar(year, month, day)
-        assert greg.cformat('%U')== WNS
-        assert greg.cformat('%W') == WNM
-
-
-def test_560_cformat_percent():
-    greg = GregorianCalendar(1, 2, 3)
-    assert greg.cformat('%') == '%'
-    assert greg.cformat('%%') == '%'
-    assert greg.cformat('%%%') == '%%'
-    assert greg.cformat('abcd%') == 'abcd%'
-    assert greg.cformat('%k') == '%k'
-    assert greg.cformat('a%k') == 'a%k'
-    assert greg.cformat('%k%') == '%k%'
-
-
-def test_570_cformat_invalid_type():
-    greg = GregorianCalendar(1, 2, 3)
-    for par in (1, (1,), [1], {1: 1}, None):
-        with pytest.raises(TypeError):
-            greg.cformat(par)
-
-
-def test_900_pickling():
-    for test_row in gregorian_test_data:
-        year = test_row[2][0]
-        month = test_row[2][1]
-        day = test_row[2][2]
-        greg = GregorianCalendar(year, month, day)
-        for protocol in range(pickle.HIGHEST_PROTOCOL + 1):
-            pickled = pickle.dumps(greg, protocol)
-            derived = pickle.loads(pickled)
-            assert greg == derived
-
-
-def test_920_subclass():
-
-    class G(GregorianCalendar):
-        theAnswer = 42
-
-        def __init__(self, *args, **kws):
-            temp = kws.copy()
-            self.extra = temp.pop('extra')
-            GregorianCalendar.__init__(self, *args, **temp)
-
-        def newmeth(self, start):
-            return start + self.year + self.month
-
-    greg1 = GregorianCalendar(2003, 4, 14)
-    greg2 = G(2003, 4, 14, extra=7)
-
-    assert greg2.theAnswer == 42
-    assert greg2.extra == 7
-    assert greg1.to_rata_die() == greg2.to_rata_die()
-    assert greg2.newmeth(-7) == greg1.year + greg1.month - 7
+        assert GregorianCalendar(year, month, day).day_of_year() == doy
 
