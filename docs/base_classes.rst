@@ -37,18 +37,10 @@ There are two ways of creating a :class:`Date` instance:
    integer, otherwise a :exc:`TypeError` exception is raised. There is no
    restriction on its numeric value.
 
-..
-   tests in test_date.py:
-   - test_00_constructor_default
-
 
 .. classmethod:: Date.today()
 
    Return a :class:`Date` object that represents the current local date.
-
-..
-   tests in test_date.py:
-   - test_02_constructor_today
 
 
 :class:`Date` instances have one attribute:
@@ -59,20 +51,12 @@ There are two ways of creating a :class:`Date` instance:
    January 1\ :sup:`st`, year 1. This attribute is read-only: an
    :exc:`AttributeError` exception is raised when trying to change it.
 
-..
-   tests in test_date.py:
-   - test_20_attribute
 
 :class:`Date` instances are immutable, so they can be used as dictionary keys.
 When two aware instances indicate the same time, even if they have different
 UTC offsets, the have the same hash. The hash function takes into consideration also that They can also be pickled and unpickled.
 In boolean contexts, all :class:`Date` instances are considered to be true.
 
-..
-   tests in test_date.py:
-   - test_10_hash_equality
-   - test_11_pickling
-   - test_12_bool
 
 :class:`Date` has one instance method:
 
@@ -80,11 +64,6 @@ In boolean contexts, all :class:`Date` instances are considered to be true.
 
    Return ``R.D.`` followed by the day count. ``R.D.`` stands for Rata Die, the
    Latin for "fixed date".
-
-..
-   tests in test_date.py:
-   - test_30_repr
-   - test_31_str
 
 
 Available calendars
@@ -159,18 +138,6 @@ Notes:
    If the operator is one of the other four (``<=``, ``>``, ``>=`` or
    ``==``), a :exc:`TypeError` exception is raised.
 
-..
-   tests in test_date.py:
-   - test_40_operations
-   - test_41_comparisons
-
-
-
-..
-   other tests in test_date.py:
-   - test_90_subclass1
-   - test_91_subclass2
-
 
 
 :class:`Time` objects
@@ -210,11 +177,6 @@ There are five :class:`Time` constructors:
    -1 and less or equal to 1. A :exc:`ValueError` exception is raised if
    values are outside these ranges.
 
-..
-   tests in test_time.py:
-   - test_00_constructor_default
-   - test_01_constructor_default_numden
-   - test_02_constructor_default_w_utcoffset
 
 .. classmethod:: Time.now(utcoffset=None)
 
@@ -227,37 +189,24 @@ There are five :class:`Time` constructors:
    at the given time difference from UTC. ``utcoffset`` follows the same
    requirements of the default constructor.
 
-..
-   tests in test_time.py:
-   - test_03_constructor_now
-   - test_04_constructor_now_w_utcoffset
 
 .. classmethod:: Time.localnow()
 
    Return a naive :class:`Time` object that represents the current local
    standard time.
 
-..
-   tests in test_time.py:
-   - test_05_constructor_localnow
 
 .. classmethod:: Time.utcnow()
 
    Return a naive :class:`Time` object that represents the current standard
    UTC.
 
-..
-   tests in test_time.py:
-   - test_06_constructor_utcnow
 
 Two read-only attributes store the ``day_frac`` and ``utcoffset`` arguments.
 The former is always a Fraction object, the latter is either a Fraction
 object or ``None``, for naive time. An attempt to directly set the values of
 these two attributes will raise an :exc:`AttributeError` exception.
 
-..
-   tests in test_time.py:
-   - test_20_attributes
 
 :class:`Time` objects support comparison, where *time1* is considered less
 than *time2* when the former represents a moment earlier than the latter.
@@ -273,20 +222,11 @@ is returned. This allows a Time-like instance to perform reflected comparison
 if it is the second operator. In this case, the second object is responsible
 for checking naivety.
 
-..
-   tests in test_time.py:
-   - test_41_comparisons
-   - test_42_comparisons_with_utcoffset
 
 :class:`Time` instances are immutable, so they can be used as dictionary keys.
 They can also be pickled and unpickled. In boolean contexts, all :class:`Time`
 instances are considered to be true.
 
-..
-   tests in test_time.py:
-   - test_10_hash_equality
-   - test_11_pickling
-   - test_12_bool
 
 Instance method:
 
@@ -303,11 +243,6 @@ Instance method:
    >>> t2 = Time(3, 24, utcoffset="-4/24")
    >>> print(t2)
    1/8 of a day, -1/6 of a day from UTC
-
-..
-   tests in test_time.py:
-   - test_30_repr
-   - test_31_str
 
 
 Available time representations
@@ -347,11 +282,6 @@ Supported operations
 |                               | consideration. (5) (6) (7)                   |
 +-------------------------------+----------------------------------------------+
 
-..
-   tests in test_time.py:
-   - test_40_operations
-   - test_42_operations_and_naivety
-   - test_43_time_subtraction
 
 Notes:
 
@@ -400,10 +330,3 @@ Notes:
    ``time1 + (time2 - time1)`` compares equal to ``time2``, but it will have
    the same ``day_frac`` value only if the UTC offsets of ``time1`` and
    ``time2`` are equal.
-
-
-..
-   other tests in test_time.py:
-   - test_90_subclass1
-   - test_91_subclass2
-

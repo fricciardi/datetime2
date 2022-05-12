@@ -49,6 +49,7 @@ The default constructor for a Gregorian day is:
    If an argument is outside those ranges, a :exc:`ValueError` exception is
    raised.
 
+
 Another constructor can be used if the day in the year is known:
 
 .. classmethod:: GregorianCalendar.year_day(year, day_of_year)
@@ -72,6 +73,7 @@ A :class:`GregorianCalendar` object has three attributes:
    the number of days in the corresponding month. These attributes are read-only:
    an :exc:`AttributeError` exception is raised when trying to change any of them.
 
+
 Two static method have been implemented to return details of a Gregorian year:
 
 .. staticmethod:: GregorianCalendar.is_leap_year(year)
@@ -85,6 +87,7 @@ Two static method have been implemented to return details of a Gregorian year:
    Return 366 if *year* is a leap year in the Gregorian calendar, 365
    otherwise. For example, ``GregorianCalendar.days_in_year(2100) == 365``.
 
+
 An instance of the :class:`GregorianCalendar` class has the following
 methods:
 
@@ -95,11 +98,13 @@ methods:
    Note that this is the ISO convention for weekdays, *not* the one used by
    :meth:`datetime.date.weekday`, where Monday is 0 and Sunday is 6.
 
+
 .. method:: GregorianCalendar.day_of_year()
 
    Return the number of days elapsed since January 1\ :sup:`st`. The result
    is a number from 1 to 365 or 366 (in leap years). For example,
    ``GregorianCalendar(2008, 3, 1).day_of_year() == 61``.
+
 
 .. method:: GregorianCalendar.replace(year, month, day)
 
@@ -118,6 +123,7 @@ methods:
       Traceback (most recent call last):
         |
       ValueError: Day must be between 1 and number of days in month, while it is 31.
+
 
 .. method:: GregorianCalendar.__str__()
 
@@ -203,6 +209,7 @@ Notes:
 
 (3)
    Negative years will have a trailing ``'-'``.
+
 
 
 .. _iso-calendar:
@@ -347,3 +354,5 @@ Notes:
 
 (3)
    Negative years will have a trailing ``'-'``.
+
+
