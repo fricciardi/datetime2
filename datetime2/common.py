@@ -34,18 +34,28 @@ from fractions import Fraction
 __author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
 
-def verify_value(arguments, min=None, max=None, min_excl=None, max_excl=None):
+def verify_value(num, den, min, max, min_excl, max_excl, strict):
     """Raised exceptions:
     - RuntimeError: if both min and min_excl, or max and max_excl are provided.
-    - TypeError: if tuple argument for fraction is invalid or has worng values
+    - TypeError: if tuple argument for fraction is invalid or has wrong values
                  (0 denominator, NaN or similar)
     - ValueError: if fractional value does not observe condition(s)."""
     if min is not None and min_excl is not None:
         raise RuntimeError("Only one minimum value can be given.")
     if max is not None and max_excl is not None:
         raise RuntimeError("Only one maximum value can be given.")
+    if strict:
+        if den is None:
+            if not isinstance(num, Fraction):
+                raise TypeError("Value must be a Python Fraction.")
+            den = 1
+        else:
+            if not isinstance(num, Fraction):
+                raise TypeError("Numerator must be a Python Fraction.")
+            if not isinstance(den, Fraction):
+                raise TypeError("Denominator must be a Python Fraction.")
     try:
-        value = Fraction(*arguments)
+        value = Fraction(num, den)
     except TypeError as exc:
         raise TypeError("Invalid type in a fractional value.") from exc
     except (OverflowError, ValueError) as exc:
@@ -61,9 +71,9 @@ def verify_value(arguments, min=None, max=None, min_excl=None, max_excl=None):
     return value
 
 
-def verify_fractional_value(fractional, min=None, max=None, min_excl=None, max_excl=None):
-    return verify_value((fractional,), min, max, min_excl, max_excl)
+def verify_fractional_value(fractional, min=None, max=None, min_excl=None, max_excl=None, strict=False):
+    return verify_value(fractional, None, min, max, min_excl, max_excl, strict)
 
 
-def verify_fractional_value_num_den(numerator, denominator, min=None, max=None, min_excl=None, max_excl=None):
-    return verify_value((numerator, denominator), min, max, min_excl, max_excl)
+def verify_fractional_value_num_den(numerator, denominator, min=None, max=None, min_excl=None, max_excl=None, strict=False):
+    return verify_value(numerator, denominator, min, max, min_excl, max_excl, strict)
