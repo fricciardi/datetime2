@@ -5,6 +5,7 @@
 
    from datetime2 import Date
    from datetime2 import Time
+   from datetime2.western import GregorianCalendar
    from fractions import Fraction
 
 .. _interface:
@@ -69,11 +70,11 @@ different ways.
    >>> d = Date.gregorian(2013, 4, 22)
    >>> d.iso.week
    17
-   >>> t = Time(0.5)
+   >>> t = Time(0.5, utcoffset='-1/6')
    >>> str(t.western)
    '12:00:00'
    >>> t.internet.beat
-   Fraction(500, 1)
+   Fraction(625, 1)
 
 An intended feature of :mod:`datetime2` is that any representations is computed
 only once, when first accessed, then remains available to the base class.
