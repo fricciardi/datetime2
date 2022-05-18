@@ -62,7 +62,8 @@ def clean_Date(request):
     request.addfinalizer(clear_Date_class)
 
 
-def test_000_register_new_calendar(clean_Date):
+def test_00_register_new_calendar(clean_Date):
+    # valid call
     assert not hasattr(Date, "test_1")
     with pytest.raises(AttributeError):
         Date.test_1
@@ -70,15 +71,11 @@ def test_000_register_new_calendar(clean_Date):
     assert hasattr(Date, "test_1")
     Date.test_1
 
-
-def test_010_register_new_calendar_existing_calendar_or_attribute():
     with pytest.raises(AttributeError):
         Date.register_new_calendar("gregorian", ExampleTestCalendar)
     with pytest.raises(AttributeError):
         Date.register_new_calendar("day_count", ExampleTestCalendar)
 
-
-def test_020_register_new_calendar_invalid_attribute_name():
     with pytest.raises(ValueError):
         Date.register_new_calendar("", ExampleTestCalendar)
     with pytest.raises(ValueError):
@@ -86,8 +83,6 @@ def test_020_register_new_calendar_invalid_attribute_name():
     with pytest.raises(ValueError):
         Date.register_new_calendar(123, ExampleTestCalendar)
 
-
-def test_030_register_new_calendar_invalid_calendar_class():
     class NoFromCalendar:  # without from_rata_die
         def __init__(self, week, day):
             self.week = week
@@ -97,7 +92,7 @@ def test_030_register_new_calendar_invalid_calendar_class():
             return 7 * (self.week - 1) + self.day
 
     with pytest.raises(TypeError):
-        Date.register_new_calendar("test_1", NoFromCalendar)
+        Date.register_new_calendar("test_2", NoFromCalendar)
 
     class NoToCalendar:  # without to_rata_die
         def __init__(self, week, day):
@@ -109,10 +104,10 @@ def test_030_register_new_calendar_invalid_calendar_class():
             return cls((rata_die - 1) // 7 + 1, (rata_die - 1) % 7 + 1)
 
     with pytest.raises(TypeError):
-        Date.register_new_calendar("test_1", NoToCalendar)
+        Date.register_new_calendar("test_2", NoToCalendar)
 
 
-def test_040_registered_attribute_simple_class(clean_Date):
+def test_10_registered_cal_attribute_simple_class(clean_Date):
     Date.register_new_calendar("test_1", ExampleTestCalendar)
 
     # Date attribute type and metaclass are correct
@@ -142,7 +137,7 @@ def test_040_registered_attribute_simple_class(clean_Date):
     assert d1c.test_1.day == 3
 
 
-def test_043_registered_attribute_class_with_other_constructors(clean_Date):
+def test_12_registered_cal_attribute_class_with_other_constructors(clean_Date):
     class ExampleTestCalendar2(ExampleTestCalendar):
         @classmethod
         def with_thousands(cls, thousands, week, day):
@@ -180,7 +175,7 @@ def test_043_registered_attribute_class_with_other_constructors(clean_Date):
     assert d2c.test_2.day == 3
 
 
-def test_046_registered_attribute_class_with_static_methods(clean_Date):
+def test_14_registered_cal_attribute_class_with_static_methods(clean_Date):
     class ExampleTestCalendar3(ExampleTestCalendar):
         @staticmethod
         def is_odd(number):
@@ -225,7 +220,7 @@ def test_046_registered_attribute_class_with_static_methods(clean_Date):
     assert not d3c.test_3.is_odd(4)
 
 
-def test_100_date_has_attributes_but_instance_not():
+def test_16_Date_has_attributes_but_instance_not():
     # the date class aways has a registered attribute
     assert hasattr(Date, "gregorian")
     assert Date.gregorian
@@ -247,10 +242,11 @@ def test_100_date_has_attributes_but_instance_not():
     d3.gregorian
 
 
-def test_900_avoid_date_override():
+def test_90_avoid_date_override():
+    # In the past it happened that a date instance, created via a Gregorian calenader,
+    # was able to directly get an attribute which instead belonged to the calendar class.
+    # This is not desirable, better must be thought as an error.
     d = Date.gregorian(1, 1, 1)
-    # I do not want an instance of Date created through a Gregorian to have its static methods
-    # One of the implementation I used had this error and I want to avoid it
     with pytest.raises(AttributeError):
         getattr(d, "is_leap_year")
     with pytest.raises(AttributeError):
@@ -268,7 +264,7 @@ class ExampleTestTimeRepresentation:
         self.minute100 = minute100
 
     @classmethod
-    def from_time_pair(cls, day_frac, to_utc=None):
+    def from_time_pair(cls, day_frac, utcoffset=None):
         minutes_tot = day_frac * 10000
         hour100 = int(minutes_tot / 100)
         return cls(hour100, minutes_tot - hour100 * 100)
@@ -278,7 +274,7 @@ class ExampleTestTimeRepresentation:
 
 
 @pytest.fixture
-def class_Time_resource(request):
+def clean_Time(request):
     def clear_Time_class():
         for name in [name for name in Time.__dict__.keys() if name.startswith("test_")]:
             delattr(Time, name)
@@ -286,7 +282,8 @@ def class_Time_resource(request):
     request.addfinalizer(clear_Time_class)
 
 
-def test_000_register_new_time_repr(class_Time_resource):
+def test_200_register_new_time_repr(clean_Time):
+    # valid call
     assert not hasattr(Time, "test_1")
     with pytest.raises(AttributeError):
         Time.test_1
@@ -294,15 +291,13 @@ def test_000_register_new_time_repr(class_Time_resource):
     assert hasattr(Time, "test_1")
     Time.test_1
 
-
-def test_010_register_new_time_repr_existing_time_repr_or_attribute():
+    # existing time repr or attribute
     with pytest.raises(AttributeError):
         Time.register_new_time("western", ExampleTestTimeRepresentation)
     with pytest.raises(AttributeError):
         Time.register_new_time("day_frac", ExampleTestTimeRepresentation)
 
-
-def test_020_register_new_time_repr_invalid_attribute_name():
+    # invalid attribute name
     with pytest.raises(ValueError):
         Time.register_new_time("", ExampleTestTimeRepresentation)
     with pytest.raises(ValueError):
@@ -310,8 +305,7 @@ def test_020_register_new_time_repr_invalid_attribute_name():
     with pytest.raises(ValueError):
         Time.register_new_time(123, ExampleTestTimeRepresentation)
 
-
-def test_030_register_new_time_repr_invalid_time_repr_class():
+    # invalid time repr class
     class NoFromTimeRepr:  # without from_rata_die  TODO: shouldn't this comment be from_time_pair?
         def __init__(self, hour100, minute100):
             self.hour100 = hour100
@@ -321,7 +315,7 @@ def test_030_register_new_time_repr_invalid_time_repr_class():
             return Fraction(self.hour100 * 100 + self.minute100, 10000), None
 
     with pytest.raises(TypeError):
-        Time.register_new_time("test_1", NoFromTimeRepr)
+        Time.register_new_time("test_2", NoFromTimeRepr)
 
     class NoToTimeRepr:  # without to_rata_die
         def __init__(self, hour100, minute100):
@@ -335,10 +329,10 @@ def test_030_register_new_time_repr_invalid_time_repr_class():
             return cls(hour100, minutes_tot - hour100 * 100)
 
     with pytest.raises(TypeError):
-        Time.register_new_time("test_1", NoToTimeRepr)
+        Time.register_new_time("test_2", NoToTimeRepr)
 
 
-def test_040_registered_attribute_simple_class(class_Time_resource):
+def test_210_registered_time_attribute_simple_class(clean_Time):
     Time.register_new_time("test_1", ExampleTestTimeRepresentation)
 
     # Time attribute type and metaclass are correct
@@ -368,7 +362,7 @@ def test_040_registered_attribute_simple_class(class_Time_resource):
     assert t1c.test_1.minute100 == Fraction("275/24")
 
 
-def test_043_registered_attribute_class_with_other_constructors(class_Time_resource):
+def test_212_registered_time_attribute_class_with_other_constructors(clean_Time):
     class ExampleTestTimeRepresentation2(ExampleTestTimeRepresentation):
         @classmethod
         def with_seconds(cls, hour100, minute100, second100):
@@ -406,7 +400,7 @@ def test_043_registered_attribute_class_with_other_constructors(class_Time_resou
     assert t2c.test_2.minute100 == Fraction("275/24")
 
 
-def test_046_registered_attribute_class_with_static_methods(class_Time_resource):
+def test_214_registered_time_attribute_class_with_static_methods(clean_Time):
     class ExampleTestTimeRepresentation3(ExampleTestTimeRepresentation):
         @staticmethod
         def is_odd(number):
@@ -451,7 +445,7 @@ def test_046_registered_attribute_class_with_static_methods(class_Time_resource)
     assert not t3c.test_3.is_odd(4)
 
 
-def test_100_Time_has_attributes_but_instance_not():
+def test_216_Time_has_attributes_but_instance_not():
     # the Time class aways has a registered attribute
     assert hasattr(Time, "western")
     assert Time.western
@@ -473,21 +467,21 @@ def test_100_Time_has_attributes_but_instance_not():
     t3.western
 
 
-def test_110_naivety_is_preserved():
+def test_230_naivety_is_preserved():
     class NaivetyCheck:
-        def __init__(self, hour100, minute100, to_utc=None):
+        def __init__(self, hour100, minute100, utcoffset=None):
             self.hour100 = hour100
             self.minute100 = minute100
-            self.to_utc = to_utc
+            self.utcoffset = utcoffset
 
         def to_time_pair(self):
-            return Fraction(self.hour100 * 100 + self.minute100, 10000), None
+            return Fraction(self.hour100 * 100 + self.minute100, 10000), self.utcoffset
 
         @classmethod
-        def from_time_pair(cls, day_frac, to_utc=None):
+        def from_time_pair(cls, day_frac, utcoffset=None):
             minutes_tot = day_frac * 10000
             hour100 = int(minutes_tot / 100)
-            return cls(hour100, minutes_tot - hour100 * 100)
+            return cls(hour100, minutes_tot - hour100 * 100, utcoffset=utcoffset)
 
     Time.register_new_time("test_1", NaivetyCheck)
 
@@ -500,5 +494,5 @@ def test_110_naivety_is_preserved():
     t3 = Time.test_1(11, 12)
     assert t3.utcoffset is None
 
-    t4 = Time.test_1(11, 12, to_utc=0)
+    t4 = Time.test_1(11, 12, utcoffset=0)
     assert t4.utcoffset is not None
