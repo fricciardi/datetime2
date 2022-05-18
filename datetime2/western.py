@@ -336,23 +336,16 @@ class WesternTime:
 # todo: Fix from_time_pair and to_time_pair
     @classmethod
     def from_time_pair(cls, day_frac, utcoffset):
-        if not isinstance(day_frac, Fraction):
-            raise TypeError("Fraction argument expected for day fraction")
-        day_frac_valid = verify_fractional_value(day_frac, min=0, max_excl=1)
+        day_frac_valid = verify_fractional_value(day_frac, min=0, max_excl=1, strict=True)
+        hour = int(day_frac * 24)
+        minute = int((day_frac - Fraction(hour, 24)) * 1440)
+        second = (day_frac - Fraction(hour, 24) - Fraction(minute, 1440)) * 86400
         if utcoffset is None:
-            hour = int(day_frac * 24)
-            minute = int((day_frac - Fraction(hour, 24)) * 1440)
-            second = (day_frac - Fraction(hour, 24) - Fraction(minute, 1440)) * 86400
             western = cls(hour, minute, second)
             return western
         else:
-            if not isinstance(utcoffset, Fraction):
-                raise TypeError("Fraction argument expected for fraction from UTC")
-            timezone_valid = verify_fractional_value(utcoffset, min=-1, max=1)
-            hour = int(day_frac_valid * 24)
-            minute = int((day_frac_valid - Fraction(hour, 24)) * 1440)
-            second = (day_frac_valid - Fraction(hour, 24) - Fraction(minute, 1440)) * 86400
-            western = cls(hour, minute, second, timezone=timezone_valid * 24)
+            utcoffset_valid = verify_fractional_value(utcoffset, min=-1, max=1, strict=True)
+            western = cls(hour, minute, second, timezone=utcoffset_valid * 24)
             return western
 
     def to_time_pair(self):

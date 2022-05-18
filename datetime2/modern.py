@@ -303,16 +303,12 @@ class InternetTime:
         return self._beat
 
     @classmethod
-    def from_time_pair(cls, day_frac, to_utc):
-        if not isinstance(day_frac, Fraction):
-            raise TypeError("Fraction argument expected for day fraction")
-        if not isinstance(to_utc, Fraction):
-            raise TypeError("Fraction argument expected for fraction to UTC")
-        if day_frac < 0 or day_frac >= 1:
-            raise ValueError("Day fraction must be equal or greater than 0 and less than 1, while it is {}.".format(day_frac))
-        if to_utc < -1 or to_utc > 1:
-            raise ValueError("Fraction to UTC must be greater or equal to -1 and less or equal to 1, while it is {}.".format(day_frac))
-        utc_time = day_frac - to_utc
+    def from_time_pair(cls, day_frac, utcoffset):
+        day_frac_valid = verify_fractional_value(day_frac, min=0, max_excl=1, strict=True)
+        if utcoffset is None:
+            raise TypeError("Internet time can only be used for aware Time instances.")
+        utcoffset_valid = verify_fractional_value(utcoffset, min=-1, max=1, strict=True)
+        utc_time = day_frac_valid - utcoffset_valid
         beat = (utc_time - floor(utc_time)) * 1000
         internet = cls(beat)
         return internet
