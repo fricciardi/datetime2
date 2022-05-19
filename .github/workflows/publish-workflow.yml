@@ -1,0 +1,54 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Publish workflow
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  debug:
+    name: Debug
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.10" ]
+    steps:
+    - name: debug
+      run: |
+        echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+
+  build-n-publish:
+    name: Build and publish to PyPI and TestPyPI
+    if: startsWith(github.ref, 'refs/tags')
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.10" ]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install setuptools wheel twine
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: debug
+      run: |
+        echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+    - name: Build Package
+      run: |
+        python setup.py sdist bdist_wheel
+    - name: Publish distribution to TestPyPI
+      if: contains(github.ref, 'dev')
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        repository_url: https://test.pypi.org/legacy/
+

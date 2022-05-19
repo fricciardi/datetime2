@@ -77,6 +77,9 @@ jobs:
     - name: Build Package
       run: |
         python setup.py sdist bdist_wheel
+    - name: Build Package
+      run: |
+        python setup.py sdist bdist_wheel
     - name: Publish distribution to TestPyPI
       if: startsWith(github.ref, 'refs/tags') && contains(github.ref, 'dev')
       uses: pypa/gh-action-pypi-publish@master
