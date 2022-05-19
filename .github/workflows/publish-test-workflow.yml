@@ -6,11 +6,11 @@ name: Publish workflow
 on:
   push:
     tags:
-      - '!*dev*'
+      - '*dev*'
 
 jobs:
   build-n-publish:
-    name: Build and publish to PyPI
+    name: Build and publish to TestPyPI
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -33,5 +33,6 @@ jobs:
     - name: Publish distribution to TestPyPI
       uses: pypa/gh-action-pypi-publish@master
       with:
-        password: ${{ secrets.PYPI_API_TOKEN }}
+        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        repository_url: https://test.pypi.org/legacy/
 
