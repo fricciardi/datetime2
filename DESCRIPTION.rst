@@ -1,26 +1,21 @@
 datetime2
 =========
 
-.. image:: https://travis-ci.org/fricciardi/datetime2.svg?branch=master
-   :target: https://travis-ci.org/fricciardi/datetime2
-
 .. image:: https://readthedocs.org/projects/datetime2/badge/?version=stable
    :target: https://datetime2.readthedocs.io/en/stable/?badge=stable
+
+.. image:: https://github.com/fricciardi/datetime2/actions/workflows/publish-workflow.yml/badge.svg
+   :target: https://github.com/fricciardi/datetime2/actions/workflows/publish-workflow.yml
 
 .. image:: https://img.shields.io/badge/License-BSD-green.svg
    :target: https://opensource.org/licenses/BSD-3-Clause
 
 The `datetime2 <http://pypi.org/project/datetime2>`_ implements the same
 features the standard
-`datetime <https://docs.python.org/3.7/library/datetime.html>`_ module has,
+`datetime <https://docs.python.org/3/library/datetime.html>`_ module has,
 and adds the capability of constructing and representing date and time
 in many formats. Additionally, it removes a few limits that the original
 package has.
-
-Documentation is hosted at
-`ReadtheDocs <https://datetime2.readthedocs.io/en/stable/?badge=stable>`_.
-
-Code is hosted at `GitHub <http://github.com/fricciardi/datetime2>`_.
 
 *datetime2* is a one-man, free-time work.
 
