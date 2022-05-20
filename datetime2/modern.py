@@ -37,7 +37,6 @@ __all__ = ["IsoCalendar"]
 
 import bisect
 from fractions import Fraction
-from functools import total_ordering
 from math import floor
 
 from datetime2 import verify_fractional_value
@@ -124,14 +123,15 @@ for year_index in range(1, 400):
         _weeks_in_previous_years[-1] + (52 if year_index not in _long_years else 53)
     )
 
+
 # This code pretty prints the week-in-previous-years list
 # for row in range (20):
 #    print('{:3d}: {}'.format(row * 20, " ".join(['{:5d}'.format(_weeks_in_previous_years[y + row * 20]) for y in range(20)])))
 
+
 ##############################################################################
 # Iso calendar
 #
-@total_ordering
 class IsoCalendar:
     def __init__(self, year, week, day):
         if not isinstance(year, int) or not isinstance(week, int) or not isinstance(day, int):
@@ -207,29 +207,6 @@ class IsoCalendar:
             day = self.day
         return self.__class__(year, week, day)
 
-    # Comparison operators
-    def __eq__(self, other):
-        return (
-            isinstance(other, IsoCalendar)
-            and self.year == other.year
-            and self.week == other.week
-            and self.day == other.day
-        )
-
-    def __gt__(self, other):
-        if isinstance(other, IsoCalendar):
-            return (self.year, self.week, self.day) > (
-                other.year,
-                other.week,
-                other.day,
-            )
-        else:
-            return NotImplemented
-
-    # hash value
-    def __hash__(self):
-        return hash((self.year, self.week, self.day))
-
     def __repr__(self):
         return "datetime2.modern.{}({}, {}, {})".format(
             self.__class__.__name__, self.year, self.week, self.day
@@ -287,7 +264,6 @@ class IsoCalendar:
 ##############################################################################
 # Internet time representation
 #
-@total_ordering
 class InternetTime:
     def __init__(self, beat):
         try:
@@ -315,20 +291,6 @@ class InternetTime:
 
     def to_time_pair(self):
         return self._beat / 1000, Fraction(-1, 24)
-
-    # Comparison operators
-    def __eq__(self, other):
-        return isinstance(other, InternetTime) and self.beat == other.beat
-
-    def __gt__(self, other):
-        if isinstance(other, InternetTime):
-            return self.beat > other.beat
-        else:
-            return NotImplemented
-
-    # hash value
-    def __hash__(self):
-        return hash(self.beat)
 
     def __repr__(self):
         return "datetime2.modern.{}({})".format(

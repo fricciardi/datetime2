@@ -73,6 +73,10 @@ internet_time_millibeat = [
 ]
 
 
+def internet_equal(first, second):
+    return first.beat == second.beat
+
+
 def test_00_constructor():
     # valid types
     for beat in (11, "11", Decimal("11"), Fraction(11, 1)):
@@ -193,7 +197,7 @@ def test_30_repr():
         internet_repr = repr(internet)
         assert internet_repr.startswith("datetime2.modern.InternetTime(") and internet_repr.endswith(")")
         args = internet_repr[30:-1]
-        assert internet == eval(internet_repr)
+        assert internet_equal(internet, eval(internet_repr))
         assert Fraction(eval(args)) == beat
 
 

@@ -217,6 +217,10 @@ gregorian_invalid_data = [
 ]
 
 
+def gregorian_equal(first, second):
+    return first.year == second.year and first.month == second.month and first.day == second.day
+
+
 def test_00_constructor():
     # valid data
     for test_row in gregorian_test_data:
@@ -361,7 +365,7 @@ def test_30_repr():
         args = args[:-1]  # drop ')'
         for found, expected in zip(args.split(','), (year, month, day)):
             assert int(found) == expected
-        assert greg == eval(greg_repr)
+        assert gregorian_equal(greg, eval(greg_repr))
 
 
 def test_31_str():
@@ -466,14 +470,14 @@ def test_51_replace():
         month = test_row[2][1]
         day = test_row[2][2]
         greg = GregorianCalendar(year, month, day)
-        assert greg.replace() == GregorianCalendar(year, month, day)
-        assert greg.replace(year=11) == GregorianCalendar(11, month, day)
-        assert greg.replace(month=10) == GregorianCalendar(year, 10, day)
-        assert greg.replace(day=9) == GregorianCalendar(year, month, 9)
-        assert greg.replace(month=10, year=11) == GregorianCalendar(11, 10, day)
-        assert greg.replace(day=9, year=11) == GregorianCalendar(11, month, 9)
-        assert greg.replace(day=9, month=10) == GregorianCalendar(year, 10, 9)
-        assert greg.replace(day=9, month=10, year=11) == GregorianCalendar(11, 10, 9)
+        assert gregorian_equal(greg.replace(), GregorianCalendar(year, month, day))
+        assert gregorian_equal(greg.replace(year=11), GregorianCalendar(11, month, day))
+        assert gregorian_equal(greg.replace(month=10), GregorianCalendar(year, 10, day))
+        assert gregorian_equal(greg.replace(day=9), GregorianCalendar(year, month, 9))
+        assert gregorian_equal(greg.replace(month=10, year=11), GregorianCalendar(11, 10, day))
+        assert gregorian_equal(greg.replace(day=9, year=11), GregorianCalendar(11, month, 9))
+        assert gregorian_equal(greg.replace(day=9, month=10), GregorianCalendar(year, 10, 9))
+        assert gregorian_equal(greg.replace(day=9, month=10, year=11), GregorianCalendar(11, 10, 9))
 
     # invalid types
     greg = GregorianCalendar(11, 10, 9)

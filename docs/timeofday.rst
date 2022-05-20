@@ -12,16 +12,6 @@ This chapter lists the time representations classes available in the
 :mod:`datetime2` package. Of course, they all conform to the requirements for
 interface classes listed in :ref:`customization`.
 
-As such, they all have the six standard comparison operators: ``<``, ``>``, ``==``,
-``>=``, ``<=``, and ``!=``, which return a meaningful result when comparing
-calendar objects of the same type. When comparing a calendar object with an
-object of a different type, the ``==`` and ``!=`` operators *always* consider
-them to be unequal, while the ``<``, ``>``, ``>=`` and ``<=`` operators raise
-a :exc:`TypeError` exception.
-
-Description of the comparison operators and interface methods is then omitted
-from the time of day class descriptions below.
-
 .. TODO: if we will be keeping all time representations on a page, a ToC here will be useful
 
 In the following we define as *rational number* anything that can be

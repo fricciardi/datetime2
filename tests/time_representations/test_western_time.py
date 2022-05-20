@@ -145,6 +145,20 @@ timezone_cformat_test_data = [
 ]
 
 
+def western_exactly_equal(first, second):
+    if first.timezone is None:
+        if second.timezone is not None:
+            return False
+        else:
+            return first.hour == second.hour and first.minute == second.minute and first.second == second.second
+    else:
+        if second.timezone is None:
+            return False
+        else:
+            return first.hour == second.hour and first.minute == second.minute and first.second == second.second and first.timezone == second.timezone
+
+
+
 def test_00_constructor():
     # check all types for seconds are accepted
     for integer_second in (3, '3'):
@@ -330,7 +344,7 @@ def test_30_repr():
         assert western_repr.startswith('datetime2.western.WesternTime(') and western_repr.endswith(')')
         args = western_repr[30:-1]
         found_hour, found_minute, found_second = args.split(',', 2)
-        assert western == eval(western_repr)
+        assert western_exactly_equal(western, eval(western_repr))
         assert int(found_hour.strip()) == hour
         assert int(found_minute.strip()) == minute
         assert eval(found_second) == second
@@ -341,7 +355,7 @@ def test_30_repr():
         args = western_repr[30:-1]
         found_hour, found_minute, second_and_timezone = args.split(',', 2)
         found_second, found_timezone = second_and_timezone.split(', timezone=')
-        assert western == eval(western_repr)
+        assert western_exactly_equal(western, eval(western_repr))
         assert int(found_hour.strip()) == 1
         assert int(found_minute.strip()) == 2
         assert eval(found_second) == Fraction(3, 1)
@@ -435,19 +449,19 @@ def test_51_replace():
         minute = test_row[1][1]
         second = Fraction(test_row[1][2])
         western = WesternTime(hour, minute, second)
-        assert western.replace() == WesternTime(hour, minute, second)
-        assert western.replace(hour=11) == WesternTime(11, minute, second)
-        assert western.replace(minute=10) == WesternTime(hour, 10, second)
-        assert western.replace(second=9) == WesternTime(hour, minute, 9)
-        assert western.replace(minute=10, hour=11) == WesternTime(11, 10, second)
-        assert western.replace(second=9, hour=11) == WesternTime(11, minute, 9)
-        assert western.replace(second=9, minute=10) == WesternTime(hour, 10, 9)
-        assert western.replace(second=9, minute=10, hour=11) == WesternTime(11, 10, 9)
+        assert western_exactly_equal(western.replace(),  WesternTime(hour, minute, second))
+        assert western_exactly_equal(western.replace(hour=11),  WesternTime(11, minute, second))
+        assert western_exactly_equal(western.replace(minute=10),  WesternTime(hour, 10, second))
+        assert western_exactly_equal(western.replace(second=9),  WesternTime(hour, minute, 9))
+        assert western_exactly_equal(western.replace(minute=10, hour=11),  WesternTime(11, 10, second))
+        assert western_exactly_equal(western.replace(second=9, hour=11),  WesternTime(11, minute, 9))
+        assert western_exactly_equal(western.replace(second=9, minute=10),  WesternTime(hour, 10, 9))
+        assert western_exactly_equal(western.replace(second=9, minute=10, hour=11),  WesternTime(11, 10, 9))
     for test_timezone in timezone_test_data:
         western = WesternTime(1, 2, 3, timezone=test_timezone[0])
-        assert western.replace(hour=11, timezone=-1) == WesternTime(11, 2, 3, timezone=-1)
-        assert western.replace(minute=22, timezone=2) == WesternTime(1, 22, 3, timezone=2)
-        assert western.replace(second=33, timezone=-3) == WesternTime(1, 2, 33, timezone=-3)
+        assert western_exactly_equal(western.replace(hour=11, timezone=-1),  WesternTime(11, 2, 3, timezone=-1))
+        assert western_exactly_equal(western.replace(minute=22, timezone=2),  WesternTime(1, 22, 3, timezone=2))
+        assert western_exactly_equal(western.replace(second=33, timezone=-3),  WesternTime(1, 2, 33, timezone=-3))
 
     ### invalid types
     western = WesternTime(11, 10, 9)

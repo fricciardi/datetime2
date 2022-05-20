@@ -215,6 +215,10 @@ iso_invalid_data = [
 ]
 
 
+def iso_equal(first, second):
+    return first.year == second.year and first.week == second.week and first.day == second.day
+
+
 def test_00_constructor():
     for test_row in iso_test_data:
         year = test_row[1]
@@ -325,7 +329,7 @@ def test_30_repr():
         args = args[:-1] # drop ')'
         for found, expected in zip(args.split(','), (year, week, day)):
             assert int(found) == expected
-        assert iso == eval(iso_repr)
+        assert iso_equal(iso, eval(iso_repr))
 
 
 def test_31_str():
@@ -408,14 +412,14 @@ def test_51_replace():
         week = test_row[2]
         day = test_row[3]
         iso = IsoCalendar(year, week, day)
-        assert iso.replace() == IsoCalendar(year, week, day)
-        assert iso.replace(year=11) == IsoCalendar(11, week, day)
-        assert iso.replace(week=10) == IsoCalendar(year, 10, day)
-        assert iso.replace(day=2) == IsoCalendar(year, week, 2)
-        assert iso.replace(week=10, year=11) == IsoCalendar(11, 10, day)
-        assert iso.replace(day=3, year=11) == IsoCalendar(11, week, 3)
-        assert iso.replace(day=4, week=10) == IsoCalendar(year, 10, 4)
-        assert iso.replace(day=1, week=10, year=11) == IsoCalendar(11, 10, 1)
+        assert iso_equal(iso.replace(),  IsoCalendar(year, week, day))
+        assert iso_equal(iso.replace(year=11),  IsoCalendar(11, week, day))
+        assert iso_equal(iso.replace(week=10),  IsoCalendar(year, 10, day))
+        assert iso_equal(iso.replace(day=2),  IsoCalendar(year, week, 2))
+        assert iso_equal(iso.replace(week=10, year=11),  IsoCalendar(11, 10, day))
+        assert iso_equal(iso.replace(day=3, year=11),  IsoCalendar(11, week, 3))
+        assert iso_equal(iso.replace(day=4, week=10),  IsoCalendar(year, 10, 4))
+        assert iso_equal(iso.replace(day=1, week=10, year=11),  IsoCalendar(11, 10, 1))
 
     # test invalid types
     iso = IsoCalendar(11, 10, 4)

@@ -35,7 +35,6 @@ __author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
 import bisect
 from fractions import Fraction
-from functools import total_ordering
 from math import floor
 
 from .common import verify_fractional_value
@@ -54,7 +53,6 @@ _days_in_previous_months = [
 ##############################################################################
 # Gregorian calendar
 #
-@total_ordering
 class GregorianCalendar:
     def __init__(self, year, month, day):
         if (
@@ -178,29 +176,6 @@ class GregorianCalendar:
         if day is None:
             day = self.day
         return self.__class__(year, month, day)
-
-    # Comparison operators
-    def __eq__(self, other):
-        return (
-            isinstance(other, GregorianCalendar)
-            and self.year == other.year
-            and self.month == other.month
-            and self.day == other.day
-        )
-
-    def __gt__(self, other):
-        if isinstance(other, GregorianCalendar):
-            return (self.year, self.month, self.day) > (
-                other.year,
-                other.month,
-                other.day,
-            )
-        else:
-            return NotImplemented
-
-    # hash value
-    def __hash__(self):
-        return hash((self.year, self.month, self.day))
 
     def __repr__(self):
         return "datetime2.western.{}({}, {}, {})".format(
@@ -441,15 +416,3 @@ class WesternTime:
                 chunk_pieces.append(part[1:])
             output_pieces.append("".join(chunk_pieces))
         return "%".join(output_pieces)
-
-    def __eq__(self, other):
-        if self.timezone is None:
-            if other.timezone is None:
-                return self.hour == other.hour and self.minute == other.minute and self.second == other.second
-            else:
-                return False
-        else:
-            if other.timezone is not None:
-                return self.hour == other.hour and self.minute == other.minute and self.second == other.second and self.timezone == other.timezone
-            else:
-                return False
