@@ -27,8 +27,6 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# TODO: remove all uses of __class__
-
 __author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
 
@@ -193,10 +191,10 @@ class IsoCalendar:
             week = self.week
         if day is None:
             day = self.day
-        return self.__class__(year, week, day)
+        return type(self)(year, week, day)
 
     def __repr__(self):
-        return "datetime2.modern.{}({}, {}, {})".format(self.__class__.__name__, self.year, self.week, self.day)
+        return "datetime2.modern.{}({}, {}, {})".format(type(self).__name__, self.year, self.week, self.day)
 
     def __str__(self):
         if self.year >= 0:
@@ -279,7 +277,7 @@ class InternetTime:
         return self._beat / 1000, Fraction(-1, 24)
 
     def __repr__(self):
-        return "datetime2.modern.{}({})".format(self.__class__.__name__, repr(self.beat))
+        return "datetime2.modern.{}({})".format(type(self).__name__, repr(self.beat))
 
     def __str__(self):
         return "@{:03d}".format(int(self.beat))

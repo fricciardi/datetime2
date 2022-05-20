@@ -31,8 +31,6 @@ __author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
 # TODO: change all .format( to formatted string literal. Check also in other source files
 
-# TODO: remove all uses of __class__
-
 
 import time
 from fractions import Fraction
@@ -112,7 +110,7 @@ class Date:
         return self._day_count
 
     def __repr__(self):
-        return "datetime2.{}({})".format(self.__class__.__name__, self.day_count)
+        return "datetime2.{}({})".format(type(self).__name__, self.day_count)
 
     def __str__(self):
         return "R.D. {}".format(self.day_count)
@@ -121,7 +119,7 @@ class Date:
         if isinstance(other, TimeDelta):
             if other.days != floor(other.days):
                 raise ValueError("Date object cannot be added to non integral TimeDelta.")
-            return self.__class__(self.day_count + floor(other.days))  # this way we ensure day count is integer
+            return type(self)(self.day_count + floor(other.days))  # this way we ensure day count is integer
         else:
             return NotImplemented
 
@@ -133,7 +131,7 @@ class Date:
         elif isinstance(other, TimeDelta):
             if other.days != floor(other.days):
                 raise ValueError("Non integral TimeDelta cannot be subtracted from Date.")
-            return self.__class__(self.day_count - floor(other.days))
+            return type(self)(self.day_count - floor(other.days))
         else:
             return NotImplemented
 
@@ -295,9 +293,9 @@ class Time:
 
     def __repr__(self):
         if self.utcoffset is None:
-            return "datetime2.{}('{}')".format(self.__class__.__name__, str(self.day_frac))
+            return "datetime2.{}('{}')".format(type(self).__name__, str(self.day_frac))
         else:
-            return "datetime2.{}('{}', utcoffset='{}')".format(self.__class__.__name__, str(self.day_frac), str(self.utcoffset))
+            return "datetime2.{}('{}', utcoffset='{}')".format(type(self).__name__, str(self.day_frac), str(self.utcoffset))
 
     def __str__(self):
         if self.utcoffset is None:

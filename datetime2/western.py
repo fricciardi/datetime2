@@ -29,7 +29,6 @@
 
 __author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
-# TODO: remove all uses of __class__
 
 import bisect
 from fractions import Fraction
@@ -134,10 +133,10 @@ class GregorianCalendar:
             month = self.month
         if day is None:
             day = self.day
-        return self.__class__(year, month, day)
+        return type(self)(year, month, day)
 
     def __repr__(self):
-        return "datetime2.western.{}({}, {}, {})".format(self.__class__.__name__, self.year, self.month, self.day)
+        return "datetime2.western.{}({}, {}, {})".format(type(self).__name__, self.year, self.month, self.day)
 
     def __str__(self):
         if self.year >= 0:
@@ -296,7 +295,7 @@ class WesternTime:
 
     def __repr__(self):
         if self.timezone is None:
-            return "datetime2.western.{}({}, {}, {})".format(self.__class__.__name__, self.hour, self.minute, repr(self.second))
+            return "datetime2.western.{}({}, {}, {})".format(type(self).__name__, self.hour, self.minute, repr(self.second))
         else:
             return f"datetime2.western.{type(self).__name__}({self.hour}, {self.minute}, {self.second!r}, timezone={self.timezone!r})"
 

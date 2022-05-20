@@ -29,7 +29,6 @@
 
 __author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
-# TODO: remove all uses of __class__
 
 from fractions import Fraction
 import pytest
@@ -124,7 +123,7 @@ def test_10_registered_cal_attribute_simple_class(clean_Date):
     d1b = Date(1000)
     assert isinstance(d1b.test_1, ExampleTestCalendar)
     assert type(d1b.test_1).__name__ == "ExampleTestCalendarInDate"
-    assert type(d1b.test_1.__class__).__name__ == "ModifiedClass"
+    assert type(type(d1b.test_1)).__name__ == "ModifiedClass"
     assert d1b.test_1.week == 143
     assert d1b.test_1.day == 6
 
@@ -132,7 +131,7 @@ def test_10_registered_cal_attribute_simple_class(clean_Date):
     d1c = Date.gregorian(100, 2, 3)
     assert isinstance(d1c.test_1, ExampleTestCalendar)
     assert type(d1c.test_1).__name__ == "ExampleTestCalendarInDate"
-    assert type(d1c.test_1.__class__).__name__ == "ModifiedClass"
+    assert type(type(d1c.test_1)).__name__ == "ModifiedClass"
     assert d1c.test_1.week == 5171
     assert d1c.test_1.day == 3
 
@@ -162,7 +161,7 @@ def test_12_registered_cal_attribute_class_with_other_constructors(clean_Date):
     d2b = Date(1000)
     assert isinstance(d2b.test_2, ExampleTestCalendar2)
     assert type(d2b.test_2).__name__ == "ExampleTestCalendar2InDate"
-    assert type(d2b.test_2.__class__).__name__ == "ModifiedClass"
+    assert type(type(d2b.test_2)).__name__ == "ModifiedClass"
     assert d2b.test_2.week == 143
     assert d2b.test_2.day == 6
 
@@ -170,7 +169,7 @@ def test_12_registered_cal_attribute_class_with_other_constructors(clean_Date):
     d2c = Date.gregorian(100, 2, 3)
     assert isinstance(d2c.test_2, ExampleTestCalendar2)
     assert type(d2c.test_2).__name__ == "ExampleTestCalendar2InDate"
-    assert type(d2c.test_2.__class__).__name__ == "ModifiedClass"
+    assert type(type(d2c.test_2)).__name__ == "ModifiedClass"
     assert d2c.test_2.week == 5171
     assert d2c.test_2.day == 3
 
@@ -197,7 +196,7 @@ def test_14_registered_cal_attribute_class_with_static_methods(clean_Date):
     d3b = Date(1000)
     assert isinstance(d3b.test_3, ExampleTestCalendar3)
     assert type(d3b.test_3).__name__ == "ExampleTestCalendar3InDate"
-    assert type(d3b.test_3.__class__).__name__ == "ModifiedClass"
+    assert type(type(d3b.test_3)).__name__ == "ModifiedClass"
     assert d3b.test_3.week == 143
     assert d3b.test_3.day == 6
 
@@ -205,7 +204,7 @@ def test_14_registered_cal_attribute_class_with_static_methods(clean_Date):
     d3c = Date.gregorian(100, 2, 3)
     assert isinstance(d3c.test_3, ExampleTestCalendar3)
     assert type(d3c.test_3).__name__ == "ExampleTestCalendar3InDate"
-    assert type(d3c.test_3.__class__).__name__ == "ModifiedClass"
+    assert type(type(d3c.test_3)).__name__ == "ModifiedClass"
     assert d3c.test_3.week == 5171
     assert d3c.test_3.day == 3
 
@@ -349,7 +348,7 @@ def test_210_registered_time_attribute_simple_class(clean_Time):
     t1b = Time("963/1250")
     assert isinstance(t1b.test_1, ExampleTestTimeRepresentation)
     assert type(t1b.test_1).__name__ == "ExampleTestTimeRepresentationInTime"
-    assert type(t1b.test_1.__class__).__name__ == "ModifiedClass"
+    assert type(type(t1b.test_1)).__name__ == "ModifiedClass"
     assert t1b.test_1.hour100 == 77
     assert t1b.test_1.minute100 == 4
 
@@ -357,7 +356,7 @@ def test_210_registered_time_attribute_simple_class(clean_Time):
     t1c = Time.western(10, 35, 15)
     assert isinstance(t1c.test_1, ExampleTestTimeRepresentation)
     assert type(t1c.test_1).__name__ == "ExampleTestTimeRepresentationInTime"
-    assert type(t1c.test_1.__class__).__name__ == "ModifiedClass"
+    assert type(type(t1c.test_1)).__name__ == "ModifiedClass"
     assert t1c.test_1.hour100 == 44
     assert t1c.test_1.minute100 == Fraction("275/24")
 
@@ -387,7 +386,7 @@ def test_212_registered_time_attribute_class_with_other_constructors(clean_Time)
     t2b = Time("963/1250")
     assert isinstance(t2b.test_2, ExampleTestTimeRepresentation2)
     assert type(t2b.test_2).__name__ == "ExampleTestTimeRepresentation2InTime"
-    assert type(t2b.test_2.__class__).__name__ == "ModifiedClass"
+    assert type(type(t2b.test_2)).__name__ == "ModifiedClass"
     assert t2b.test_2.hour100 == 77
     assert t2b.test_2.minute100 == 4
 
@@ -395,7 +394,7 @@ def test_212_registered_time_attribute_class_with_other_constructors(clean_Time)
     t2c = Time.western(10, 35, 15)
     assert isinstance(t2c.test_2, ExampleTestTimeRepresentation2)
     assert type(t2c.test_2).__name__ == "ExampleTestTimeRepresentation2InTime"
-    assert type(t2c.test_2.__class__).__name__ == "ModifiedClass"
+    assert type(type(t2c.test_2)).__name__ == "ModifiedClass"
     assert t2c.test_2.hour100 == 44
     assert t2c.test_2.minute100 == Fraction("275/24")
 
@@ -422,7 +421,7 @@ def test_214_registered_time_attribute_class_with_static_methods(clean_Time):
     t3b = Time("963/1250")
     assert isinstance(t3b.test_3, ExampleTestTimeRepresentation3)
     assert type(t3b.test_3).__name__ == "ExampleTestTimeRepresentation3InTime"
-    assert type(t3b.test_3.__class__).__name__ == "ModifiedClass"
+    assert type(type(t3b.test_3)).__name__ == "ModifiedClass"
     assert t3b.test_3.hour100 == 77
     assert t3b.test_3.minute100 == 4
 
@@ -430,7 +429,7 @@ def test_214_registered_time_attribute_class_with_static_methods(clean_Time):
     t3c = Time.western(10, 35, 15)
     assert isinstance(t3c.test_3, ExampleTestTimeRepresentation3)
     assert type(t3c.test_3).__name__ == "ExampleTestTimeRepresentation3InTime"
-    assert type(t3c.test_3.__class__).__name__ == "ModifiedClass"
+    assert type(type(t3c.test_3)).__name__ == "ModifiedClass"
     assert t3c.test_3.hour100 == 44
     assert t3c.test_3.minute100 == Fraction("275/24")
 
