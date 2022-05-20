@@ -305,7 +305,7 @@ def test_200_register_new_time_repr(clean_Time):
         Time.register_new_time(123, ExampleTestTimeRepresentation)
 
     # invalid time repr class
-    class NoFromTimeRepr:  # without from_rata_die  TODO: shouldn't this comment be from_time_pair?
+    class NoFromTimeRepr:  # without from_time_pair
         def __init__(self, hour100, minute100):
             self.hour100 = hour100
             self.minute100 = minute100
@@ -316,7 +316,7 @@ def test_200_register_new_time_repr(clean_Time):
     with pytest.raises(TypeError):
         Time.register_new_time("test_2", NoFromTimeRepr)
 
-    class NoToTimeRepr:  # without to_rata_die
+    class NoToTimeRepr:  # without to_time_pair
         def __init__(self, hour100, minute100):
             self.hour100 = hour100
             self.minute100 = minute100

@@ -256,7 +256,6 @@ class WesternTime:
     def timezone(self):
         return self._timezone
 
-# todo: Fix from_time_pair and to_time_pair
     @classmethod
     def from_time_pair(cls, day_frac, utcoffset):
         day_frac_valid = verify_fractional_value(day_frac, min=0, max_excl=1, strict=True)

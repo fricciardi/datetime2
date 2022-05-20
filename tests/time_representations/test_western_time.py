@@ -36,8 +36,6 @@ import pytest
 
 from datetime2.western import WesternTime
 
-# TODO: Also implement to_time_pair tests
-
 INF = float('inf')
 NAN = float('nan')
 
