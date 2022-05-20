@@ -119,9 +119,7 @@ _long_years = frozenset(
 
 _weeks_in_previous_years = [0]
 for year_index in range(1, 400):
-    _weeks_in_previous_years.append(
-        _weeks_in_previous_years[-1] + (52 if year_index not in _long_years else 53)
-    )
+    _weeks_in_previous_years.append(_weeks_in_previous_years[-1] + (52 if year_index not in _long_years else 53))
 
 
 # This code pretty prints the week-in-previous-years list
@@ -161,15 +159,9 @@ class IsoCalendar:
     def from_rata_die(cls, day_count):
         if not isinstance(day_count, int):
             raise TypeError("integer argument expected")
-        week_no_less_1, day_less_1 = divmod(
-            day_count - 1, 7
-        )  # ranges: week_no_less_1: free, day_less_1: 0..6
-        four_hundred_years, no_of_weeks_in_400 = divmod(
-            week_no_less_1, 20871
-        )  # ranges: four_hundred_years: free, no_of_weeks_in_400: 0..20870
-        year_in_400 = bisect.bisect_right(
-            _weeks_in_previous_years, no_of_weeks_in_400
-        )  # range: year_in_400: 1..400
+        week_no_less_1, day_less_1 = divmod(day_count - 1, 7)  # ranges: week_no_less_1: free, day_less_1: 0..6
+        four_hundred_years, no_of_weeks_in_400 = divmod(week_no_less_1, 20871)  # ranges: four_hundred_years: free, no_of_weeks_in_400: 0..20870
+        year_in_400 = bisect.bisect_right(_weeks_in_previous_years, no_of_weeks_in_400)  # range: year_in_400: 1..400
         year = year_in_400 + four_hundred_years * 400
         week = no_of_weeks_in_400 - _weeks_in_previous_years[year_in_400 - 1] + 1
         day = day_less_1 + 1
@@ -188,11 +180,7 @@ class IsoCalendar:
     def to_rata_die(self):
         if self._rata_die is None:
             y400, year_in_400 = divmod(self.year - 1, 400)
-            self._rata_die = (
-                y400 * 146097
-                + 7 * (_weeks_in_previous_years[year_in_400] + self.week - 1)
-                + self.day
-            )
+            self._rata_die = (y400 * 146097 + 7 * (_weeks_in_previous_years[year_in_400] + self.week - 1) + self.day)
         return self._rata_die
 
     def day_of_year(self):
@@ -208,9 +196,7 @@ class IsoCalendar:
         return self.__class__(year, week, day)
 
     def __repr__(self):
-        return "datetime2.modern.{}({}, {}, {})".format(
-            self.__class__.__name__, self.year, self.week, self.day
-        )
+        return "datetime2.modern.{}({}, {}, {})".format(self.__class__.__name__, self.year, self.week, self.day)
 
     def __str__(self):
         if self.year >= 0:
@@ -293,9 +279,7 @@ class InternetTime:
         return self._beat / 1000, Fraction(-1, 24)
 
     def __repr__(self):
-        return "datetime2.modern.{}({})".format(
-            self.__class__.__name__, repr(self.beat)
-        )
+        return "datetime2.modern.{}({})".format(self.__class__.__name__, repr(self.beat))
 
     def __str__(self):
         return "@{:03d}".format(int(self.beat))

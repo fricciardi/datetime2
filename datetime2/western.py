@@ -31,8 +31,6 @@ __author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
 # TODO: remove all uses of __class__
 
- #TODO: better revert black formatting
-
 import bisect
 from fractions import Fraction
 from math import floor
@@ -50,30 +48,18 @@ _days_in_previous_months = [
     for leap_year in (0, 1)
 ]
 
+
 ##############################################################################
 # Gregorian calendar
 #
 class GregorianCalendar:
     def __init__(self, year, month, day):
-        if (
-            not isinstance(year, int)
-            or not isinstance(month, int)
-            or not isinstance(day, int)
-        ):
+        if (not isinstance(year, int) or not isinstance(month, int) or not isinstance(day, int)):
             raise TypeError("integer argument expected")
         if month < 1 or month > 12:
-            raise ValueError(
-                "Month must be between 1 and 12, while it is {}.".format(month)
-            )
-        if (
-            day < 1
-            or day > _days_in_month[GregorianCalendar.is_leap_year(year)][month - 1]
-        ):
-            raise ValueError(
-                "Day must be between 1 and number of days in month, while it is {}.".format(
-                    day
-                )
-            )
+            raise ValueError("Month must be between 1 and 12, while it is {}.".format(month))
+        if (day < 1 or day > _days_in_month[GregorianCalendar.is_leap_year(year)][month - 1]):
+            raise ValueError("Day must be between 1 and number of days in month, while it is {}.".format(day))
         self._year = year
         self._month = month
         self._day = day
@@ -96,18 +82,9 @@ class GregorianCalendar:
         if not isinstance(year, int) or not isinstance(day, int):
             raise TypeError("integer argument expected")
         if day < 1 or day > (366 if GregorianCalendar.is_leap_year(year) else 365):
-            raise ValueError(
-                "Day must be between 1 and number of days in year, while it is {}.".format(
-                    day
-                )
-            )
-        month = bisect.bisect_left(
-            _days_in_previous_months[GregorianCalendar.is_leap_year(year)], day
-        )
-        day_in_month = (
-            day
-            - _days_in_previous_months[GregorianCalendar.is_leap_year(year)][month - 1]
-        )
+            raise ValueError("Day must be between 1 and number of days in year, while it is {}.".format(day))
+        month = bisect.bisect_left(_days_in_previous_months[GregorianCalendar.is_leap_year(year)], day)
+        day_in_month = (day - _days_in_previous_months[GregorianCalendar.is_leap_year(year)][month - 1])
         return cls(year, month, day_in_month)
 
     @classmethod
@@ -118,16 +95,8 @@ class GregorianCalendar:
         y100, d100 = divmod(d400, 36524)
         y4, d4 = divmod(d100, 1461)
         y1 = d4 // 365
-        year_minus_one = (
-            400 * y400 + 100 * y100 + 4 * y4 + y1 - (1 if (y100 == 4 or y1 == 4) else 0)
-        )
-        days = (
-            day_count
-            - 365 * year_minus_one
-            - year_minus_one // 4
-            + year_minus_one // 100
-            - year_minus_one // 400
-        )  # days from january 1st (included) to today
+        year_minus_one = (400 * y400 + 100 * y100 + 4 * y4 + y1 - (1 if (y100 == 4 or y1 == 4) else 0))
+        days = (day_count - 365 * year_minus_one - year_minus_one // 4 + year_minus_one // 100 - year_minus_one // 400)  # days from january 1st (included) to today
         greg_day = cls.year_day(year_minus_one + 1, days)
         greg_day._rata_die = day_count
         return greg_day
@@ -142,31 +111,21 @@ class GregorianCalendar:
 
     def to_rata_die(self):
         if self._rata_die is None:
-            self._rata_die = (
-                365 * (self._year - 1)
+            self._rata_die = (365 * (self._year - 1)
                 + (self._year - 1) // 4
                 - (self._year - 1) // 100
                 + (self._year - 1) // 400
                 + (367 * self._month - 362) // 12
-                + (
-                    (-1 if GregorianCalendar.is_leap_year(self._year) else -2)
-                    if self._month > 2
-                    else 0
-                )
-                + self._day
-            )
+                + ((-1 if GregorianCalendar.is_leap_year(self._year) else -2) if self._month > 2 else 0)
+                + self._day)
         return self._rata_die
 
     def weekday(self):
         return (self.to_rata_die() - 1) % 7 + 1
 
     def day_of_year(self):
-        return self.to_rata_die() - (
-            365 * (self._year - 1)
-            + (self._year - 1) // 4
-            - (self._year - 1) // 100
-            + (self._year - 1) // 400
-        )
+        return self.to_rata_die() - (365 * (self._year - 1) + (self._year - 1) // 4
+                                     - (self._year - 1) // 100 + (self._year - 1) // 400)
 
     def replace(self, *, year=None, month=None, day=None):
         if year is None:
@@ -178,9 +137,7 @@ class GregorianCalendar:
         return self.__class__(year, month, day)
 
     def __repr__(self):
-        return "datetime2.western.{}({}, {}, {})".format(
-            self.__class__.__name__, self.year, self.month, self.day
-        )
+        return "datetime2.western.{}({}, {}, {})".format(self.__class__.__name__, self.year, self.month, self.day)
 
     def __str__(self):
         if self.year >= 0:
@@ -261,21 +218,15 @@ class WesternTime:
         if not isinstance(hour, int) or not isinstance(minute, int):
             raise TypeError("Hour and minute must be integer")
         if hour < 0 or hour > 23:
-            raise ValueError(
-                "Hour must be between 0 and 23, while it is {}.".format(hour)
-            )
+            raise ValueError("Hour must be between 0 and 23, while it is {}.".format(hour))
         if minute < 0 or minute > 59:
-            raise ValueError(
-                "Minute must be between 0 and 59, while it is {}.".format(minute)
-            )
+            raise ValueError("Minute must be between 0 and 59, while it is {}.".format(minute))
         try:
             second_fraction = verify_fractional_value(second, min=0, max_excl=60)
         except TypeError as exc:
             raise TypeError("Second is not a valid fractional value") from exc
         except ValueError as exc:
-            raise ValueError(
-                "Second must be equal or greater than 0 and less than 60."
-            ) from exc
+            raise ValueError("Second must be equal or greater than 0 and less than 60.") from exc
         self._hour = hour
         self._minute = minute
         self._second = second_fraction
@@ -287,9 +238,7 @@ class WesternTime:
             except TypeError as exc:
                 raise TypeError("Time zone is not a valid fractional value") from exc
             except ValueError as exc:
-                raise ValueError(
-                    "Time zone must be greater than -24 and less than 24."
-                ) from exc
+                raise ValueError("Time zone must be greater than -24 and less than 24.") from exc
             self._timezone = candidate_timezone
 
     @property

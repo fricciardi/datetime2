@@ -33,8 +33,6 @@ __author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
 # TODO: remove all uses of __class__
 
-# TODO: better revert black fromatting
-
 
 import time
 from fractions import Fraction
@@ -51,9 +49,7 @@ def get_moment_complete():
     """Return local date and time as day_count, local time as day fraction, and,
     if possible, distance from UTC as fraction of a day."""
     try:
-        moment_ns = (
-            time.time_ns()
-        )  # time in ns from epoch; note epoch is platform dependent
+        moment_ns = (time.time_ns())  # time in ns from epoch; note epoch is platform dependent
     except AttributeError:
         moment_ns = int(time.time() * 1_000_000_000)  # time() returns a float in second
     # for the moment we are using time module's functions to get localtime
@@ -61,16 +57,10 @@ def get_moment_complete():
     seconds, nanoseconds = divmod(moment_ns, 1_000_000_000)
     moment = time.localtime(seconds)
     year = moment.tm_year
-    days_before_year = (
-        (year - 1) * 365 + (year - 1) // 4 - (year - 1) // 100 + (year - 1) // 400
-    )
+    days_before_year = ((year - 1) * 365 + (year - 1) // 4 - (year - 1) // 100 + (year - 1) // 400)
     day_count = days_before_year + moment.tm_yday
-    day_frac = (
-        Fraction(moment.tm_hour, 24)
-        + Fraction(moment.tm_min, 1440)
-        + Fraction(moment.tm_sec, 86400)
-        + Fraction(nanoseconds, 86_400_000_000_000)
-    )
+    day_frac = (Fraction(moment.tm_hour, 24)   + Fraction(moment.tm_min, 1440) +
+                Fraction(moment.tm_sec, 86400) + Fraction(nanoseconds, 86_400_000_000_000))
     utcoffset = Fraction(moment.tm_gmtoff, 86400)
     return day_count, day_frac, utcoffset
 
@@ -111,9 +101,7 @@ class Date:
         if isinstance(day_count, int):
             self._day_count = day_count
         else:
-            raise TypeError(
-                "day_count argument for Date must be an integer.".format(str(day_count))
-            )
+            raise TypeError("day_count argument for Date must be an integer.".format(str(day_count)))
 
     @classmethod
     def today(cls):
@@ -132,12 +120,8 @@ class Date:
     def __add__(self, other):
         if isinstance(other, TimeDelta):
             if other.days != floor(other.days):
-                raise ValueError(
-                    "Date object cannot be added to non integral TimeDelta."
-                )
-            return self.__class__(
-                self.day_count + floor(other.days)
-            )  # this way we ensure day count is integer
+                raise ValueError("Date object cannot be added to non integral TimeDelta.")
+            return self.__class__(self.day_count + floor(other.days))  # this way we ensure day count is integer
         else:
             return NotImplemented
 
@@ -148,9 +132,7 @@ class Date:
             return TimeDelta(self.day_count - other.day_count)
         elif isinstance(other, TimeDelta):
             if other.days != floor(other.days):
-                raise ValueError(
-                    "non integral TimeDelta cannot be subtracted from Date."
-                )
+                raise ValueError("Non integral TimeDelta cannot be subtracted from Date.")
             return self.__class__(self.day_count - floor(other.days))
         else:
             return NotImplemented
@@ -178,11 +160,7 @@ class Date:
         elif hasattr(other, "day_count"):
             return NotImplemented
         else:
-            raise TypeError(
-                "You cannot compare '{}' with '{}'.".format(
-                    str(type(self)), str(type(other))
-                )
-            )
+            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
 
     def __ge__(self, other):
         if isinstance(other, Date):
@@ -190,11 +168,7 @@ class Date:
         elif hasattr(other, "day_count"):
             return NotImplemented
         else:
-            raise TypeError(
-                "You cannot compare '{}' with '{}'.".format(
-                    str(type(self)), str(type(other))
-                )
-            )
+            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
 
     def __lt__(self, other):
         if isinstance(other, Date):
@@ -202,11 +176,7 @@ class Date:
         elif hasattr(other, "day_count"):
             return NotImplemented
         else:
-            raise TypeError(
-                "You cannot compare '{}' with '{}'.".format(
-                    str(type(self)), str(type(other))
-                )
-            )
+            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
 
     def __le__(self, other):
         if isinstance(other, Date):
@@ -214,11 +184,7 @@ class Date:
         elif hasattr(other, "day_count"):
             return NotImplemented
         else:
-            raise TypeError(
-                "You cannot compare '{}' with '{}'.".format(
-                    str(type(self)), str(type(other))
-                )
-            )
+            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
 
     # hash value
     def __hash__(self):
@@ -227,13 +193,9 @@ class Date:
     @classmethod
     def register_new_calendar(cls, attribute_name, calendar_class):
         if not isinstance(attribute_name, str) or not attribute_name.isidentifier():
-            raise ValueError(
-                "Invalid calendar attribute name: {}.".format(attribute_name)
-            )
+            raise ValueError("Invalid calendar attribute name: {}.".format(attribute_name))
         if hasattr(cls, attribute_name):
-            raise AttributeError(
-                "Calendar attribute already existing: {}.".format(attribute_name)
-            )
+            raise AttributeError("Calendar attribute already existing: {}.".format(attribute_name))
         if not hasattr(calendar_class, "from_rata_die"):
             raise TypeError("Calendar class does not have method from_rata_die.")
         if not hasattr(calendar_class, "to_rata_die"):
