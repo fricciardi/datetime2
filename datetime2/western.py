@@ -32,7 +32,6 @@ __author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
 import bisect
 from fractions import Fraction
-from math import floor
 
 from .common import verify_fractional_value
 
@@ -308,7 +307,7 @@ class WesternTime:
         "p": lambda self: "AM" if self.hour < 12 else "PM",
         "M": lambda self: f"{self.minute:02d}",
         "S": lambda self: f"{int(self.second):02d}",
-        "f": lambda self: f"{int((self.second - floor(self.second)) * 1000000):06d}",
+        "f": lambda self: f"{int((self.second - int(self.second)) * 1000000):06d}",
     }
 
     def cformat(self, format_string):

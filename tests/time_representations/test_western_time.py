@@ -31,7 +31,6 @@ __author__ = 'Francesco Ricciardi <francescor2010 at yahoo.it>'
 
 from decimal import Decimal
 from fractions import Fraction
-import pickle
 import pytest
 
 from datetime2.western import WesternTime

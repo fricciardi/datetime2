@@ -282,7 +282,7 @@ class InternetTime:
 
     format_functions = {
         "b": lambda self: f"{int(self.beat):03d}",
-        "f": lambda self: f"{int((self.beat - floor(self.beat)) * 1000):03d}"
+        "f": lambda self: f"{int((self.beat - int(self.beat)) * 1000):03d}"
     }
 
     def cformat(self, format_string):
