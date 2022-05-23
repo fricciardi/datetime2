@@ -176,17 +176,11 @@ class GregorianCalendar:
         "d": lambda self: "{:02d}".format(self.day),
         "m": lambda self: "{:02d}".format(self.month),
         "j": lambda self: "{:03d}".format(self.day_of_year()),
-        "U": lambda self: "{:02d}".format(
-            (self.day_of_year() + (13 - self.weekday()) % 7) // 7
-        ),
+        "U": lambda self: "{:02d}".format((self.day_of_year() + (13 - self.weekday()) % 7) // 7),
         "w": lambda self: "{:1d}".format(self.weekday()),
-        "W": lambda self: "{:02d}".format(
-            (self.day_of_year() + 7 - self.weekday()) // 7
-        ),
+        "W": lambda self: "{:02d}".format((self.day_of_year() + 7 - self.weekday()) // 7),
         "y": lambda self: "{:03d}".format(self.year)[-2:],
-        "Y": lambda self: "{:04d}".format(self.year)
-        if self.year >= 0
-        else "-{:04d}".format(-self.year),
+        "Y": lambda self: "{:04d}".format(self.year) if self.year >= 0 else "-{:04d}".format(-self.year),
     }
 
     def cformat(self, format_string):
@@ -310,15 +304,11 @@ class WesternTime:
 
     format_functions = {
         "H": lambda self: "{:02d}".format(self.hour),
-        "I": lambda self: "{:02d}".format(
-            12 if self.hour == 0 else self.hour if self.hour <= 12 else self.hour - 12
-        ),
+        "I": lambda self: "{:02d}".format(12 if self.hour == 0 else self.hour if self.hour <= 12 else self.hour - 12),
         "p": lambda self: "AM" if self.hour < 12 else "PM",
         "M": lambda self: "{:02d}".format(self.minute),
         "S": lambda self: "{:02d}".format(floor(self.second)),
-        "f": lambda self: "{:06d}".format(
-            int((self.second - floor(self.second)) * 1000000)
-        ),
+        "f": lambda self: "{:06d}".format(int((self.second - floor(self.second)) * 1000000)),
     }
 
     def cformat(self, format_string):
