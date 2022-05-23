@@ -29,8 +29,6 @@
 
 __author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
-# TODO: change all .format( to formatted string literal. Check also in other source files
-
 
 import time
 from fractions import Fraction
@@ -76,7 +74,7 @@ class TimeDelta:
         self._days = Fraction(days)
 
     def __repr__(self):
-        return "TimeDelta({})".format(self.days)
+        return f"TimeDelta({self.days})"
 
     def __eq__(self, other):
         return self._days == other._days
@@ -99,7 +97,7 @@ class Date:
         if isinstance(day_count, int):
             self._day_count = day_count
         else:
-            raise TypeError("day_count argument for Date must be an integer.".format(str(day_count)))
+            raise TypeError("day_count argument for Date must be an integer.")
 
     @classmethod
     def today(cls):
@@ -110,10 +108,10 @@ class Date:
         return self._day_count
 
     def __repr__(self):
-        return "datetime2.{}({})".format(type(self).__name__, self.day_count)
+        return f"datetime2.{type(self).__name__}({self.day_count})"
 
     def __str__(self):
-        return "R.D. {}".format(self.day_count)
+        return f"R.D. {self.day_count}"
 
     def __add__(self, other):
         if isinstance(other, TimeDelta):
@@ -158,7 +156,7 @@ class Date:
         elif hasattr(other, "day_count"):
             return NotImplemented
         else:
-            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
+            raise TypeError(f"You cannot compare '{type(self)!s}' with '{type(other)!s}'.")
 
     def __ge__(self, other):
         if isinstance(other, Date):
@@ -166,7 +164,7 @@ class Date:
         elif hasattr(other, "day_count"):
             return NotImplemented
         else:
-            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
+            raise TypeError(f"You cannot compare '{type(self)!s}' with '{type(other)!s}'.")
 
     def __lt__(self, other):
         if isinstance(other, Date):
@@ -174,7 +172,7 @@ class Date:
         elif hasattr(other, "day_count"):
             return NotImplemented
         else:
-            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
+            raise TypeError(f"You cannot compare '{type(self)!s}' with '{type(other)!s}'.")
 
     def __le__(self, other):
         if isinstance(other, Date):
@@ -182,7 +180,7 @@ class Date:
         elif hasattr(other, "day_count"):
             return NotImplemented
         else:
-            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
+            raise TypeError(f"You cannot compare '{type(self)!s}' with '{type(other)!s}'.")
 
     # hash value
     def __hash__(self):
@@ -191,9 +189,9 @@ class Date:
     @classmethod
     def register_new_calendar(cls, attribute_name, calendar_class):
         if not isinstance(attribute_name, str) or not attribute_name.isidentifier():
-            raise ValueError("Invalid calendar attribute name: {}.".format(attribute_name))
+            raise ValueError(f"Invalid calendar attribute name: {attribute_name}.")
         if hasattr(cls, attribute_name):
-            raise AttributeError("Calendar attribute already existing: {}.".format(attribute_name))
+            raise AttributeError(f"Calendar attribute already existing: {attribute_name}.")
         if not hasattr(calendar_class, "from_rata_die"):
             raise TypeError("Calendar class does not have method from_rata_die.")
         if not hasattr(calendar_class, "to_rata_die"):
@@ -207,7 +205,7 @@ class Date:
                 return date_obj
 
         # Create the modified calendar class
-        new_class_name = "{}In{}".format(calendar_class.__name__, cls.__name__)
+        new_class_name = f"{calendar_class.__name__}In{cls.__name__}"
         modified_calendar_class = ModifiedClass(new_class_name, (calendar_class,), {})
 
         class CalendarAttribute:
@@ -293,15 +291,15 @@ class Time:
 
     def __repr__(self):
         if self.utcoffset is None:
-            return "datetime2.{}('{}')".format(type(self).__name__, str(self.day_frac))
+            return f"datetime2.{type(self).__name__}('{self.day_frac!s}')"
         else:
-            return "datetime2.{}('{}', utcoffset='{}')".format(type(self).__name__, str(self.day_frac), str(self.utcoffset))
+            return f"datetime2.{type(self).__name__}('{self.day_frac!s}', utcoffset='{self.utcoffset!s}')"
 
     def __str__(self):
         if self.utcoffset is None:
-            return "{} of a day".format(str(self.day_frac))
+            return f"{self.day_frac!s} of a day"
         else:
-            return "{} of a day, {} of a day from UTC".format(str(self.day_frac), str(self.utcoffset))
+            return f"{self.day_frac!s} of a day, {self.utcoffset!s} of a day from UTC"
 
     # Math operators
     def __add__(self, other):
@@ -390,7 +388,7 @@ class Time:
         elif hasattr(other, "day_frac") and hasattr(other, "utcoffset"):
             return NotImplemented
         else:
-            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
+            raise TypeError(f"You cannot compare '{type(self)!s}' with '{type(other)!s}'.")
 
     def __ge__(self, other):
         if isinstance(other, Time):
@@ -407,7 +405,7 @@ class Time:
         elif hasattr(other, "day_frac") and hasattr(other, "utcoffset"):
             return NotImplemented
         else:
-            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
+            raise TypeError(f"You cannot compare '{type(self)!s}' with '{type(other)!s}'.")
 
     def __lt__(self, other):
         if isinstance(other, Time):
@@ -424,7 +422,7 @@ class Time:
         elif hasattr(other, "day_frac") and hasattr(other, "utcoffset"):
             return NotImplemented
         else:
-            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
+            raise TypeError(f"You cannot compare '{type(self)!s}' with '{type(other)!s}'.")
 
     def __le__(self, other):
         if isinstance(other, Time):
@@ -441,7 +439,7 @@ class Time:
         elif hasattr(other, "day_frac") and hasattr(other, "utcoffset"):
             return NotImplemented
         else:
-            raise TypeError("You cannot compare '{}' with '{}'.".format(str(type(self)), str(type(other))))
+            raise TypeError(f"You cannot compare '{type(self)!s}' with '{type(other)!s}'.")
 
     # hash value
     def __hash__(self):
@@ -453,9 +451,9 @@ class Time:
     @classmethod
     def register_new_time(cls, attribute_name, time_repr_class):
         if not isinstance(attribute_name, str) or not attribute_name.isidentifier():
-            raise ValueError("Invalid attribute name ('{}') for time representation.".format(attribute_name))
+            raise ValueError(f"Invalid attribute name ('{attribute_name}') for time representation.")
         if hasattr(cls, attribute_name):
-            raise AttributeError("Time representation attribute already existing: {}.".format(attribute_name))
+            raise AttributeError(f"Time representation attribute already existing: {attribute_name}.")
         if not hasattr(time_repr_class, "from_time_pair"):
             raise TypeError("Time representation class does not have method from_time_pair.")
         if not hasattr(time_repr_class, "to_time_pair"):
@@ -470,7 +468,7 @@ class Time:
                 return time_obj
 
         # Create the modified calendar class
-        new_class_name = "{}In{}".format(time_repr_class.__name__, cls.__name__)
+        new_class_name = f"{time_repr_class.__name__}In{cls.__name__}"
         modified_time_repr_class = ModifiedClass(new_class_name, (time_repr_class,), {})
 
         class TimeReprAttribute:

@@ -353,7 +353,7 @@ def test_31_str():
         assert str(iso) == expected
 
 
-def test_320_cformat():
+def test_32_cformat():
     # valid numbers
     for test_row in iso_test_data:
         year = test_row[1]

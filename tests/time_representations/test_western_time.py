@@ -366,7 +366,7 @@ def test_31_str():
         minute = test_row[1][1]
         second = Fraction(test_row[1][2])
         western = WesternTime(hour, minute, second)
-        expected = '{:02d}:{:02d}:{:02d}'.format(hour, minute, int(second))
+        expected = f'{hour:02d}:{minute:02d}:{int(second):02d}'
         assert str(western) == expected
     for test_timezone in timezone_test_data:
         western = WesternTime(1, 2, 3, timezone=test_timezone[0])
@@ -382,23 +382,23 @@ def test_32_cformat():
         second = Fraction(test_row[1][2])
         western = WesternTime(hour, minute, second)
         # hours
-        assert western.cformat('%H') == '{:02d}'.format(hour)
+        assert western.cformat('%H') == f'{hour:02d}'
         if hour == 0:
             assert western.cformat('%I') == '12'
             assert western.cformat('%p') == 'AM'
         elif hour <= 11:
-            assert western.cformat('%I') == '{:02d}'.format(hour)
+            assert western.cformat('%I') == f'{hour:02d}'
             assert western.cformat('%p') == 'AM'
         elif hour == 12:
-            assert western.cformat('%I') == '{:02d}'.format(hour)
+            assert western.cformat('%I') == f'{hour:02d}'
             assert western.cformat('%p') == 'PM'
         else:
-            assert western.cformat('%I') == '{:02d}'.format(hour - 12)
+            assert western.cformat('%I') == f'{hour - 12:02d}'
             assert western.cformat('%p') == 'PM'
         # minutes and seconds
-        assert western.cformat('%M') == '{:02d}'.format(minute)
-        assert western.cformat('%S') == '{:02d}'.format(int(second))
-        #empty timezone
+        assert western.cformat('%M') == f'{minute:02d}'
+        assert western.cformat('%S') == f'{int(second):02d}'
+        # empty timezone
         assert western.cformat('%z') == ''
 
     # microseconds

@@ -53,12 +53,12 @@ _days_in_previous_months = [
 #
 class GregorianCalendar:
     def __init__(self, year, month, day):
-        if (not isinstance(year, int) or not isinstance(month, int) or not isinstance(day, int)):
+        if not isinstance(year, int) or not isinstance(month, int) or not isinstance(day, int):
             raise TypeError("integer argument expected")
         if month < 1 or month > 12:
-            raise ValueError("Month must be between 1 and 12, while it is {}.".format(month))
-        if (day < 1 or day > _days_in_month[GregorianCalendar.is_leap_year(year)][month - 1]):
-            raise ValueError("Day must be between 1 and number of days in month, while it is {}.".format(day))
+            raise ValueError(f"Month must be between 1 and 12, while it is {month}.")
+        if day < 1 or day > _days_in_month[GregorianCalendar.is_leap_year(year)][month - 1]:
+            raise ValueError(f"Day must be between 1 and number of days in month, while it is {day}.")
         self._year = year
         self._month = month
         self._day = day
@@ -81,7 +81,7 @@ class GregorianCalendar:
         if not isinstance(year, int) or not isinstance(day, int):
             raise TypeError("integer argument expected")
         if day < 1 or day > (366 if GregorianCalendar.is_leap_year(year) else 365):
-            raise ValueError("Day must be between 1 and number of days in year, while it is {}.".format(day))
+            raise ValueError(f"Day must be between 1 and number of days in year, while it is {day}.")
         month = bisect.bisect_left(_days_in_previous_months[GregorianCalendar.is_leap_year(year)], day)
         day_in_month = (day - _days_in_previous_months[GregorianCalendar.is_leap_year(year)][month - 1])
         return cls(year, month, day_in_month)
@@ -136,13 +136,13 @@ class GregorianCalendar:
         return type(self)(year, month, day)
 
     def __repr__(self):
-        return "datetime2.western.{}({}, {}, {})".format(type(self).__name__, self.year, self.month, self.day)
+        return f"datetime2.western.{type(self).__name__}({self.year}, {self.month}, {self.day})"
 
     def __str__(self):
         if self.year >= 0:
-            return "{:04d}-{:02d}-{:02d}".format(self.year, self.month, self.day)
+            return f"{self.year:04d}-{self.month:02d}-{self.day:02d}"
         else:
-            return "{:05d}-{:02d}-{:02d}".format(self.year, self.month, self.day)
+            return f"{self.year:05d}-{self.month:02d}-{self.day:02d}"
 
     name_weekdays = [
         "Monday",
@@ -173,14 +173,14 @@ class GregorianCalendar:
         "A": lambda self: GregorianCalendar.name_weekdays[self.weekday() - 1],
         "b": lambda self: GregorianCalendar.name_months[self.month - 1][:3],
         "B": lambda self: GregorianCalendar.name_months[self.month - 1],
-        "d": lambda self: "{:02d}".format(self.day),
-        "m": lambda self: "{:02d}".format(self.month),
-        "j": lambda self: "{:03d}".format(self.day_of_year()),
-        "U": lambda self: "{:02d}".format((self.day_of_year() + (13 - self.weekday()) % 7) // 7),
-        "w": lambda self: "{:1d}".format(self.weekday()),
-        "W": lambda self: "{:02d}".format((self.day_of_year() + 7 - self.weekday()) // 7),
-        "y": lambda self: "{:03d}".format(self.year)[-2:],
-        "Y": lambda self: "{:04d}".format(self.year) if self.year >= 0 else "-{:04d}".format(-self.year),
+        "d": lambda self: f"{self.day:02d}",
+        "m": lambda self: f"{self.month:02d}",
+        "j": lambda self: f"{self.day_of_year():03d}",
+        "U": lambda self: f"{(self.day_of_year() + (13 - self.weekday()) % 7) // 7:02d}",
+        "w": lambda self: f"{self.weekday():1d}",
+        "W": lambda self: f"{(self.day_of_year() + 7 - self.weekday()) // 7:02d}",
+        "y": lambda self: f"{self.year:03d}"[-2:],
+        "Y": lambda self: f"{self.year:04d}" if self.year >= 0 else f"-{-self.year:04d}",
     }
 
     def cformat(self, format_string):
@@ -211,9 +211,9 @@ class WesternTime:
         if not isinstance(hour, int) or not isinstance(minute, int):
             raise TypeError("Hour and minute must be integer")
         if hour < 0 or hour > 23:
-            raise ValueError("Hour must be between 0 and 23, while it is {}.".format(hour))
+            raise ValueError(f"Hour must be between 0 and 23, while it is {hour}.")
         if minute < 0 or minute > 59:
-            raise ValueError("Minute must be between 0 and 59, while it is {}.".format(minute))
+            raise ValueError(f"Minute must be between 0 and 59, while it is {minute}.")
         try:
             second_fraction = verify_fractional_value(second, min=0, max_excl=60)
         except TypeError as exc:
@@ -288,7 +288,7 @@ class WesternTime:
 
     def __repr__(self):
         if self.timezone is None:
-            return "datetime2.western.{}({}, {}, {})".format(type(self).__name__, self.hour, self.minute, repr(self.second))
+            return f"datetime2.western.{type(self).__name__}({self.hour}, {self.minute}, {self.second!r})"
         else:
             return f"datetime2.western.{type(self).__name__}({self.hour}, {self.minute}, {self.second!r}, timezone={self.timezone!r})"
 
@@ -303,12 +303,12 @@ class WesternTime:
             return f"{time_str}{tz_hour:+02d}:{tz_minute:02d}"
 
     format_functions = {
-        "H": lambda self: "{:02d}".format(self.hour),
-        "I": lambda self: "{:02d}".format(12 if self.hour == 0 else self.hour if self.hour <= 12 else self.hour - 12),
+        "H": lambda self: f"{self.hour:02d}",
+        "I": lambda self: f"{12 if self.hour == 0 else self.hour if self.hour <= 12 else self.hour - 12:02d}",
         "p": lambda self: "AM" if self.hour < 12 else "PM",
-        "M": lambda self: "{:02d}".format(self.minute),
-        "S": lambda self: "{:02d}".format(floor(self.second)),
-        "f": lambda self: "{:06d}".format(int((self.second - floor(self.second)) * 1000000)),
+        "M": lambda self: f"{self.minute:02d}",
+        "S": lambda self: f"{int(self.second):02d}",
+        "f": lambda self: f"{int((self.second - floor(self.second)) * 1000000):06d}",
     }
 
     def cformat(self, format_string):

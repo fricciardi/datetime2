@@ -398,16 +398,16 @@ def test_32_cformat():
         day = test_row[2][2]
         doy = test_row[3]
         greg = GregorianCalendar(year, month, day)
-        assert greg.cformat('%d') == '{:02d}'.format(day)
-        assert greg.cformat('%j') == '{:03d}'.format(doy)
-        assert greg.cformat('%m') == '{:02d}'.format(month)
-        assert greg.cformat('%w') == '{:d}'.format(wday)
+        assert greg.cformat('%d') == f'{day:02d}'
+        assert greg.cformat('%j') == f'{doy:03d}'
+        assert greg.cformat('%m') == f'{month:02d}'
+        assert greg.cformat('%w') == f'{wday:d}'
         if year >= 0:
             assert greg.cformat('%y') == ('0' + str(year))[-2:]
-            assert greg.cformat('%Y') == '{:04d}'.format(year)
+            assert greg.cformat('%Y') == f'{year:04d}'
         else:
             assert greg.cformat('%y') == ('0' + str(-year))[-2:]
-            assert greg.cformat('%Y') == '-{:04d}'.format(-year)
+            assert greg.cformat('%Y') == f'-{-year:04d}'
 
     # check names
     weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']

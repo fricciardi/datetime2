@@ -205,7 +205,7 @@ def test_31_str():
     for test_row in internet_time_test_data:
         beat = Fraction(test_row[1])
         internet = InternetTime(beat)
-        expected = "@{:03d}".format(floor(beat))
+        expected = f"@{int(beat):03d}"
         assert str(internet) == expected
 
 
@@ -214,7 +214,7 @@ def test_32_cformat():
     for test_row in internet_time_test_data:
         beat = Fraction(test_row[1])
         internet = InternetTime(beat)
-        assert internet.cformat("%b") == "{:03d}".format(floor(beat))
+        assert internet.cformat("%b") == f"{int(beat):03d}"
 
     # millibeats
     for fraction, millibeat in internet_time_millibeat:

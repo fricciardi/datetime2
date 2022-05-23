@@ -133,9 +133,9 @@ class IsoCalendar:
         if not isinstance(year, int) or not isinstance(week, int) or not isinstance(day, int):
             raise TypeError("integer argument expected")
         if week < 1 or week > IsoCalendar.weeks_in_year(year):
-            raise ValueError("Week must be between 1 and number of weeks in year, while it is {}.".format(week))
+            raise ValueError(f"Week must be between 1 and number of weeks in year, while it is {week}.")
         if day < 1 or day > 7:
-            raise ValueError("Day must be between 1 and 7, while it is {}.".format(day))
+            raise ValueError(f"Day must be between 1 and 7, while it is {day}.")
         self._year = year
         self._week = week
         self._day = day
@@ -194,13 +194,13 @@ class IsoCalendar:
         return type(self)(year, week, day)
 
     def __repr__(self):
-        return "datetime2.modern.{}({}, {}, {})".format(type(self).__name__, self.year, self.week, self.day)
+        return f"datetime2.modern.{type(self).__name__}({self.year}, {self.week}, {self.day})"
 
     def __str__(self):
         if self.year >= 0:
-            return "{:04d}-W{:02d}-{:1d}".format(self.year, self.week, self.day)
+            return f"{self.year:04d}-W{self.week:02d}-{self.day:1d}"
         else:
-            return "{:05d}-W{:02d}-{:1d}".format(self.year, self.week, self.day)
+            return f"{self.year:05d}-W{self.week:02d}-{self.day:1d}"
 
     name_weekdays = [
         "Monday",
@@ -215,13 +215,11 @@ class IsoCalendar:
     format_functions = {
         "a": lambda self: IsoCalendar.name_weekdays[self.day - 1][:3],
         "A": lambda self: IsoCalendar.name_weekdays[self.day - 1],
-        "j": lambda self: "{:03d}".format(self.day_of_year()),
-        "w": lambda self: "{:1d}".format(self.day),
-        "W": lambda self: "{:02d}".format((self.day_of_year() + 7 - self.day) // 7),
-        "y": lambda self: "{:03d}".format(self.year)[-2:],
-        "Y": lambda self: "{:04d}".format(self.year)
-        if self.year >= 0
-        else "-{:04d}".format(-self.year),
+        "j": lambda self: f"{self.day_of_year():03d}",
+        "w": lambda self: f"{self.day:1d}",
+        "W": lambda self: f"{(self.day_of_year() + 7 - self.day) // 7:02d}",
+        "y": lambda self: f"{self.year:03d}"[-2:],
+        "Y": lambda self: f"{self.year:04d}" if self.year >= 0 else f"-{-self.year:04d}"
     }
 
     def cformat(self, format_string):
@@ -277,14 +275,14 @@ class InternetTime:
         return self._beat / 1000, Fraction(-1, 24)
 
     def __repr__(self):
-        return "datetime2.modern.{}({})".format(type(self).__name__, repr(self.beat))
+        return f"datetime2.modern.{type(self).__name__}({self.beat!r})"
 
     def __str__(self):
-        return "@{:03d}".format(int(self.beat))
+        return f"@{int(self.beat):03d}"
 
     format_functions = {
-        "b": lambda self: "{:03d}".format(int(self.beat)),
-        "f": lambda self: "{:03d}".format(int((self.beat - floor(self.beat)) * 1000)),
+        "b": lambda self: f"{int(self.beat):03d}",
+        "f": lambda self: f"{int((self.beat - floor(self.beat)) * 1000):03d}"
     }
 
     def cformat(self, format_string):

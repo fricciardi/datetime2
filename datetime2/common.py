@@ -61,13 +61,13 @@ def verify_value(num, den, min, max, min_excl, max_excl, strict):
     except (OverflowError, ValueError) as exc:
         raise TypeError("Invalid fractional value.") from exc
     if min is not None and value < min:
-        raise ValueError("Value must be more than or equal to {}".format(min))
+        raise ValueError(f"Value must be more than or equal to {min}")
     if min_excl is not None and value <= min_excl:
-        raise ValueError("Value must be more than {}".format(min_excl))
+        raise ValueError(f"Value must be more than {min_excl}")
     if max is not None and value > max:
-        raise ValueError("Value must be less than or equal to {}".format(max))
+        raise ValueError(f"Value must be less than or equal to {max}")
     if max_excl is not None and value >= max_excl:
-        raise ValueError("Value must be less than {}".format(max))
+        raise ValueError(f"Value must be less than {max}")
     return value
 
 
