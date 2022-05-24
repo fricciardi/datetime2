@@ -4,7 +4,7 @@ from os import path
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the relevant file
-with open(path.join(here, 'DESCRIPTION.rst')) as f:
+with open(path.join(here, 'README.rst')) as f:
     long_description = f.read()
 
 # TODO: All setup arguments need to be revised, also check for those to give more info on PyPI page
