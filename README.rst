@@ -4,11 +4,23 @@ datetime2
 .. image:: https://readthedocs.org/projects/datetime2/badge/?version=stable
    :target: https://datetime2.readthedocs.io/en/stable/?badge=stable
 
-.. image:: https://github.com/fricciardi/datetime2/actions/workflows/publish-workflow.yml/badge.svg
-   :target: https://github.com/fricciardi/datetime2/actions/workflows/publish-workflow.yml
+.. image:: https://img.shields.io/pypi/v/datetime2.svg
+   :target: https://pypi.org/project/datetime2/
 
-.. image:: https://img.shields.io/badge/License-BSD-green.svg
+.. image:: https://img.shields.io/pypi/status/datetime2.svg
+   :target: https://pypi.org/project/datetime2/
+
+.. image:: https://img.shields.io/pypi/pyversions/datetime2.svg
+   :target: https://pypi.org/project/datetime2/
+
+.. image:: https://github.com/fricciardi/datetime2/actions/workflows/push-workflow.yml/badge.svg
+   :target: https://github.com/fricciardi/datetime2/actions/workflows/push-workflow.yml
+   :alt: Build Status
+
+.. image:: https://img.shields.io/pypi/l/datetime2.svg
    :target: https://opensource.org/licenses/BSD-3-Clause
+
+
 
 The `datetime2 <http://pypi.org/project/datetime2>`_ implements the same
 features the standard
