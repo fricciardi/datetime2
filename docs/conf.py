@@ -26,7 +26,7 @@ author = 'Francesco Ricciardi'
 # The short X.Y version
 version = '0.8'
 # The full version, including alpha/beta/rc tags
-release = '0.8.0dev4'
+release = '0.8.0dev5'
 
 
 # -- General configuration ---------------------------------------------------
