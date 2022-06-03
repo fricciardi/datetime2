@@ -21,15 +21,20 @@ datetime2
    :target: https://opensource.org/licenses/BSD-3-Clause
 
 
-
-The `datetime2 <http://pypi.org/project/datetime2>`_ implements the same
-features the standard
-`datetime <https://docs.python.org/3/library/datetime.html>`_ module has,
-and adds the capability of constructing and representing date and time
-in many formats. Additionally, it removes a few limits that the original
-package has.
+The `datetime2 <http://pypi.org/project/datetime2>`_ module provides similar
+features to those given by the standard
+`datetime <https://docs.python.org/3/library/datetime.html>`_ module,
+adding the capability of constructing and representing date and time in many
+formats. Additionally, it removes a few limits that the original package has.
 
 *datetime2* is a one-man, free-time work.
+
+Planned releases
+================
+
+* 0.9: Implementation of TimeDelta, which currently is a stub
+* 1.0: Implementation of DateTime, first production release
+* 1.1: Implementation of Julian and Hebrew calendars
 
 Project objectives
 ==================

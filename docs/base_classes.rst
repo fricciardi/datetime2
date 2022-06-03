@@ -166,7 +166,7 @@ There are five :class:`Time` constructors:
    The ``day_frac`` and ``utcoffset`` arguments can be anything that can
    be passed to the :class:`fractions.Fraction` constructor, i.e. an integer, a
    float, another Fraction, a Decimal number or a string representing an
-   integer, a float or a fraction. The ``day_frac`` arguments only can also be
+   integer, a float or a fraction. The ``day_frac`` argument only can also be
    passed with two values that represent numerator and denominator of the
    fraction. A :exc:`TypeError` exception is raised if the type of any
    argument is not one of the accepted types. A :exc:`ZeroDivisionError`
@@ -330,3 +330,141 @@ Notes:
    ``time1 + (time2 - time1)`` compares equal to ``time2``, but it will have
    the same ``day_frac`` value only if the UTC offsets of ``time1`` and
    ``time2`` are equal.
+
+
+:class:`TimeDelta` objects
+--------------------------
+
+An interval of time, expressed in fractional days.
+
+There are two :class:`TimeDelta` constructors:
+
+.. class:: TimeDelta(fractional_days)
+.. class:: TimeDelta(numerator, denominator)
+
+   Return an object that represents a time interval in fractional days, given
+   in the ``fractional_days`` argument. This value will be greater than 1 to
+   indicate an interval longer than 1 day.
+
+   The ``fractional_days`` argument can be anything that can be passed to the
+   :class:`fractions.Fraction` constructor, i.e. an integer, a float, another
+   Fraction, a Decimal number or a string representing an integer, a float or
+   a fraction. The argument can also be passed with two values that represent
+   numerator and denominator of the fraction. A :exc:`TypeError` exception is
+   raised if the type of any argument is not one of the accepted types. A
+   :exc:`ZeroDivisionError` exception is raised if the denominator is 0.
+   There are no limits on the value of ``fractional_days``.
+
+
+The read-only attribute ``fractional_days`` stores the value, always as a
+Python Fraction object. An attempt to directly set the values of this
+attribute will raise an :exc:`AttributeError` exception.
+
+
+:class:`TimeDelta` objects support comparison, where *timedelta1* is
+considered greater than *timedelta2* when the former represents a time
+interval longer than the latter. When comparing a :class:`TimeDelta` object
+and an object of another class, if the latter has the ``fractional_days``
+attribute, ``NotImplemented`` is returned. This allows a TimeDelta-like
+instance to perform reflected comparison if it is the second operator.
+
+
+:class:`TimeDelta` instances are immutable, so they can be used as dictionary
+keys. They can also be pickled and unpickled. In boolean contexts, all
+:class:`TimeDelta` instances are considered to be true.
+
+
+Instance methods:
+
+.. method:: TimeDelta.is_integer()
+
+   Returns ``True`` if the time interval is made of an integer number of days.
+
+.. doctest::
+
+   >>> td1 = Timedelta("3/4")
+   >>> td1.is_integer()
+   False
+   >>> td2 = TimeDelta(-1)
+   >>> td2.is_integer()
+   True
+
+
+.. method:: TimeDelta.__str__()
+
+   Returns a string indicating the number of days and the remianing fraction
+   of a day:
+
+.. doctest::
+
+   >>> td1 = Timedelta("1/12")
+   >>> print(td1)
+   1/12 of a day
+   >>> td2 = TimeDelta(3)
+   >>> print(td2)
+   3 days
+   >>> td3 = TimeDelta(11, 7)
+   >>> print(td3)
+   1 day and 4/7 of a day
+
+
+Available time interval representations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The following table lists the available time representations interval and the
+attributes by which they are reachable:
+
++----------------+----------------+------------------------------------------------+--------------------+
+| Representation | Attribute      | Time representation class                      | Module             |
++================+================+================================================+====================+
+| Western        | ``western``    | :ref:`WesternTimeDelta <western-timedelta>`    | datetime2.western  |
++----------------+----------------+------------------------------------------------+--------------------+
+
+
+Supported operations
+^^^^^^^^^^^^^^^^^^^^
+
+
++----------------------------------------------+----------------------------------------------+
+| Operation                                    | Result                                       |
++==============================================+==============================================+
+| ``timedelta1 = timedelta2 + timedelta3``     | Sum of two time intervals.                   |
++----------------------------------------------+----------------------------------------------+
+| ``timedelta1 = timedelta2 - timedelta3``     | Difference of two time intervals.            |
++----------------------------------------------+----------------------------------------------+
+| ``timedelta1 = timedelta2 * number``         | Multiplication of a time interval by an      |
+|                                              | integer od decimal number. (1) (2)           |
++----------------------------------------------+----------------------------------------------+
+| ``timedelta1 = timedelta2 / number``         | Division of a time interval by an            |
+|                                              | integer or decimal number. (3)               |
++----------------------------------------------+----------------------------------------------+
+| ``timedelta1 < timedelta2``                  | *timedelta1* is less than *timedelta2* when  |
+|                                              | the former represents an interval shorter    |
+|                                              | than the latter. (4)                         |
++----------------------------------------------+----------------------------------------------+
+
+
+The table above does not include mixed type operations between ``TimeDelta``
+and ``Date``, ``Time`` or ``DateTime``. See the *Supported operations*
+chapter of each of these classes.
+
+
+Notes:
+
+(1)
+   The number is first converted to a fraction, then exact multiplication
+   takes place. As such, if *number* is a float, conversion error may happen.
+
+(2)
+   Also reverse multiplication is implemented (``timedelta1 = number *
+   timedelta2``)
+
+(3)
+   The number is first converted to a fraction, then exact division takes
+   place. As such, if *number* is a float, conversion error may happen.
+
+(4)
+   All other comparison operators (``<=``, ``>``, ``>=``, ``==`` and ``!=``)
+   behave similarly.
+
+

@@ -24,9 +24,9 @@ copyright = '2022, Francesco Ricciardi'
 author = 'Francesco Ricciardi'
 
 # The short X.Y version
-version = '0.8'
+version = '0.9'
 # The full version, including alpha/beta/rc tags
-release = '0.8.0'
+release = '0.9.0dev0'
 
 
 # -- General configuration ---------------------------------------------------
