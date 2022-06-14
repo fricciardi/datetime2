@@ -370,11 +370,41 @@ instance to perform reflected comparison if it is the second operator.
 
 
 :class:`TimeDelta` instances are immutable, so they can be used as dictionary
-keys. They can also be pickled and unpickled. In boolean contexts, all
-:class:`TimeDelta` instances are considered to be true.
+keys. They can also be pickled and unpickled.
+
+In boolean contexts, a :class:`TimeDelta` instance is considered to be true
+if and only if it isn’t equal to TimeDelta(0).
 
 
 Instance methods:
+
+.. method:: TimeDelta.days()
+.. method:: TimeDelta.__int__()
+.. method:: TimeDelta.day_part()
+
+   The first two methods return the number of full days in the represented
+   time interval. The last method returns its fractional part. All methods
+   return a negative value if the time interval is negative. In this way,
+   given any :class:`TimeDelta` instance ``td``, it is always:
+   ``td.fractional_days == td.days() + td.day_part()``
+
+.. doctest::
+
+   >>> td1 = Timedelta(16, 3)
+   >>> td1.days()
+   5
+   >>> int(td1)
+   5
+   >>> td1.day_part()
+   Fraction(1, 3)
+   >>> td2 = TimeDelta(-7.625)
+   >>> td2.days()
+   -7
+   >>> int(td2)
+   -7
+   >>> td2.day_part()
+   Fraction(-5, 8)
+
 
 .. method:: TimeDelta.is_integer()
 
@@ -432,15 +462,32 @@ Supported operations
 +----------------------------------------------+----------------------------------------------+
 | ``timedelta1 = timedelta2 - timedelta3``     | Difference of two time intervals.            |
 +----------------------------------------------+----------------------------------------------+
-| ``timedelta1 = timedelta2 * number``         | Multiplication of a time interval by an      |
-|                                              | integer od decimal number. (1) (2)           |
+| ``timedelta1 = timedelta2 * number`` or      | Multiplication of a time interval by a       |
+| ``timedelta1 = number * timedelta2``         | number. (1)                                  |
 +----------------------------------------------+----------------------------------------------+
-| ``timedelta1 = timedelta2 / number``         | Division of a time interval by an            |
-|                                              | integer or decimal number. (3)               |
+| ``timedelta1 = timedelta2 / number``         | Division of a time interval by a number. (1) |
++----------------------------------------------+----------------------------------------------+
+| ``number = timedelta1 / timedelta2``         | Returns a fraction which is the ratio        |
+|                                              | between the two time intervals.              |
++----------------------------------------------+----------------------------------------------+
+| ``timedelta1 = timedelta2 // number``        | Integer time interval obtained dividing the  |
+|                                              | original interval in *number* equal parts.   |
+|                                              | (1)                                          |
++----------------------------------------------+----------------------------------------------+
+| ``number = timedelta1 // timedelta2``        | Integer number of times ``timedelta2`` is    |
+|                                              | contained in ``timedelta1``.                 |
++----------------------------------------------+----------------------------------------------+
+| ``timedelta1 = timedelta2 % dividend``       | Remainder of the integral division.          |
+|                                              | Equivalent to:                               |
+|                                              | ``timedelta2 - timedelta2 // dividend``. (2) |
++----------------------------------------------+----------------------------------------------+
+| ``divmod(timedelta1, dividend)``             | Return a tuple made of the integral quotient |
+|                                              | and remainder of ``timedelta1`` divided by   |
+|                                              | *dividend*. (2)                              |
 +----------------------------------------------+----------------------------------------------+
 | ``timedelta1 < timedelta2``                  | *timedelta1* is less than *timedelta2* when  |
 |                                              | the former represents an interval shorter    |
-|                                              | than the latter. (4)                         |
+|                                              | than the latter. (3)                         |
 +----------------------------------------------+----------------------------------------------+
 
 
@@ -452,18 +499,14 @@ chapter of each of these classes.
 Notes:
 
 (1)
-   The number is first converted to a fraction, then exact multiplication
-   takes place. As such, if *number* is a float, conversion error may happen.
+   The number is first converted to a fraction, then multiplication or
+   division takes place. As such, if *number* is a float, float to Fraction
+   conversion error may happen, and result may not be exact.
 
 (2)
-   Also reverse multiplication is implemented (``timedelta1 = number *
-   timedelta2``)
+   If dividend is a number, see note (1).
 
 (3)
-   The number is first converted to a fraction, then exact division takes
-   place. As such, if *number* is a float, conversion error may happen.
-
-(4)
    All other comparison operators (``<=``, ``>``, ``>=``, ``==`` and ``!=``)
    behave similarly.
 
