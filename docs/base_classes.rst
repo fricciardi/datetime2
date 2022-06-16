@@ -379,31 +379,56 @@ if and only if it isn’t equal to TimeDelta(0).
 Instance methods:
 
 .. method:: TimeDelta.days()
-.. method:: TimeDelta.__int__()
-.. method:: TimeDelta.day_part()
+.. method:: TimeDelta.day_frac()
 
-   The first two methods return the number of full days in the represented
-   time interval. The last method returns its fractional part. All methods
+   The first method returns the number of full days in the represented time
+   interval. The second method returns its fractional part. All methods
    return a negative value if the time interval is negative. In this way,
    given any :class:`TimeDelta` instance ``td``, it is always:
-   ``td.fractional_days == td.days() + td.day_part()``
+   ``td.fractional_days == td.days() + td.day_frac()``
 
 .. doctest::
 
    >>> td1 = Timedelta(16, 3)
    >>> td1.days()
    5
-   >>> int(td1)
-   5
-   >>> td1.day_part()
+   >>> td1.day_frac()
    Fraction(1, 3)
    >>> td2 = TimeDelta(-7.625)
    >>> td2.days()
    -7
-   >>> int(td2)
-   -7
-   >>> td2.day_part()
+   >>> td2.day_frac()
    Fraction(-5, 8)
+
+
+.. method:: TimeDelta.__int__()
+.. method:: TimeDelta.int()
+.. method:: TimeDelta.frac()
+
+   The first two methods return the same instance with only the integer part.
+   The last method returns the same instance with only the fractional part.
+   All methods return a negative value if the time interval is negative. In
+   this way, given any :class:`TimeDelta` instance ``td``, it is always:
+   ``td == td.int() + td.frac()``
+
+.. doctest::
+
+   >>> td1 = Timedelta(16, 3)
+   >>> td1.int()
+   TimeDelta(Fraction(5, 1))
+   >>> int(td1)
+   TimeDelta(Fraction(5, 1))
+   >>> td1.frac()
+   TimeDelta(Fraction(1, 3))
+   >>> td2 = TimeDelta(-7.625)
+   >>> td2.int()
+   TimeDelta(Fraction(-7, 1))
+   >>> int(td2)
+   TimeDelta(Fraction(-7, 1))
+   >>> td2.frac()
+   TimeDelta(Fraction(-5, 8))
+
+
 
 
 .. method:: TimeDelta.is_integer()
@@ -422,8 +447,10 @@ Instance methods:
 
 .. method:: TimeDelta.__str__()
 
-   Returns a string indicating the number of days and the remianing fraction
-   of a day:
+   Returns a string indicating the number of days and the remaining fraction
+   of a day. Note that whilst in :class:`datetime.timedelta` the fractional
+   part is always positive, in :class:`TimeDelta` the fractional part has the
+   same sign of the integer part.
 
 .. doctest::
 
@@ -433,9 +460,9 @@ Instance methods:
    >>> td2 = TimeDelta(3)
    >>> print(td2)
    3 days
-   >>> td3 = TimeDelta(11, 7)
+   >>> td3 = TimeDelta(11, -7)
    >>> print(td3)
-   1 day and 4/7 of a day
+   -1 day and -4/7 of a day
 
 
 Available time interval representations
@@ -494,6 +521,8 @@ Supported operations
 The table above does not include mixed type operations between ``TimeDelta``
 and ``Date``, ``Time`` or ``DateTime``. See the *Supported operations*
 chapter of each of these classes.
+
+Class :class:`TimeDelta` unary arithmetic operators ``+``, ``-`` and ``abs()``.
 
 
 Notes:
