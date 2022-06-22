@@ -358,7 +358,25 @@ There are two :class:`TimeDelta` constructors:
 
 The read-only attribute ``fractional_days`` stores the value, always as a
 Python Fraction object. An attempt to directly set the values of this
-attribute will raise an :exc:`AttributeError` exception.
+attribute will raise an :exc:`AttributeError` exception. It is also possible
+to access the integral and fractional parts of ``fractional_days`` with two
+calculated attributes: ``int_part`` and ``frac_part``. If the time interval
+is negative, both ``int_part`` and ``frac_part`` are negative. Given any
+:class:`TimeDelta` instance ``td``, it is always:
+``td.fractional_days == td.int_part() + td.frac_part()``
+
+.. doctest::
+
+   >>> td1 = Timedelta(16, 3)
+   >>> td1.int_part
+   5
+   >>> td1.frac_part
+   Fraction(1, 3)
+   >>> td2 = TimeDelta(-7.625)
+   >>> td2.int_part
+   -7
+   >>> td2.frac_part
+   Fraction(-5, 8)
 
 
 :class:`TimeDelta` objects support comparison, where *timedelta1* is
@@ -378,30 +396,6 @@ if and only if it isn’t equal to TimeDelta(0).
 
 Instance methods:
 
-.. method:: TimeDelta.days()
-.. method:: TimeDelta.day_frac()
-
-   The first method returns the number of full days in the represented time
-   interval. The second method returns its fractional part. All methods
-   return a negative value if the time interval is negative. In this way,
-   given any :class:`TimeDelta` instance ``td``, it is always:
-   ``td.fractional_days == td.days() + td.day_frac()``
-
-.. doctest::
-
-   >>> td1 = Timedelta(16, 3)
-   >>> td1.days()
-   5
-   >>> td1.day_frac()
-   Fraction(1, 3)
-   >>> td2 = TimeDelta(-7.625)
-   >>> td2.days()
-   -7
-   >>> td2.day_frac()
-   Fraction(-5, 8)
-
-
-.. method:: TimeDelta.__int__()
 .. method:: TimeDelta.int()
 .. method:: TimeDelta.frac()
 
@@ -416,13 +410,9 @@ Instance methods:
    >>> td1 = Timedelta(16, 3)
    >>> td1.int()
    TimeDelta(Fraction(5, 1))
-   >>> int(td1)
-   TimeDelta(Fraction(5, 1))
    >>> td1.frac()
    TimeDelta(Fraction(1, 3))
    >>> td2 = TimeDelta(-7.625)
-   >>> td2.int()
-   TimeDelta(Fraction(-7, 1))
    >>> int(td2)
    TimeDelta(Fraction(-7, 1))
    >>> td2.frac()
@@ -481,7 +471,6 @@ attributes by which they are reachable:
 Supported operations
 ^^^^^^^^^^^^^^^^^^^^
 
-
 +----------------------------------------------+----------------------------------------------+
 | Operation                                    | Result                                       |
 +==============================================+==============================================+
@@ -497,19 +486,23 @@ Supported operations
 | ``number = timedelta1 / timedelta2``         | Returns a fraction which is the ratio        |
 |                                              | between the two time intervals.              |
 +----------------------------------------------+----------------------------------------------+
-| ``timedelta1 = timedelta2 // number``        | Integer time interval obtained dividing the  |
-|                                              | original interval in *number* equal parts.   |
-|                                              | (1)                                          |
+| ``timedelta1 = timedelta2 // number``        | Floor division. Returns a time interval with |
+|                                              | an integer number of days. If dividend and   |
+|                                              | divisor are of different sign, the result is |
+|                                              | negative and, if not integer, it is more     |
+|                                              | negative than the true result.               |
 +----------------------------------------------+----------------------------------------------+
 | ``number = timedelta1 // timedelta2``        | Integer number of times ``timedelta2`` is    |
-|                                              | contained in ``timedelta1``.                 |
+|                                              | contained in ``timedelta1``. If dividend and |
+|                                              | divisor are of different sign, the result is |
+|                                              | negative and, if not integer, it is more     |
+|                                              | negative than the true result.               |
 +----------------------------------------------+----------------------------------------------+
-| ``timedelta1 = timedelta2 % dividend``       | Remainder of the integral division.          |
-|                                              | Equivalent to:                               |
-|                                              | ``timedelta2 - timedelta2 // dividend``. (2) |
+| ``timedelta1 = timedelta2 % divisor``        | Remainder of the division. This result       |
+|                                              | always has the same sign of the divisor.     |
 +----------------------------------------------+----------------------------------------------+
-| ``divmod(timedelta1, dividend)``             | Return a tuple made of the integral quotient |
-|                                              | and remainder of ``timedelta1`` divided by   |
+| ``divmod(timedelta, divisor)``               | Return a tuple made of the integral quotient |
+|                                              | and remainder of ``timedelta`` divided by    |
 |                                              | *dividend*. (2)                              |
 +----------------------------------------------+----------------------------------------------+
 | ``timedelta1 < timedelta2``                  | *timedelta1* is less than *timedelta2* when  |
