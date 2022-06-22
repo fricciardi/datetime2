@@ -47,13 +47,13 @@ TimeDeltaTestData = namedtuple('TimeDeltaTestData', ['frac_days', 'int_part', 'f
 
 timedelta_test_data = [
     TimeDeltaTestData(Fraction(-6, 1),  -6, Fraction(0, 1), "-6 days", [-6, Fraction(-12, 2), Decimal("-6"), -6.0, "-6", "-18/3"]),
-    TimeDeltaTestData(Fraction(-13, 4), -3, Fraction(1, 4), "-3 days and -1/4 of a day", [Fraction(-39, 12), Decimal("-3.25"), -3.25, "-3.25", "-26/8"]),
+    TimeDeltaTestData(Fraction(-13, 4), -3, Fraction(-1, 4), "-3 days and -1/4 of a day", [Fraction(-39, 12), Decimal("-3.25"), -3.25, "-3.25", "-26/8"]),
     TimeDeltaTestData(Fraction(-1, 1),  -1, Fraction(0, 1), "-1 day", ["-1"]),  # for the singular day
     TimeDeltaTestData(Fraction(-3, 8),   0, Fraction(-3, 8), "-3/8 of a day", [Fraction(-3, 8), Decimal("-0.375"), -0.375, "-0.375", "-3/8"]),
     TimeDeltaTestData(Fraction(0, 1),    0, Fraction(0, 1), "0 days", [0, Fraction(0), Decimal("0"), 0.0, "0", "0/33"]),
     TimeDeltaTestData(Fraction(1, 4),    0, Fraction(1, 4), "1/4 of a day", [Fraction(1, 4), Decimal("0.25"), 0.25, "0.25", "1/4"]),
     TimeDeltaTestData(Fraction(1, 1),    1, Fraction(0, 1), "1 day", ["1"]),  # for the singular day
-    TimeDeltaTestData(Fraction(29, 8),   3, Fraction(5, 8), "3 days and 5/8 of a day", [Fraction(58, 16), Decimal("3.675"), 3.675, "3.675", "87/24"]),
+    TimeDeltaTestData(Fraction(29, 8),   3, Fraction(5, 8), "3 days and 5/8 of a day", [Fraction(58, 16), Decimal("3.625"), 3.625, "3.625", "87/24"]),
     TimeDeltaTestData(Fraction(5, 1),    5, Fraction(0, 1), "5 days", [5, Fraction(15, 3), Decimal("5"), 5.0, "5", "10/2"])
 ]
 
@@ -131,19 +131,19 @@ def test_01_constructor_default_numden():
 def test_10_hash_equality():
     # TimeDelta instances are immutable
     td1 = TimeDelta("13/5")
-    t2 = TimeDelta(13, 5)
-    assert hash(t1) == hash(t2)
-    dic = {t1: 1}
-    assert dic[t2] == 1
-    dic[t2] = 2
+    td2 = TimeDelta(13, 5)
+    assert hash(td1) == hash(td2)
+    dic = {td1: 1}
+    assert dic[td2] == 1
+    dic[td2] = 2
     assert len(dic) == 1
-    assert dic[t1] == 2
+    assert dic[td1] == 2
 
-    t3 = TimeDelta(13000001, 5000000)
-    assert hash(t1) != hash(t3)
-    dic[t3] = 3
+    td3 = TimeDelta(13000001, 5000000)
+    assert hash(td1) != hash(td3)
+    dic[td3] = 3
     assert len(dic) == 2
-    assert dic[t3] == 3
+    assert dic[td3] == 3
 
 
 def test_11_pickling():
@@ -151,7 +151,7 @@ def test_11_pickling():
 
     # without utcoffset
     for test_datum in timedelta_test_data:
-        for input_value in testdatum.input_values:
+        for input_value in test_datum.input_values:
             td = TimeDelta(input_value)
             for protocol in range(pickle.HIGHEST_PROTOCOL + 1):
                 pickled = pickle.dumps(td, protocol)
@@ -238,10 +238,10 @@ def test_40_operations_add_sub():
     assert a + b == TimeDelta(-17, 6)
     assert a + c == TimeDelta(33, 8)
     assert b + a == TimeDelta(-17, 6)
-    assert b + b == TimeDelta(34, 6)
+    assert b + b == TimeDelta(-34, 6)
     assert b + c == TimeDelta(31, 24)
     assert c + a == TimeDelta(4.125)
-    assert c + b == TimeDelta(167, 24)
+    assert c + b == TimeDelta(31, 24)
     assert c + c == TimeDelta(33, 4)
 
     assert a - a == TimeDelta(0)
@@ -319,22 +319,22 @@ def test_41_operations_mul_div():
     assert a // 3 == TimeDelta(0)
     assert a // Fraction(1, 3) == TimeDelta(0)
     assert a // Decimal("-2.5") == TimeDelta(0)
-    assert b // 3 == TimeDelta(0)
-    assert b // Fraction(1, 3) == TimeDelta(-8)
+    assert b // 3 == TimeDelta(-1)
+    assert b // Fraction(1, 3) == TimeDelta(-9)
     assert b // Decimal("-2.5") == TimeDelta(1)
     assert c // 3 == TimeDelta(1)
     assert c // Fraction(1, 3) == TimeDelta(12)
-    assert c // Decimal("-2.5") == TimeDelta(-1)
+    assert c // Decimal("-2.5") == TimeDelta(-2)
 
     assert a % 3 == TimeDelta(0)
     assert a % Fraction(1, 3) == TimeDelta(0)
     assert a % Decimal("-2.5") == TimeDelta(0)
-    assert b % 3 == TimeDelta(-17, 18)
-    assert b % Fraction(1, 3) == TimeDelta(-1, 2)
-    assert b % Decimal("-2.5") == TimeDelta(2, 15)
-    assert c % 3 == TimeDelta(3, 8)
-    assert c % Fraction(1, 3) == TimeDelta(3, 8)
-    assert c % Decimal("-2.5") == TimeDelta(-13, 20)
+    assert b % 3 == TimeDelta(1, 6)
+    assert b % Fraction(1, 3) == TimeDelta(1, 6)
+    assert b % Decimal("-2.5") == TimeDelta(-1, 3)
+    assert c % 3 == TimeDelta(9, 8)
+    assert c % Fraction(1, 3) == TimeDelta(1, 8)
+    assert c % Decimal("-2.5") == TimeDelta(-7, 8)
 
     d = TimeDelta(-3, 4)
     e = TimeDelta(2, 3)
@@ -352,7 +352,7 @@ def test_41_operations_mul_div():
     assert c / d == Fraction(-11, 2)
     assert c / e == Fraction(99, 16)
     assert d / b == Fraction(9, 34)
-    assert d / c == Fraction(-1, 11)
+    assert d / c == Fraction(-2, 11)
     assert d / d == Fraction(1)
     assert d / e == Fraction(-9, 8)
     assert e / b == Fraction(-4, 17)
@@ -365,20 +365,20 @@ def test_41_operations_mul_div():
     assert a // d == 0
     assert a // e == 0
     assert b // b == 1
-    assert b // c == 0
+    assert b // c == -1
     assert b // d == 3
-    assert b // e == -4
-    assert c // b == -1
+    assert b // e == -5
+    assert c // b == -2
     assert c // c == 1
-    assert c // d == -5
+    assert c // d == -6
     assert c // e == 6
     assert d // b == 0
-    assert d // c == 0
+    assert d // c == -1
     assert d // d == 1
-    assert d // e == -1
-    assert e // b == -4
-    assert e // c == 6
-    assert e // d == 0
+    assert d // e == -2
+    assert e // b == -1
+    assert e // c == 0
+    assert e // d == -1
     assert e // e == 1
 
     assert a % b == Fraction(0)
@@ -386,20 +386,20 @@ def test_41_operations_mul_div():
     assert a % d == Fraction(0)
     assert a % e == Fraction(0)
     assert b % b == Fraction(0)
-    assert b % c == Fraction(-31, 99)
-    assert b % d == Fraction(7, 9)
-    assert b % e == Fraction(-1, 4)
-    assert c % b == Fraction(-31, 68)
+    assert b % c == Fraction(31, 24)
+    assert b % d == Fraction(-7, 12)
+    assert b % e == Fraction(1, 2)
+    assert c % b == Fraction(-37, 24)
     assert c % c == Fraction(0)
-    assert c % d == Fraction(-1, 2)
-    assert c % e == Fraction(3, 16)
-    assert d % b == Fraction(9, 34)
-    assert d % c == Fraction(-1, 11)
+    assert c % d == Fraction(-3, 8)
+    assert c % e == Fraction(1, 8)
+    assert d % b == Fraction(-3, 4)
+    assert d % c == Fraction(27, 8)
     assert d % d == Fraction(0)
-    assert d % e == Fraction(-1, 8)
-    assert e % b == Fraction(-4, 17)
-    assert e % c == Fraction(16, 99)
-    assert e % d == Fraction(-8, 9)
+    assert d % e == Fraction(7, 12)
+    assert e % b == Fraction(-13, 6)
+    assert e % c == Fraction(2, 3)
+    assert e % d == Fraction(-1, 12)
     assert e % e == Fraction(0)
 
     # We'll not test divmod(), which is the simple concatenation of // and %
@@ -558,19 +558,18 @@ def test_42_comparisons():
             td0 >= par
 
 
-def test_50_days_day_frac():
+def test_50_int_part_frac_part():
     for test_datum in timedelta_test_data:
         for input_value in test_datum.input_values:
             td = TimeDelta(input_value)
-            assert td.days() == test_datum.int_part
-            assert td.day_frac == test_datum.frac_part
+            assert td.int_part == test_datum.int_part
+            assert td.frac_part == test_datum.frac_part
 
 
 def test_51_int_frac():
     for test_datum in timedelta_test_data:
         for input_value in test_datum.input_values:
             td = TimeDelta(input_value)
-            assert int(td) == TimeDelta(test_datum.int_part)
             assert td.int() == TimeDelta(test_datum.int_part)
             assert td.frac() == TimeDelta(test_datum.frac_part)
 
@@ -590,7 +589,7 @@ def test_90_subclass():
         def __init__(self, *args, **kws):
             temp = kws.copy()
             self.extra = temp.pop("extra")
-            Time.__init__(self, *args, **temp)
+            TimeDelta.__init__(self, *args, **temp)
 
         def newmeth(self, start):
             return (start + self.fractional_days * 3) // 2
