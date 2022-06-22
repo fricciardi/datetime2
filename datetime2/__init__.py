@@ -287,9 +287,9 @@ class Date:
 
     def __add__(self, other):
         if isinstance(other, TimeDelta):
-            if other.days != floor(other.days):
+            if not other.is_integer():
                 raise ValueError("Date object cannot be added to non integral TimeDelta.")
-            return type(self)(self.day_count + floor(other.days))  # this way we ensure day count is integer
+            return type(self)(self.day_count + int(other.fractional_days))   # note: fractiona days is a Fraction
         else:
             return NotImplemented
 
@@ -299,9 +299,9 @@ class Date:
         if isinstance(other, Date):
             return TimeDelta(self.day_count - other.day_count)
         elif isinstance(other, TimeDelta):
-            if other.days != floor(other.days):
+            if not other.is_integer():
                 raise ValueError("Non integral TimeDelta cannot be subtracted from Date.")
-            return type(self)(self.day_count - floor(other.days))
+            return type(self)(self.day_count - int(other.fractional_days))   # note: fractiona days is a Fraction
         else:
             return NotImplemented
 
@@ -476,7 +476,7 @@ class Time:
     # Math operators
     def __add__(self, other):
         if isinstance(other, TimeDelta):
-            total = self.day_frac + other.days
+            total = self.day_frac + other.fractional_days
             return type(self)(total - floor(total), utcoffset=self.utcoffset)
         else:
             return NotImplemented
@@ -505,7 +505,7 @@ class Time:
                     delta -= 1
             return TimeDelta(delta)
         elif isinstance(other, TimeDelta):
-            total = self.day_frac - other.days
+            total = self.day_frac - other.fractional_days
             return type(self)(total - floor(total), utcoffset=self.utcoffset)
         else:
             return NotImplemented
