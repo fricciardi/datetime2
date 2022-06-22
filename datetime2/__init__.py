@@ -30,7 +30,9 @@
 __author__ = "Francesco Ricciardi <francescor2010 at yahoo.it>"
 
 
+import numbers
 import time
+from decimal import Decimal
 from fractions import Fraction
 from math import floor
 
@@ -69,19 +71,189 @@ def get_moment_complete():
 
 
 class TimeDelta:
-    # ==>> STUB <<==
-    def __init__(self, days):
-        self._days = Fraction(days)
-
-    def __repr__(self):
-        return f"TimeDelta({self.days})"
-
-    def __eq__(self, other):
-        return self._days == other._days
+    def __init__(self, numerator, denominator=None):
+        if denominator is None:
+            self._fractional_days = verify_fractional_value(numerator)
+        else:
+            self._fractional_days = verify_fractional_value_num_den(numerator, denominator)
+        self._int_part = int(self._fractional_days)
+        self._frac_part = self._fractional_days - self._int_part
 
     @property
-    def days(self):
-        return self._days
+    def fractional_days(self):
+        return self._fractional_days
+
+    @property
+    def int_part(self):
+        return self._int_part
+
+    @property
+    def frac_part(self):
+        return self._frac_part
+
+    def __repr__(self):
+        return f"datetime2.{type(self).__name__}('{self.fractional_days!s}')"
+
+    def __str__(self):
+        if self._fractional_days == 0:
+            return "0 days"
+        int_string = f"{self.int_part!s} day{'s' if self._fractional_days != 1 and self._fractional_days != -1 else ''}" if self.int_part else ""
+        frac_string = f"{self._frac_part!s} of a day" if self._frac_part else ""
+        if int_string and frac_string:
+            return f"{int_string} and {frac_string}"
+        else:
+            return int_string + frac_string
+
+    # Math operators
+    def int(self):
+        return type(self)(self.int_part)
+
+    def frac(self):
+        return type(self)(self.frac_part)
+
+    def __add__(self, other):
+        if isinstance(other, TimeDelta):
+            return type(self)(self.fractional_days + other.fractional_days)
+        else:
+            return NotImplemented
+
+    def __pos__(self):
+        return self
+
+    def __neg__(self):
+        return TimeDelta(-self.fractional_days)
+
+    def __abs__(self):
+        return self if self.fractional_days >= 0 else -self
+
+    def __sub__(self, other):
+        if isinstance(other, TimeDelta):
+            return type(self)(self.fractional_days - other.fractional_days)
+        else:
+            return NotImplemented
+
+    def __mul__(self, other):
+        if isinstance(other, (numbers.Real, Decimal)):
+            try:
+                return type(self)(self.fractional_days * Fraction(other))
+            except (OverflowError, ValueError) as exc:
+                reason = str(exc)
+                if reason.startswith("cannot convert") and reason.endswith("to integer ratio"):
+                    raise TypeError from exc
+                else:
+                    raise
+        else:
+            return NotImplemented
+
+    __rmul__ = __mul__
+
+    def __truediv__(self, other):
+        if isinstance(other, TimeDelta):
+            return self.fractional_days / other.fractional_days
+        elif isinstance(other, (numbers.Real, Decimal)):
+            try:
+                return type(self)(self.fractional_days / Fraction(other))
+            except (OverflowError, ValueError) as exc:
+                reason = str(exc)
+                if reason.startswith("cannot convert") and reason.endswith("to integer ratio"):
+                    raise TypeError from exc
+                else:
+                    raise
+        else:
+            return NotImplemented
+
+    def __floordiv__(self, other):
+        if isinstance(other, TimeDelta):
+            return self.fractional_days // other.fractional_days
+        elif isinstance(other, (numbers.Real, Decimal)):
+            try:
+                return type(self)(self.fractional_days // Fraction(other))
+            except (OverflowError, ValueError) as exc:
+                reason = str(exc)
+                if reason.startswith("cannot convert") and reason.endswith("to integer ratio"):
+                    raise TypeError from exc
+                else:
+                    raise
+        else:
+            return NotImplemented
+
+    def __mod__(self, other):
+        if isinstance(other, TimeDelta):
+            return self.fractional_days % other.fractional_days
+        elif isinstance(other, (numbers.Real, Decimal)):
+            try:
+                return type(self)(self.fractional_days % Fraction(other))
+            except (OverflowError, ValueError) as exc:
+                reason = str(exc)
+                if reason.startswith("cannot convert") and reason.endswith("to integer ratio"):
+                    raise TypeError from exc
+                else:
+                    raise
+        else:
+            return NotImplemented
+
+    def divmod(self, other):
+        return self // other, self % other
+
+    # boolean and test
+    def __bool__(self):
+        return self._fractional_days != 0
+
+    def is_integer(self):
+        return self._frac_part == 0
+
+    # comparisons
+    def __eq__(self, other):
+        if isinstance(other, TimeDelta):
+            return self._fractional_days == other.fractional_days
+        elif hasattr(other, "fractional_days"):
+            return NotImplemented
+        else:
+            return False
+
+    def __ne__(self, other):
+        if isinstance(other, TimeDelta):
+            return self._fractional_days != other.fractional_days
+        elif hasattr(other, "fractional_days"):
+            return NotImplemented
+        else:
+            return True
+
+    def __gt__(self, other):
+        if isinstance(other, TimeDelta):
+            return self._fractional_days > other.fractional_days
+        elif hasattr(other, "fractional_days"):
+            return NotImplemented
+        else:
+            raise TypeError(f"You cannot compare '{type(self)!s}' with '{type(other)!s}'.")
+
+    def __ge__(self, other):
+        if isinstance(other, TimeDelta):
+            return self._fractional_days >= other.fractional_days
+        elif hasattr(other, "fractional_days"):
+            return NotImplemented
+        else:
+            raise TypeError(f"You cannot compare '{type(self)!s}' with '{type(other)!s}'.")
+
+    def __lt__(self, other):
+        if isinstance(other, TimeDelta):
+            return self._fractional_days < other.fractional_days
+        elif hasattr(other, "fractional_days"):
+            return NotImplemented
+        else:
+            raise TypeError(f"You cannot compare '{type(self)!s}' with '{type(other)!s}'.")
+
+    def __le__(self, other):
+        if isinstance(other, TimeDelta):
+            return self._fractional_days <= other.fractional_days
+        elif hasattr(other, "fractional_days"):
+            return NotImplemented
+        else:
+            raise TypeError(f"You cannot compare '{type(self)!s}' with '{type(other)!s}'.")
+
+    # hash value
+    def __hash__(self):
+        return hash(self._fractional_days)
 
 
 ##############################################################################
