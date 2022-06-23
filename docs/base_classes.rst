@@ -391,7 +391,7 @@ instance to perform reflected comparison if it is the second operator.
 keys. They can also be pickled and unpickled.
 
 In boolean contexts, a :class:`TimeDelta` instance is considered to be true
-if and only if it isn’t equal to TimeDelta(0).
+if and only if it isn’t equal to ``TimeDelta(0)``.
 
 
 Instance methods:
@@ -399,10 +399,10 @@ Instance methods:
 .. method:: TimeDelta.int()
 .. method:: TimeDelta.frac()
 
-   The first two methods return the same instance with only the integer part.
-   The last method returns the same instance with only the fractional part.
-   All methods return a negative value if the time interval is negative. In
-   this way, given any :class:`TimeDelta` instance ``td``, it is always:
+   The first method return the same instance with only the integer part. The
+   last method returns the same instance with only the fractional part. All
+   methods return a negative value if the time interval is negative. In this
+   way, given any :class:`TimeDelta` instance ``td``, it is always:
    ``td == td.int() + td.frac()``
 
 .. doctest::
@@ -467,6 +467,9 @@ attributes by which they are reachable:
 | Western        | ``western``    | :ref:`WesternTimeDelta <western-timedelta>`    | datetime2.western  |
 +----------------+----------------+------------------------------------------------+--------------------+
 
+.. note::
+   Not available in version 0.9.0.
+
 
 Supported operations
 ^^^^^^^^^^^^^^^^^^^^
@@ -512,10 +515,11 @@ Supported operations
 
 
 The table above does not include mixed type operations between ``TimeDelta``
-and ``Date``, ``Time`` or ``DateTime``. See the *Supported operations*
-chapter of each of these classes.
+and ``Date``, ``Time`` or ``DateTime``. For more information, see the
+*Supported operations* chapter of each of these classes.
 
-Class :class:`TimeDelta` unary arithmetic operators ``+``, ``-`` and ``abs()``.
+Class :class:`TimeDelta` also upports unary arithmetic operators ``+``, ``-``
+and ``abs()``.
 
 
 Notes:
