@@ -10,7 +10,7 @@ with open(path.join(here, 'README.rst')) as f:
 # TODO: All setup arguments need to be revised, also check for those to give more info on PyPI page
 setuptools.setup(
     name='datetime2',
-    version='0.9.0dev1',
+    version='0.9.0dev2',
 
     description='New date and time classes',
     long_description=long_description,
