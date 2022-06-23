@@ -39,5 +39,7 @@ setuptools.setup(
 
     platforms=['Platform independent'],
 
-    project_urls={"Issue Tracker": "https://github.com/fricciardi/datetime2/issues"}
+    project_urls={"Documentation": 'https://datetime2.readthedocs.io/en/stable/',
+                  "Issue Tracker": "https://github.com/fricciardi/datetime2/issues",
+                  "Source": 'https://github.com/fricciardi/datetime2'}
     )
