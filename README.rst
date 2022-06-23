@@ -29,10 +29,15 @@ formats. Additionally, it removes a few limits that the original package has.
 
 *datetime2* is a one-man, free-time work.
 
-Planned releases
-================
+Current and future releases
+===========================
 
-* 0.9: Implementation of TimeDelta, which currently is a stub
+Current:
+
+* 0.9.2: Implementation of WesternTimeDelta
+
+Planned:
+
 * 1.0: Implementation of DateTime, first production release
 * 1.1: Implementation of Julian and Hebrew calendars
 
