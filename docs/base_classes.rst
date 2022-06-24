@@ -1,5 +1,9 @@
-Base classes
-============
+:mod:`datetime2` - New date and time types
+==========================================
+
+.. module:: datetime2
+    :synopsis: New date and time types
+.. moduleauthor:: Francesco Ricciardi <francescor2010@yahoo.it>
 
 .. testsetup::
 
@@ -65,6 +69,8 @@ In boolean contexts, all :class:`Date` instances are considered to be true.
    Return ``R.D.`` followed by the day count. ``R.D.`` stands for Rata Die, the
    Latin for "fixed date".
 
+
+.. _all-calendars:
 
 Available calendars
 ^^^^^^^^^^^^^^^^^^^
@@ -244,6 +250,8 @@ Instance method:
    >>> print(t2)
    1/8 of a day, -1/6 of a day from UTC
 
+
+.. _all-time-representations:
 
 Available time representations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

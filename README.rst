@@ -27,17 +27,20 @@ features to those given by the standard
 adding the capability of constructing and representing date and time in many
 formats. Additionally, it removes a few limits that the original package has.
 
-*datetime2* is a one-man, free-time work.
+*datetime2* is a one-man, free-time work. Project is hosted at GitHub, please
+follow the source code link on the right to see the latest version of this
+page (e.g. for an updated release map).
 
 Current and future releases
 ===========================
 
 Current:
 
-* 0.9.2: Implementation of WesternTimeDelta
+* 0.9.2: Reorganization of documentation
 
 Planned:
 
+* 0.9.3: Implementation of WesternTimeDelta
 * 1.0: Implementation of DateTime, first production release
 * 1.1: Implementation of Julian and Hebrew calendars
 

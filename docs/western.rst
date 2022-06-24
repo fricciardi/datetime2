@@ -1,19 +1,24 @@
-.. _all-calendars:
+:mod:`datetime2.western` - Gregorian calendar and western time
+==============================================================
 
-Calendars
-=========
+.. module:: datetime2.western
+    :synopsis: Gregorian calendar and western time
+.. moduleauthor:: Francesco Ricciardi <francescor2010@yahoo.it>
 
 .. testsetup::
 
    from datetime2.western import GregorianCalendar
-   from datetime2.modern import IsoCalendar
 
-This chapter lists the calendars classes available in the :mod:`datetime2`
-package. Of course, they all conform to the requirements for interface classes
-listed in :ref:`customization`.
+This module implements the calendar and time representation used in the
+western world:
 
+*  The :ref:`Gregorian calendar <gregorian-calendar>`
+*  The :ref:`western time representation <western-time>` inhours, minutes and
+   seconds.
 
-.. TODO: if we will be keeping all calendars on a page, a ToC here will be useful and even more we may need it to identify the module of each calendar
+Of course, they all conform to the requirements for interface classes listed
+in :ref:`customization`.
+
 
 .. _gregorian-calendar:
 
@@ -202,148 +207,148 @@ Notes:
    Negative years will have a trailing ``'-'``.
 
 
+.. _western-time:
 
-.. _iso-calendar:
-
-ISO calendar
+Western time
 ^^^^^^^^^^^^
 
-The ISO calendar divides the days into weeks, from Monday to Sunday, and groups
-52 or 53 whole weeks into a year. The first calendar week of a year is the one
-that includes the first Thursday of the corresponding Gregorian year. This
-definition can be seen also as: the first calendar weeks of a ISO year
-is the week including January, 4\ :sup:`th` Gregorian.
+An instance of the :class:`WesternTime` class represents a moment of a day as
+generally done in western countries, dividing each day in 24 hours, each hour
+in 60 minutes and each minute in 60 seconds.
 
-A good discussion of the ISO calendar can be read at `The Mathematics of the
-ISO 8601 Calendar
-<http://www.staff.science.uu.nl/~gent0113/calendar/isocalendar.htm>`_.
+The default constructor western time is:
 
-The constructor of an ISO calendar is:
+.. class:: WesternTime(hour, minute, second, timezone=None)
 
-.. class:: IsoCalendar(year, week, day)
+   Return an object that represents the moment of a day in hour, minute and
+   second elapsed from midnight. This representation does not take into
+   account the possibility of one or two additional seconds that sometimes
+   are added in specific dates to compensate earth rotation. All arguments
+   except ``timezone`` are required. The following requirements must be
+   satisfied:
 
-   Return an object that represents the date given with ISO year, week number
-   and day. All arguments are required and must be integers. Values for
-   ``week`` and ``day`` must lie in the following ranges:
+   * ``hour`` must be an integer and ``0 <= month <= 23``
+   * ``minute`` must be an integer and ``0 <= minute <= 59``
+   * ``second`` must be a rational number and its value must be
+     ``0 <= second < 60``
+   * ``timezone``, if present, must be a rational number and its value must be
+     ``-24 <= timezone <= 24``
 
-   * ``1 <= week <= number of weeks in the given year``
-   * ``1 <= day <= 7``
+   Here a *rational number* is anything that can be passed to the
+   :class:`fractions.Fraction` constructor, i.e. an integer, a float, another
+   Fraction, a Decimal number or a string representing an integer, a float or
+   a fraction.
 
-   If an argument is outside those ranges, a :exc:`ValueError` exception is
-   raised. They day number goes from 1 (Monday) to 7 (Sunday).
+   If an argument is not of the accepted type, a :exc:`TypeError` exception
+   is raised. If an argument is outside its accepted range, a
+   :exc:`ValueError` exception is raised.
+
+   The ``timezone`` argument, if present, makes the object aware and defines
+   the number of hours that must be added to UTC to get local time.
+
+.. note::
+
+   The ``timezone`` parameter is likely to change its values in future.
+
+A :class:`WesternTime` object has four attributes, all of which are read-only
+numbers: an attempt to change them will raise an :exc:`AttributeError`
+exception. These attributes store the corresponding values in the constructor:
+
+.. attribute:: WesternTime.hour
+
+   An integer with values between ``0`` and ``23``.
+
+.. attribute:: WesternTime.minute
+
+   An integer with values between ``0`` and ``59``.
+
+.. attribute:: WesternTime.second
+
+   A Python Fraction with value grater or equal to ``0`` and less than ``60``.
+
+.. attribute:: WesternTime.timezone
+
+   If this attribute is not ``None``, it a Python Fraction with values
+   between -24 and 24.
 
 
-An :class:`IsoCalendar` object has three attributes:
+An instance of the :class:`WesternTime` class has the following methods:
 
-.. attribute:: IsoCalendar.year
+.. method:: WesternTime.replace(hour, minute, second, *, timezone)
 
-.. attribute:: IsoCalendar.week
-
-.. attribute:: IsoCalendar.day
-
-   These attributes are read-only integer numbers. Week will be between 1 and
-   the number of weeks in the ISO year (52 or 53), day will be between 1 and 7.
-
-Two static method have been implmented to give details of an ISO year:
-
-.. classmethod:: IsoCalendar.is_long_year(year)
-
-   Return ``True`` if *year* is a long year, i.e. a year with 53 weeks, in the
-   ISO calendar, ``False`` otherwise. For example,
-   ``IsoCalendar.is_leap_year(2004) == True``.
-
-.. classmethod:: IsoCalendar.weeks_in_year(year)
-
-   Return the number of weeks in a ISO year, either 52 or 53. For example,
-   ``IsoCalendar.weeks_in_year(2009) == 53``.
-
-
-An instance of the :class:`IsoCalendar` class has the following methods:
-
-.. method:: IsoCalendar.day_of_year()
-
-   Return the day of the year as an integer, from 1 to 364 (in short years) or
-   371 (in long years). For example, ``IsoCalendar(2008, 3, 1).day_of_year() ==
-   62``.
-
-.. method:: IsoCalendar.replace(year, week, day)
-
-   Returns a new :class:`IsoCalendar` object with the same value, except for
-   those parameters given new values by whichever keyword arguments are
-   specified. All values are optional; if used, they must be integers. If any
-   argument is outside its validity range or would create an invalid Gregorian
-   date, a :exc:`ValueError` exception is raised. For example:
+   Returns a new :class:`WesternTime` object with the same value, except
+   for those parameters given new values by whichever keyword arguments are
+   specified. The value, if given, they must respect the same requirements
+   of the default constructor, otherwise a :exc:`TypeError` or
+   :exc:`ValueError` exception is raised. ``timezone`` parameter can be
+   replaced only for aware instances. For example:
 
 .. doctest::
 
-      >>> iso = IsoCalendar(2004, 53, 3)
-      >>> print(iso.replace(week=26))
-      2004-W26-3
-      >>> iso.replace(year=2003)  # 2003 has 52 weeks
+      >>> my_time = WesternTime(19, 6, 29)
+      >>> print(my_time.replace(minute=38))
+      19:38:29
+      >>> my_time.replace(hour=24)
       Traceback (most recent call last):
         |
-      ValueError: Week must be between 1 and number of weeks in year, while it is 53.
+      ValueError: Hour must be between 0 and 23, while it is 24.
+      >>> my_time.replace(timezone=1)
+      Traceback (most recent call last):
+        |
+      TypeError: Can replace timezone only in aware instances.
 
-.. method:: IsoCalendar.__str__()
+.. method:: WesternTime.__str__()
 
-   Return a string representing the date with the 'YYYY-**W**\ WW-DD' format.
-   Years above 9999 are represented adding necessary figures. Negative years
-   are represented prepending the minus sign. For example:
+   For a naive instance, return a string representing the time with the
+   'HH:MM:SS' format. For an aware instance, the format is
+   'HH:MM:SS+HH:MM'. The number of seconds in the time part and the number of
+   minutes in the timezone part will be truncated. For example:
 
 .. doctest::
 
-      >>> str(IsoCalendar(2002, 12, 4))
-      '2002-W12-4'
-      >>> str(IsoCalendar(-1, 1, 1))
-      '-0001-W01-1'
+      >>> str(WesternTime(12, 44, 14.8))
+      '12:44:14'
+      >>> str(WesternTime(12, 34, 56.7, timezone=12.256))
+      '12:34:56+12:15'
 
+.. method:: WesternTime.cformat(format)
 
-.. method:: IsoCalendar.cformat(format)
-
-   Return a string representing the ISO date, controlled by an explicit format
+   Return a string representing the time, controlled by an explicit format
    string. The formatting directives are a subset of those accepted by
    :meth:`datetime.date.strftime`, and their meaning does not depend on the
    underlying C library (i.e. there are no platform variations). The table
-   below lists the accepted formatting directives, all other character are not
-   interpreted.
+   below lists the accepted formatting directives, all other characters are
+   not interpreted.
 
-   +-----------+--------------------------------+-------+
-   | Directive | Meaning                        | Notes |
-   +===========+================================+=======+
-   | ``%a``    | Abbreviated weekday name.      | \(1)  |
-   +-----------+--------------------------------+-------+
-   | ``%A``    | Full weekday name.             | \(1)  |
-   +-----------+--------------------------------+-------+
-   | ``%j``    | Day of the year as a decimal   |       |
-   |           | number [001,371].              |       |
-   +-----------+--------------------------------+-------+
-   | ``%w``    | Weekday as a decimal number    |       |
-   |           | [1 (Monday), 7 (Sunday)].      |       |
-   +-----------+--------------------------------+-------+
-   | ``%W``    | Week number in the ISO year    |       |
-   |           | as a decimal number [01, 53].  |       |
-   +-----------+--------------------------------+-------+
-   | ``%y``    | ISO year without century as a  | \(2)  |
-   |           | decimal number [00, 99].       |       |
-   +-----------+--------------------------------+-------+
-   | ``%Y``    | ISO year with century as a     | \(3)  |
-   |           | decimal number. At least four  |       |
-   |           | figures will be returned.      |       |
-   +-----------+--------------------------------+-------+
-   | ``%%``    | A literal ``'%'`` character.   |       |
-   +-----------+--------------------------------+-------+
+   +-----------+-------------------------------------------+-------+
+   | Directive | Meaning                                   | Notes |
+   +===========+===========================================+=======+
+   | ``%H``    | Hour (24-hour clock) as a                 |       |
+   |           | zero-padded decimal number [00, 23].      |       |
+   +-----------+-------------------------------------------+-------+
+   | ``%I``    | Hour (12-hour clock) as a                 |       |
+   |           | zero-padded decimal number [01, 12].      |       |
+   +-----------+-------------------------------------------+-------+
+   | ``%p``    | Returns 'AM' if hour is between 0 and 11, |       |
+   |           | 'PM' if hour is between 12 and 23.        | \(1)  |
+   +-----------+-------------------------------------------+-------+
+   | ``%M``    | Minute as a zero-padded decimal number    |       |
+   |           | [00, 59].                                 |       |
+   +-----------+-------------------------------------------+-------+
+   | ``%S``    | Second as a zero-padded decimal number    |       |
+   |           | [00, 59].                                 |       |
+   +-----------+-------------------------------------------+-------+
+   | ``%f``    | Microsecond as a decimal number,          |       |
+   |           | zero-padded on the left [000000, 999999]. |       |
+   +-----------+-------------------------------------------+-------+
+   | ``%z``    | UTC offset in the form ±HHMM[SS[.ffffff]] |       |
+   |           | (empty string if the object is naive).    |       |
+   +-----------+-------------------------------------------+-------+
+   | ``%%``    | A literal ``'%'`` character.              |       |
+   +-----------+-------------------------------------------+-------+
 
 Notes:
 
 (1)
-   The ``%a`` and ``%A`` directives return a localized name in Standard C++.
-   This is not true for :mod:`datetime2`, which only returns English names.
-
-(2)
-   Since this is a truncated representation, **negative years will not have a
-   sign**.
-
-(3)
-   Negative years will have a trailing ``'-'``.
-
-
+   The ``%p`` directive returns a localized string in Standard C++. This is
+   not true for :mod:`datetime2`, which only returns the English string.

@@ -55,8 +55,7 @@ specific representation:
 The attribute gives access to what is called an "interface class". The
 interface class is the one that manages converting a specific representation
 (e.g. the Gregorian calendar) to the base class. The :ref:`all-calendars`
-chapter lists all available interface classes for calendars. The
-:ref:`all-time-representations` chapter lists all available interface
+table lists all available interface classes for calendars. The :ref:`all-time-representations` chapter lists all available interface
 classes for time.
 
 The real power of this paradigm is that we can create a base class instance

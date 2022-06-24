@@ -3,9 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-.. module:: datetime2
-   :synopsis: New date and time types
-.. moduleauthor:: Francesco Ricciardi <francescor2010@yahoo.it>
+.. currentmodule:: datetime2
 
 .. testsetup::
 
@@ -13,8 +11,8 @@
    from fractions import Fraction
    from datetime2 import Date
 
-Overview
-========
+:mod:`datetime2` overview
+=========================
 
 The definition of a moment in history is independent from the way it is
 represented in different cultures. There are indeed many calendars in which
@@ -207,8 +205,8 @@ Index
 .. toctree::
 
    base_classes
-   calendars
-   timeofday
+   modern
+   western
    interface
 
 
