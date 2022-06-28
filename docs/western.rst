@@ -13,7 +13,7 @@ This module implements the calendar and time representation used in the
 western world:
 
 *  The :ref:`Gregorian calendar <gregorian-calendar>`
-*  The :ref:`western time representation <western-time>` inhours, minutes and
+*  The :ref:`western time representation <western-time>` in hours, minutes and
    seconds.
 
 Of course, they all conform to the requirements for interface classes listed
