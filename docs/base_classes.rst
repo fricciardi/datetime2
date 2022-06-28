@@ -75,8 +75,7 @@ In boolean contexts, all :class:`Date` instances are considered to be true.
 Available calendars
 ^^^^^^^^^^^^^^^^^^^
 
-The following table lists all available calendars and the attributes by which
-they are reachable:
+Currently (version |release|) the calendars listed below are available.
 
 +--------------+------------------+----------------------------------------------------------+-------------------+
 | Calendar     | Access attribute | Calendar class                                           | Module            |
@@ -162,6 +161,7 @@ There are five :class:`Time` constructors:
 
 .. class:: Time(day_frac, *, utcoffset=None)
 .. class:: Time(numerator, denominator, *, utcoffset=None)
+   :noindex:
 
    Return an object that represents a moment in a day as a fraction of the
    whole day, given in the ``day_frac`` argument. If needed, it is possible
@@ -256,8 +256,7 @@ Instance method:
 Available time representations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The following table lists all available time representations and the attributes
-by which they are reachable:
+Currently (version |release|) the time of day listed below are available.
 
 +----------------+----------------+------------------------------------------------+--------------------+
 | Representation | Attribute      | Time representation class                      | Module             |
@@ -349,6 +348,7 @@ There are two :class:`TimeDelta` constructors:
 
 .. class:: TimeDelta(fractional_days)
 .. class:: TimeDelta(numerator, denominator)
+   :noindex:
 
    Return an object that represents a time interval in fractional days, given
    in the ``fractional_days`` argument. This value will be greater than 1 to

@@ -15,11 +15,11 @@
 =========================
 
 The definition of a moment in history is independent from the way it is
-represented in different cultures. There are indeed many calendars in which
-the same day is represented in different ways. The :mod:`datetime2` module
-detaches operations on date and time objects from their representation, and
-allows to add other representations at run time. The module does all this in
-an efficient and syntactically clear way.
+represented in different cultures. Indeed the same day is represented in
+different ways by different calendars. The :mod:`datetime2` module detaches
+operations on date and time objects from their representation, and allows to
+add other representations at run time. The module does all this in an
+efficient and syntactically clear way.
 
 We can create a date object by calling the relevant access attribute of the
 base class :class:`Date`:
@@ -65,16 +65,6 @@ independently from how the date object was built:
    >>> print(d2.gregorian.weekday())
    4
 
-Currently (version |release|) the calendars listed below are available.
-
-+-------------------+---------------------+-----------------------------------------+
-| Module            | Access attribute    | Calendar                                |
-+===================+=====================+=========================================+
-| datetime2.western | `gregorian`         | :ref:`Gregorian <gregorian-calendar>`   |
-+-------------------+---------------------+-----------------------------------------+
-| datetime2.modern  | `iso`               | :ref:`ISO <iso-calendar>`               |
-+-------------------+---------------------+-----------------------------------------+
-
 
 Similarly, we can have different representations also for time. They can be
 mixed like in dates:
@@ -92,26 +82,21 @@ mixed like in dates:
    >>> print(t2.western.minute)
    28
 
-The reference between time objects can be either implicit time, i.e.
-depending on implementation (it usually is the local time, but can also be
-UTC). In the :mod:`datetime2` module, it is also possible to have an explicit
-reference to UTC, passed as an additional parameter to the constructors of
-:class:`Time` (like in assignment to ``t1`` above) and :class:`DateTime`.
+
+
+The relation between time objects can be either implicit, i.e. depending on
+implementation (in which case a time object *normally* represents the local
+time), or explicit, which means that the objects know how they relate to each
+other. Then standard way for the latter is with UTC. An object of the first
+kind is said to be *naive*, of the second kind is called *aware* (like in
+:ref:`datetime-naive-aware` of the :mod:`datetime2` module). For aware
+objects a second value is used in the constructor to indicate the distance
+from UTC.
 
 Many representations of the time of day of this module are aware by
-definition, so in those cases the UTC offset is implicit. E.g.,
-the :ref:`Internet time <internet-time>` representation used above is by
-definition on Basel time zone (UTC+1).
-
-Currently (version |release|) the time of day listed below are available.
-
-+-------------------+---------------------+-----------------------------------------+
-| Module            | Access attribute    | Time of day                             |
-+===================+=====================+=========================================+
-| datetime2.western | `western`           | :ref:`Western <western-time>`           |
-+-------------------+---------------------+-----------------------------------------+
-| datetime2.modern  | `internet`          | :ref:`Internet <internet-time>`         |
-+-------------------+---------------------+-----------------------------------------+
+definition, so in those cases the UTC offset must not be given. E.g., the
+:ref:`Internet time <internet-time>` representation is based on Basel time
+zone (UTC+1).
 
 
 Internal representation
@@ -155,16 +140,19 @@ representation (even if it is of little use):
 
 Where ``R.D.`` stands for Rata Die, the Latin for "fixed date".
 
-There is also a generic time of day internal representation: a moment of the
-day is represented as a fraction of the day, starting from midnight. Time of
-day can have the indication of the offset from UTC (see below), in which case
-the instance is said to be *aware*. When no such indication is given, the
-instance is said to be *naive*. To make a :class:`Time` instance aware, just
-pass the optional ``utcoffset`` parameter in the constructor. Also this
-parameter is passed as a fraction of a day.
+There are similar generic representations for all base classes of the
+:mod:`datetime2` module:
+
+*  :class:`Time`: a moment of the day is represented as a fraction of the day,
+   starting from midnight. Distance from UTC, if given is also given as a
+   fraction of a day.
 
 .. doctest::
 
+   >>> print(t1)
+   14209/21600 of a day, -1/4 of a day from UTC
+   >>> print(t2)
+   179/200 of a day, 1/24 of a day from UTC
    >>> t3 = Time(7, 10)
    >>> t4 = Time(0.796875, utcoffset="1/4")
    >>> print(t3.western)
@@ -174,15 +162,23 @@ parameter is passed as a fraction of a day.
    >>> print(t4.internet)
    @588
 
-And again we can print the internal time of day:
+*  :class:`TimeDelta`: a time interval is given in number of days, possibly
+   fractional to account for parts of day.
 
 .. doctest::
 
-   >>> print(t1)
-   14209/21600 of a day, -1/4 of a day from UTC
-   >>> print(t2)
-   179/200 of a day, 1/24 of a day from UTC
-
+   >>> td1 = TimeDelta(8, 10)
+   >>> print(td1)
+   4/5 of a day
+   >>> print(td1.western)
+   19 hours, 12 minutes
+   >>> td2 = TimeDelta(118, 12)
+   >>> print(td2)
+   9 days and 5/6 of a day
+   >>> print(td2.western)
+   9 days and 20 hours
+   >>> print(td2.human)
+   1 week, 2 days and 20 hours
 
 .. [#book] "Calendrical Calculations: The Ultimate Edition",  E. M. Reingold,
            N. Dershowitz, Cambridge University Press, 2018
