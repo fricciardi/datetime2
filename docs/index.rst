@@ -47,8 +47,8 @@ methods:
    >>> print(d2.iso.day_of_year())
    158
 
-What makes :mod:`datetime2` powerful is that we can mix these attributes,
-independently from how the date object was built:
+One of the strength of :mod:`datetime2` is that we can mix these attributes,
+independently from how the date object is built:
 
 .. doctest::
 
@@ -66,8 +66,8 @@ independently from how the date object was built:
    4
 
 
-Similarly, we can have different representations also for time. They can be
-mixed like in dates:
+The same strength is true also for time, where different representations can
+be mixed like in dates:
 
 .. doctest::
 
@@ -83,15 +83,13 @@ mixed like in dates:
    28
 
 
-
 The relation between time objects can be either implicit, i.e. depending on
-implementation (in which case a time object *normally* represents the local
-time), or explicit, which means that the objects know how they relate to each
-other. Then standard way for the latter is with UTC. An object of the first
-kind is said to be *naive*, of the second kind is called *aware* (like in
-:ref:`datetime-naive-aware` of the :mod:`datetime2` module). For aware
-objects a second value is used in the constructor to indicate the distance
-from UTC.
+implementation, or explicit, which means that the objects know how they
+relate to each other. Then standard way for the latter is with UTC. An object
+of the first kind is said to be *naive*, of the second kind is called *aware*
+(like in :ref:`datetime-naive-aware` of the :mod:`datetime2` module). For
+aware objects a second value is used in the constructor to indicate the
+distance from UTC.
 
 Many representations of the time of day of this module are aware by
 definition, so in those cases the UTC offset must not be given. E.g., the

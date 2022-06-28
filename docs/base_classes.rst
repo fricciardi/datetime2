@@ -243,11 +243,9 @@ Instance method:
 
 .. doctest::
 
-   >>> t1 = Time(4, 12)
-   >>> print(t1)
+   >>> print(Time(4, 12))
    1/3 of a day
-   >>> t2 = Time(3, 24, utcoffset="-4/24")
-   >>> print(t2)
+   >>> print(Time(3, 24, utcoffset="-4/24"))
    1/8 of a day, -1/6 of a day from UTC
 
 
@@ -435,11 +433,9 @@ Instance methods:
 
 .. doctest::
 
-   >>> td1 = Timedelta("3/4")
-   >>> td1.is_integer()
+   >>> Timedelta("3/4").is_integer()
    False
-   >>> td2 = TimeDelta(-1)
-   >>> td2.is_integer()
+   >>> TimeDelta(-1).is_integer()
    True
 
 
