@@ -175,8 +175,6 @@ There are similar generic representations for all base classes of the
    9 days and 5/6 of a day
    >>> print(td2.western)
    9 days and 20 hours
-   >>> print(td2.human)
-   1 week, 2 days and 20 hours
 
 .. [#book] "Calendrical Calculations: The Ultimate Edition",  E. M. Reingold,
            N. Dershowitz, Cambridge University Press, 2018
