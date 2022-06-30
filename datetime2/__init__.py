@@ -255,6 +255,52 @@ class TimeDelta:
     def __hash__(self):
         return hash(self._fractional_days)
 
+    @classmethod
+    def register_new_time_interval(cls, attribute_name, time_interval_class):
+        if not isinstance(attribute_name, str) or not attribute_name.isidentifier():
+            raise ValueError(f"Invalid time interval attribute name: {attribute_name}.")
+        if hasattr(cls, attribute_name):
+            raise AttributeError(f"Time interval attribute already existing: {attribute_name}.")
+        if not hasattr(time_interval_class, "from_fractional_days"):
+            raise TypeError("Time interval class does not have method from_fractional_days.")
+        if not hasattr(time_interval_class, "to_fractional_days"):
+            raise TypeError("Time interval class does not have method to_fractional_days.")
+
+        class ModifiedClass(type):
+            def __call__(klass, *args, **kwargs):
+                time_interval_obj = super().__call__(*args, **kwargs)
+                date_obj = cls(time_interval_obj.to_fractional_days())
+                setattr(date_obj, attribute_name, time_interval_obj)
+                return date_obj
+
+        # Create the modified calendar class
+        new_class_name = f"{time_interval_class.__name__}In{cls.__name__}"
+        modified_time_interval_class = ModifiedClass(new_class_name, (time_interval_class,), {})
+
+        class TimeIntervalAttribute:
+            # This class implements a context dependent attribute
+            def __init__(self, attr_name, modif_time_interval_class):
+                self.attribute_name = attr_name
+                self.modified_time_interval_class = modif_time_interval_class
+
+            def __get__(self, instance, owner):
+                if instance is None:
+                    return self.modified_time_interval_class
+                else:
+                    assert self.attribute_name not in instance.__dict__
+                    timedelta = self.modified_time_interval_class.from_fractional_days(instance.fractional_days)
+                    time_interval_obj = getattr(timedelta, self.attribute_name)
+                    setattr(instance, self.attribute_name, time_interval_obj)
+                    return time_interval_obj
+
+        setattr(cls, attribute_name, TimeIntervalAttribute(attribute_name, modified_time_interval_class))
+
+
+##############################################################################
+# Register current calendars
+#
+TimeDelta.register_new_time_interval("western", western.WesternTimeDelta)
+
 
 ##############################################################################
 #
@@ -289,7 +335,7 @@ class Date:
         if isinstance(other, TimeDelta):
             if not other.is_integer():
                 raise ValueError("Date object cannot be added to non integral TimeDelta.")
-            return type(self)(self.day_count + int(other.fractional_days))   # note: fractiona days is a Fraction
+            return type(self)(self.day_count + int(other.fractional_days))   # note: fractional days is a Fraction
         else:
             return NotImplemented
 
@@ -301,7 +347,7 @@ class Date:
         elif isinstance(other, TimeDelta):
             if not other.is_integer():
                 raise ValueError("Non integral TimeDelta cannot be subtracted from Date.")
-            return type(self)(self.day_count - int(other.fractional_days))   # note: fractiona days is a Fraction
+            return type(self)(self.day_count - int(other.fractional_days))   # note: fractional days is a Fraction
         else:
             return NotImplemented
 
@@ -382,9 +428,9 @@ class Date:
 
         class CalendarAttribute:
             # This class implements a context dependent attribute
-            def __init__(self, attribute_name, modified_calendar_class):
-                self.attribute_name = attribute_name
-                self.modified_calendar_class = modified_calendar_class
+            def __init__(self, attr_name, modif_calendar_class):
+                self.attribute_name = attr_name
+                self.modified_calendar_class = modif_calendar_class
 
             def __get__(self, instance, owner):
                 if instance is None:
@@ -645,9 +691,9 @@ class Time:
 
         class TimeReprAttribute:
             # This class implements a context dependent attribute
-            def __init__(self, attr_name, modified_time_repr_class):
+            def __init__(self, attr_name, modif_time_repr_class):
                 self.attr_name = attr_name
-                self.modified_time_repr_class = modified_time_repr_class
+                self.modified_time_repr_class = modif_time_repr_class
 
             def __get__(self, instance, owner):
                 if instance is None:
