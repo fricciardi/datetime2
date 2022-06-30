@@ -39,6 +39,8 @@ from datetime2.modern import InternetTime
 INF = float("inf")
 NAN = float("nan")
 
+# TODO: use named tuple for test data
+
     # day_frac    internet  with utcoffset=1/3    with utcoffset=-1/5
 internet_time_test_data = [
     # beat and half beat

@@ -40,6 +40,7 @@ from datetime2 import Date, Time, TimeDelta
 INF = float("inf")
 NAN = float("nan")
 
+# TODO: use named tuple for test data
 
 #############################################################################
 # Date tests

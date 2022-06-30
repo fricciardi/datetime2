@@ -39,6 +39,8 @@ from datetime2.modern import IsoCalendar
 INF = float('inf')
 NAN = float('nan')
 
+# TODO: use named tuple for test data
+
 iso_test_data = [
     # data from Calendrical Calculations: The Millennium Edition, with addition
     #      RD         ISO      doy

@@ -39,6 +39,8 @@ from datetime2.western import GregorianCalendar
 INF = float('inf')
 NAN = float('nan')
 
+# TODO: use named tuple for test data
+
 gregorian_test_data = [
     # data from Calendrical Calculations: The Millennium Edition, with addition
     # RD      Weekday    Gregorian

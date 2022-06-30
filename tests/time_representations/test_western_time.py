@@ -38,6 +38,8 @@ from datetime2.western import WesternTime
 INF = float('inf')
 NAN = float('nan')
 
+# TODO: use named tuple for test data
+
 western_time_test_data = [
     # day_frac           western                    as hours         as minutes         as seconds
     #   numer denom       h   m   s                 num denum         num denum         num denum
