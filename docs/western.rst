@@ -216,7 +216,7 @@ An instance of the :class:`WesternTime` class represents a moment of a day as
 generally done in western countries, dividing each day in 24 hours, each hour
 in 60 minutes and each minute in 60 seconds.
 
-The default constructor western time is:
+The default western time constructor is:
 
 .. class:: WesternTime(hour, minute, second, timezone=None)
 
@@ -227,8 +227,8 @@ The default constructor western time is:
    except ``timezone`` are required. The following requirements must be
    satisfied:
 
-   * ``hour`` must be an integer and ``0 <= month <= 23``
-   * ``minute`` must be an integer and ``0 <= minute <= 59``
+   * ``hour`` must be an integer and ``0 <= hour < 24``
+   * ``minute`` must be an integer and ``0 <= minute < 60``
    * ``second`` must be a rational number and its value must be
      ``0 <= second < 60``
    * ``timezone``, if present, must be a rational number and its value must be
@@ -352,3 +352,101 @@ Notes:
 (1)
    The ``%p`` directive returns a localized string in Standard C++. This is
    not true for :mod:`datetime2`, which only returns the English string.
+
+
+.. _western-time-interval:
+
+Western time interval
+^^^^^^^^^^^^^^^^^^^^^
+
+An instance of the :class:`WesternTimeDelta` class represents a time interval
+given in days, hours, minutes and seconds.
+
+The default constructor is:
+
+.. class:: WesternTimeDelta(days, hours, minutes, seconds)
+
+   Return an object that represents a time interval in hours, minutes and
+   seconds. All arguments are required. ``hours``, ``minutes`` and
+   ``seconds`` must have the same sign of ``days``. The types and absolute
+   values of each parameter are listed below:
+
+   * ``days`` must be an integer of any value
+   * ``hours`` must be an integer and its absolute value must be
+     ``0 <= hours <= 23``
+   * ``minutes`` must be an integer and its absolute value must be
+     ``0 <= minutes <= 59``
+   * ``seconds`` must be a rational number and its absolute value must be
+     ``0 <= second < 60``
+
+   Here a *rational number* is anything that can be passed to the
+   :class:`fractions.Fraction` constructor, i.e. an integer, a float, another
+   Fraction, a Decimal number or a string representing an integer, a float or
+   a fraction.
+
+   If an argument is not of the accepted type, a :exc:`TypeError` exception
+   is raised. If an argument is outside its accepted range or all parameter
+   haven't the same sign, a :exc:`ValueError` exception is raised.
+
+
+A :class:`WesternTimeDelta` object has four attributes, all of which are
+read-only numbers: an attempt to change them will raise an
+:exc:`AttributeError` exception. These attributes store the corresponding
+values in the constructor:
+
+.. attribute:: WesternTime.days
+
+   An integer of any value.
+
+.. attribute:: WesternTime.hours
+
+   An integer of the same sign as ``days`` and with absolute value between
+   ``0`` and ``23``.
+
+.. attribute:: WesternTime.minutes
+
+   An integer of the same sign as ``days`` and with absolute value between
+   ``0`` and ``59``.
+
+.. attribute:: WesternTime.seconds
+
+   A Python Fraction of the same sign as ``days`` and with absolute value
+   grater or equal to ``0`` and less than ``60``.
+
+An instance of the :class:`WesternTimeDelta` class has the following methods:
+
+.. method:: WesternTimeDelta.replace(days, hours, minutes, seconds)
+
+   Returns a new :class:`WesternTimeDelta` object with the same value, except
+   for those parameters given new values by whichever keyword arguments are
+   specified. The value, if given, they must respect the same requirements
+   of the default constructor, otherwise a :exc:`TypeError` or
+   :exc:`ValueError` exception is raised. For example:
+
+.. doctest::
+
+      >>> my_td = WesternTimeDelta(1, 23, 45, 6)
+      >>> print(my_td.replace(minutes=0))
+      1 day, 23 hours and 6 seconds
+      >>> my_td.replace(hours=24)
+      Traceback (most recent call last):
+        |
+      ValueError: Hours must be between 0 and 23, while it is 24.
+      >>> my_time.replace(secondsì'33')
+      Traceback (most recent call last):
+        |
+      ValueError: Seconds must be of the same sign of 'days'.
+
+.. method:: WesternTimeDelta.__str__()
+
+   Return a string representing the time interval. When a component of the
+   interval is zero, it is not printed. The number of seconds will be
+   truncated. For example:
+
+.. doctest::
+
+      >>> str(WesternTimeDelta(9, 8, 7, 6.5))
+      '9 days, 8 hours, 7 minutes and 6 seconds'
+      >>> str(WesternTimeDelta(0, 0, -5, -2))
+      '-5 minutes and -2 seconds'
+
