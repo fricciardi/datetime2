@@ -65,245 +65,6 @@ def get_moment_complete():
 
 ##############################################################################
 #
-# TimeDelta
-#
-##############################################################################
-
-
-class TimeDelta:
-    def __init__(self, numerator, denominator=None):
-        if denominator is None:
-            self._fractional_days = verify_fractional_value(numerator)
-        else:
-            self._fractional_days = verify_fractional_value_num_den(numerator, denominator)
-        self._int_part = int(self._fractional_days)
-        self._frac_part = self._fractional_days - self._int_part
-
-    @property
-    def fractional_days(self):
-        return self._fractional_days
-
-    @property
-    def int_part(self):
-        return self._int_part
-
-    @property
-    def frac_part(self):
-        return self._frac_part
-
-    def __repr__(self):
-        return f"datetime2.{type(self).__name__}('{self.fractional_days!s}')"
-
-    def __str__(self):
-        if self._fractional_days == 0:
-            return "0 days"
-        int_string = f"{self.int_part!s} day{'s' if self._fractional_days != 1 and self._fractional_days != -1 else ''}" if self.int_part else ""
-        frac_string = f"{self._frac_part!s} of a day" if self._frac_part else ""
-        if int_string and frac_string:
-            return f"{int_string} and {frac_string}"
-        else:
-            return int_string + frac_string
-
-    # Math operators
-    def int(self):
-        return type(self)(self.int_part)
-
-    def frac(self):
-        return type(self)(self.frac_part)
-
-    def __add__(self, other):
-        if isinstance(other, TimeDelta):
-            return type(self)(self.fractional_days + other.fractional_days)
-        else:
-            return NotImplemented
-
-    def __pos__(self):
-        return self
-
-    def __neg__(self):
-        return TimeDelta(-self.fractional_days)
-
-    def __abs__(self):
-        return self if self.fractional_days >= 0 else -self
-
-    def __sub__(self, other):
-        if isinstance(other, TimeDelta):
-            return type(self)(self.fractional_days - other.fractional_days)
-        else:
-            return NotImplemented
-
-    def __mul__(self, other):
-        if isinstance(other, (numbers.Real, Decimal)):
-            try:
-                return type(self)(self.fractional_days * Fraction(other))
-            except (OverflowError, ValueError) as exc:
-                reason = str(exc)
-                if reason.startswith("cannot convert") and reason.endswith("to integer ratio"):
-                    raise TypeError from exc
-                else:
-                    raise
-        else:
-            return NotImplemented
-
-    __rmul__ = __mul__
-
-    def __truediv__(self, other):
-        if isinstance(other, TimeDelta):
-            return self.fractional_days / other.fractional_days
-        elif isinstance(other, (numbers.Real, Decimal)):
-            try:
-                return type(self)(self.fractional_days / Fraction(other))
-            except (OverflowError, ValueError) as exc:
-                reason = str(exc)
-                if reason.startswith("cannot convert") and reason.endswith("to integer ratio"):
-                    raise TypeError from exc
-                else:
-                    raise
-        else:
-            return NotImplemented
-
-    def __floordiv__(self, other):
-        if isinstance(other, TimeDelta):
-            return self.fractional_days // other.fractional_days
-        elif isinstance(other, (numbers.Real, Decimal)):
-            try:
-                return type(self)(self.fractional_days // Fraction(other))
-            except (OverflowError, ValueError) as exc:
-                reason = str(exc)
-                if reason.startswith("cannot convert") and reason.endswith("to integer ratio"):
-                    raise TypeError from exc
-                else:
-                    raise
-        else:
-            return NotImplemented
-
-    def __mod__(self, other):
-        if isinstance(other, TimeDelta):
-            return self.fractional_days % other.fractional_days
-        elif isinstance(other, (numbers.Real, Decimal)):
-            try:
-                return type(self)(self.fractional_days % Fraction(other))
-            except (OverflowError, ValueError) as exc:
-                reason = str(exc)
-                if reason.startswith("cannot convert") and reason.endswith("to integer ratio"):
-                    raise TypeError from exc
-                else:
-                    raise
-        else:
-            return NotImplemented
-
-    def divmod(self, other):
-        return self // other, self % other
-
-    # boolean and test
-    def __bool__(self):
-        return self._fractional_days != 0
-
-    def is_integer(self):
-        return self._frac_part == 0
-
-    # comparisons
-    def __eq__(self, other):
-        if isinstance(other, TimeDelta):
-            return self._fractional_days == other.fractional_days
-        elif hasattr(other, "fractional_days"):
-            return NotImplemented
-        else:
-            return False
-
-    def __ne__(self, other):
-        if isinstance(other, TimeDelta):
-            return self._fractional_days != other.fractional_days
-        elif hasattr(other, "fractional_days"):
-            return NotImplemented
-        else:
-            return True
-
-    def __gt__(self, other):
-        if isinstance(other, TimeDelta):
-            return self._fractional_days > other.fractional_days
-        elif hasattr(other, "fractional_days"):
-            return NotImplemented
-        else:
-            raise TypeError(f"You cannot compare '{type(self)!s}' with '{type(other)!s}'.")
-
-    def __ge__(self, other):
-        if isinstance(other, TimeDelta):
-            return self._fractional_days >= other.fractional_days
-        elif hasattr(other, "fractional_days"):
-            return NotImplemented
-        else:
-            raise TypeError(f"You cannot compare '{type(self)!s}' with '{type(other)!s}'.")
-
-    def __lt__(self, other):
-        if isinstance(other, TimeDelta):
-            return self._fractional_days < other.fractional_days
-        elif hasattr(other, "fractional_days"):
-            return NotImplemented
-        else:
-            raise TypeError(f"You cannot compare '{type(self)!s}' with '{type(other)!s}'.")
-
-    def __le__(self, other):
-        if isinstance(other, TimeDelta):
-            return self._fractional_days <= other.fractional_days
-        elif hasattr(other, "fractional_days"):
-            return NotImplemented
-        else:
-            raise TypeError(f"You cannot compare '{type(self)!s}' with '{type(other)!s}'.")
-
-    # hash value
-    def __hash__(self):
-        return hash(self._fractional_days)
-
-    @classmethod
-    def register_new_time_interval(cls, attribute_name, time_interval_class):
-        if not isinstance(attribute_name, str) or not attribute_name.isidentifier():
-            raise ValueError(f"Invalid time interval attribute name: {attribute_name}.")
-        if hasattr(cls, attribute_name):
-            raise AttributeError(f"Time interval attribute already existing: {attribute_name}.")
-        if not hasattr(time_interval_class, "from_fractional_days"):
-            raise TypeError("Time interval class does not have method from_fractional_days.")
-        if not hasattr(time_interval_class, "to_fractional_days"):
-            raise TypeError("Time interval class does not have method to_fractional_days.")
-
-        class ModifiedClass(type):
-            def __call__(klass, *args, **kwargs):
-                time_interval_obj = super().__call__(*args, **kwargs)
-                date_obj = cls(time_interval_obj.to_fractional_days())
-                setattr(date_obj, attribute_name, time_interval_obj)
-                return date_obj
-
-        # Create the modified calendar class
-        new_class_name = f"{time_interval_class.__name__}In{cls.__name__}"
-        modified_time_interval_class = ModifiedClass(new_class_name, (time_interval_class,), {})
-
-        class TimeIntervalAttribute:
-            # This class implements a context dependent attribute
-            def __init__(self, attr_name, modif_time_interval_class):
-                self.attribute_name = attr_name
-                self.modified_time_interval_class = modif_time_interval_class
-
-            def __get__(self, instance, owner):
-                if instance is None:
-                    return self.modified_time_interval_class
-                else:
-                    assert self.attribute_name not in instance.__dict__
-                    timedelta = self.modified_time_interval_class.from_fractional_days(instance.fractional_days)
-                    time_interval_obj = getattr(timedelta, self.attribute_name)
-                    setattr(instance, self.attribute_name, time_interval_obj)
-                    return time_interval_obj
-
-        setattr(cls, attribute_name, TimeIntervalAttribute(attribute_name, modified_time_interval_class))
-
-
-##############################################################################
-# Register current calendars
-#
-TimeDelta.register_new_time_interval("western", western.WesternTimeDelta)
-
-
-##############################################################################
-#
 # Date
 #
 ##############################################################################
@@ -713,3 +474,244 @@ class Time:
 #
 Time.register_new_time("western", western.WesternTime)
 Time.register_new_time("internet", modern.InternetTime)
+
+
+##############################################################################
+#
+# TimeDelta
+#
+##############################################################################
+
+
+class TimeDelta:
+    def __init__(self, numerator, denominator=None):
+        if denominator is None:
+            self._fractional_days = verify_fractional_value(numerator)
+        else:
+            self._fractional_days = verify_fractional_value_num_den(numerator, denominator)
+        self._int_part = int(self._fractional_days)
+        self._frac_part = self._fractional_days - self._int_part
+
+    @property
+    def fractional_days(self):
+        return self._fractional_days
+
+    @property
+    def int_part(self):
+        return self._int_part
+
+    @property
+    def frac_part(self):
+        return self._frac_part
+
+    def __repr__(self):
+        return f"datetime2.{type(self).__name__}('{self.fractional_days!s}')"
+
+    def __str__(self):
+        if self._fractional_days == 0:
+            return "0 days"
+        int_string = f"{self.int_part!s} day{'s' if self._fractional_days != 1 and self._fractional_days != -1 else ''}" if self.int_part else ""
+        frac_string = f"{self._frac_part!s} of a day" if self._frac_part else ""
+        if int_string and frac_string:
+            return f"{int_string} and {frac_string}"
+        else:
+            return int_string + frac_string
+
+    # Math operators
+    def int(self):
+        return type(self)(self.int_part)
+
+    def frac(self):
+        return type(self)(self.frac_part)
+
+    def __add__(self, other):
+        if isinstance(other, TimeDelta):
+            return type(self)(self.fractional_days + other.fractional_days)
+        else:
+            return NotImplemented
+
+    def __pos__(self):
+        return self
+
+    def __neg__(self):
+        return TimeDelta(-self.fractional_days)
+
+    def __abs__(self):
+        return self if self.fractional_days >= 0 else -self
+
+    def __sub__(self, other):
+        if isinstance(other, TimeDelta):
+            return type(self)(self.fractional_days - other.fractional_days)
+        else:
+            return NotImplemented
+
+    def __mul__(self, other):
+        if isinstance(other, (numbers.Real, Decimal)):
+            try:
+                return type(self)(self.fractional_days * Fraction(other))
+            except (OverflowError, ValueError) as exc:
+                reason = str(exc)
+                if reason.startswith("cannot convert") and reason.endswith("to integer ratio"):
+                    raise TypeError from exc
+                else:
+                    raise
+        else:
+            return NotImplemented
+
+    __rmul__ = __mul__
+
+    def __truediv__(self, other):
+        if isinstance(other, TimeDelta):
+            return self.fractional_days / other.fractional_days
+        elif isinstance(other, (numbers.Real, Decimal)):
+            try:
+                return type(self)(self.fractional_days / Fraction(other))
+            except (OverflowError, ValueError) as exc:
+                reason = str(exc)
+                if reason.startswith("cannot convert") and reason.endswith("to integer ratio"):
+                    raise TypeError from exc
+                else:
+                    raise
+        else:
+            return NotImplemented
+
+    def __floordiv__(self, other):
+        if isinstance(other, TimeDelta):
+            return self.fractional_days // other.fractional_days
+        elif isinstance(other, (numbers.Real, Decimal)):
+            try:
+                return type(self)(self.fractional_days // Fraction(other))
+            except (OverflowError, ValueError) as exc:
+                reason = str(exc)
+                if reason.startswith("cannot convert") and reason.endswith("to integer ratio"):
+                    raise TypeError from exc
+                else:
+                    raise
+        else:
+            return NotImplemented
+
+    def __mod__(self, other):
+        if isinstance(other, TimeDelta):
+            return self.fractional_days % other.fractional_days
+        elif isinstance(other, (numbers.Real, Decimal)):
+            try:
+                return type(self)(self.fractional_days % Fraction(other))
+            except (OverflowError, ValueError) as exc:
+                reason = str(exc)
+                if reason.startswith("cannot convert") and reason.endswith("to integer ratio"):
+                    raise TypeError from exc
+                else:
+                    raise
+        else:
+            return NotImplemented
+
+    def divmod(self, other):
+        return self // other, self % other
+
+    # boolean and test
+    def __bool__(self):
+        return self._fractional_days != 0
+
+    def is_integer(self):
+        return self._frac_part == 0
+
+    # comparisons
+    def __eq__(self, other):
+        if isinstance(other, TimeDelta):
+            return self._fractional_days == other.fractional_days
+        elif hasattr(other, "fractional_days"):
+            return NotImplemented
+        else:
+            return False
+
+    def __ne__(self, other):
+        if isinstance(other, TimeDelta):
+            return self._fractional_days != other.fractional_days
+        elif hasattr(other, "fractional_days"):
+            return NotImplemented
+        else:
+            return True
+
+    def __gt__(self, other):
+        if isinstance(other, TimeDelta):
+            return self._fractional_days > other.fractional_days
+        elif hasattr(other, "fractional_days"):
+            return NotImplemented
+        else:
+            raise TypeError(f"You cannot compare '{type(self)!s}' with '{type(other)!s}'.")
+
+    def __ge__(self, other):
+        if isinstance(other, TimeDelta):
+            return self._fractional_days >= other.fractional_days
+        elif hasattr(other, "fractional_days"):
+            return NotImplemented
+        else:
+            raise TypeError(f"You cannot compare '{type(self)!s}' with '{type(other)!s}'.")
+
+    def __lt__(self, other):
+        if isinstance(other, TimeDelta):
+            return self._fractional_days < other.fractional_days
+        elif hasattr(other, "fractional_days"):
+            return NotImplemented
+        else:
+            raise TypeError(f"You cannot compare '{type(self)!s}' with '{type(other)!s}'.")
+
+    def __le__(self, other):
+        if isinstance(other, TimeDelta):
+            return self._fractional_days <= other.fractional_days
+        elif hasattr(other, "fractional_days"):
+            return NotImplemented
+        else:
+            raise TypeError(f"You cannot compare '{type(self)!s}' with '{type(other)!s}'.")
+
+    # hash value
+    def __hash__(self):
+        return hash(self._fractional_days)
+
+    @classmethod
+    def register_new_time_interval(cls, attribute_name, time_interval_class):
+        if not isinstance(attribute_name, str) or not attribute_name.isidentifier():
+            raise ValueError(f"Invalid time interval attribute name: {attribute_name}.")
+        if hasattr(cls, attribute_name):
+            raise AttributeError(f"Time interval attribute already existing: {attribute_name}.")
+        if not hasattr(time_interval_class, "from_fractional_days"):
+            raise TypeError("Time interval class does not have method from_fractional_days.")
+        if not hasattr(time_interval_class, "to_fractional_days"):
+            raise TypeError("Time interval class does not have method to_fractional_days.")
+
+        class ModifiedClass(type):
+            def __call__(klass, *args, **kwargs):
+                time_interval_obj = super().__call__(*args, **kwargs)
+                date_obj = cls(time_interval_obj.to_fractional_days())
+                setattr(date_obj, attribute_name, time_interval_obj)
+                return date_obj
+
+        # Create the modified calendar class
+        new_class_name = f"{time_interval_class.__name__}In{cls.__name__}"
+        modified_time_interval_class = ModifiedClass(new_class_name, (time_interval_class,), {})
+
+        class TimeIntervalAttribute:
+            # This class implements a context dependent attribute
+            def __init__(self, attr_name, modif_time_interval_class):
+                self.attribute_name = attr_name
+                self.modified_time_interval_class = modif_time_interval_class
+
+            def __get__(self, instance, owner):
+                if instance is None:
+                    return self.modified_time_interval_class
+                else:
+                    assert self.attribute_name not in instance.__dict__
+                    timedelta = self.modified_time_interval_class.from_fractional_days(instance.fractional_days)
+                    time_interval_obj = getattr(timedelta, self.attribute_name)
+                    setattr(instance, self.attribute_name, time_interval_obj)
+                    return time_interval_obj
+
+        setattr(cls, attribute_name, TimeIntervalAttribute(attribute_name, modified_time_interval_class))
+
+
+##############################################################################
+# Register current calendars
+#
+TimeDelta.register_new_time_interval("western", western.WesternTimeDelta)
+
+
