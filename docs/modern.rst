@@ -9,12 +9,11 @@
 
    from datetime2.modern import IsoCalendar
 
-This module implements a calendar and a tiem representation that have been
+This module implements a calendar and a time representation that have been
 defined in the recent years:
 
 *  The :ref:`ISO calendar <iso-calendar>`
-*  The :ref:`western time representation <western-time>` inhours, minutes and
-   seconds.
+*  The :ref:`internet time representation <internet-time>` where a day is divided in 1000 parts.
 
 Of course, they all conform to the requirements for interface classes listed
 in :ref:`customization`.

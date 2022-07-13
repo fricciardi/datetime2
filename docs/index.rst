@@ -197,8 +197,8 @@ Index
 .. toctree::
 
    base_classes
-   modern
    western
+   modern
    interface
 
 
