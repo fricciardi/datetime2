@@ -459,37 +459,23 @@ An instance of the :class:`WesternTimeDelta` class has the following methods:
    below lists the accepted formatting directives, all other characters are
    not interpreted.
 
-   +-----------+-------------------------------------------+-------+
-   | Directive | Meaning                                   | Notes |
-   +===========+===========================================+=======+
-   | ``%H``    | Hour (24-hour clock) as a                 |       |
-   |           | zero-padded decimal number [00, 23].      |       |
-   +-----------+-------------------------------------------+-------+
-   | ``%I``    | Hour (12-hour clock) as a                 |       |
-   |           | zero-padded decimal number [01, 12].      |       |
-   +-----------+-------------------------------------------+-------+
-   | ``%p``    | Returns 'AM' if hour is between 0 and 11, |       |
-   |           | 'PM' if hour is between 12 and 23.        | \(1)  |
-   +-----------+-------------------------------------------+-------+
-   | ``%M``    | Minute as a zero-padded decimal number    |       |
-   |           | [00, 59].                                 |       |
-   +-----------+-------------------------------------------+-------+
-   | ``%S``    | Second as a zero-padded decimal number    |       |
-   |           | [00, 59].                                 |       |
-   +-----------+-------------------------------------------+-------+
-   | ``%f``    | Microsecond as a decimal number,          |       |
-   |           | zero-padded on the left [000000, 999999]. |       |
-   +-----------+-------------------------------------------+-------+
-   | ``%z``    | UTC offset in the form ±HHMM[SS[.ffffff]] |       |
-   |           | (empty string if the object is naive).    |       |
-   +-----------+-------------------------------------------+-------+
-   | ``%%``    | A literal ``'%'`` character.              |       |
-   +-----------+-------------------------------------------+-------+
-
-Notes:
-
-(1)
-   The ``%p`` directive returns a localized string in Standard C++. This is
-   not true for :mod:`datetime2`, which only returns the English string.
-
+   +-----------+-------------------------------------------+
+   | Directive | Meaning                                   |
+   +===========+===========================================+
+   | ``%d``    | Full days as a decimal number.            |
+   +-----------+-------------------------------------------+
+   | ``%H``    | Hours as a zero-padded decimal number     |
+   |           | [00, 23].                                 |
+   +-----------+-------------------------------------------+
+   | ``%M``    | Minutes as a zero-padded decimal number   |
+   |           | [00, 59].                                 |
+   +-----------+-------------------------------------------+
+   | ``%S``    | Seconds as a zero-padded decimal number   |
+   |           | [00, 59].                                 |
+   +-----------+-------------------------------------------+
+   | ``%f``    | Microseconds as a zero-padded decimal     |
+   |           | number [000000, 999999].                  |
+   +-----------+-------------------------------------------+
+   | ``%%``    | A literal ``'%'`` character.              |
+   +-----------+-------------------------------------------+
 
