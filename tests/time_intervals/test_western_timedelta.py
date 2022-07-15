@@ -457,142 +457,108 @@ def test_31_str():
 
 
 def test_32_cformat():
-    for test_row in western_timedelta_test_data:
-        hour = test_row[1][0]
-        minute = test_row[1][1]
-        second = Fraction(test_row[1][2])
-        western = WesternTime(hour, minute, second)
-        # hours
-        assert western.cformat('%H') == f'{hour:02d}'
-        if hour == 0:
-            assert western.cformat('%I') == '12'
-            assert western.cformat('%p') == 'AM'
-        elif hour <= 11:
-            assert western.cformat('%I') == f'{hour:02d}'
-            assert western.cformat('%p') == 'AM'
-        elif hour == 12:
-            assert western.cformat('%I') == f'{hour:02d}'
-            assert western.cformat('%p') == 'PM'
-        else:
-            assert western.cformat('%I') == f'{hour - 12:02d}'
-            assert western.cformat('%p') == 'PM'
-        # minutes and seconds
-        assert western.cformat('%M') == f'{minute:02d}'
-        assert western.cformat('%S') == f'{int(second):02d}'
-        # empty timezone
-        assert western.cformat('%z') == ''
+    for test_datum in western_timedelta_test_data:
+        days = test_datum.days
+        hours = test_datum.hours
+        minutes = test_datum.minutes
+        seconds = test_datum.seconds
+        wtd = WesternTimeDelta(days, hours, minutes, seconds)
+        assert wtd.cformat('%d') == f'{days}'
+        assert wtd.cformat('%H') == f'{hours:02d}'
+        assert wtd.cformat('%M') == f'{minutes:02d}'
+        assert wtd.cformat('%S') == f'{int(seconds):02d}'
 
     # microseconds
-    for fraction, microseconds in western_time_microseconds:
-        western = WesternTime(12, 34, Fraction(fraction) + 56)
-        assert western.cformat('%f') == microseconds
-
-    # timezone
-    for test_cformat_timezone in timezone_cformat_test_data:
-        western = WesternTime(1, 2, 3, timezone=test_cformat_timezone[0])
-        assert western.cformat('%z') == test_cformat_timezone[1]
+    for fraction, microseconds in western_timedelta_microseconds:
+        wtd = WesternTimeDelta(12, 34, Fraction(fraction) + 56)
+        assert wtd.cformat('%f') == microseconds
 
     # percent
-    western = WesternTime(1, 2, 3)
-    assert western.cformat('%') == '%'
-    assert western.cformat('%%') == '%'
-    assert western.cformat('%%%') == '%%'
-    assert western.cformat('abcd%') == 'abcd%'
-    assert western.cformat('%k') == '%k'
-    assert western.cformat('a%k') == 'a%k'
-    assert western.cformat('%k%') == '%k%'
+    wtd = WesternTimeDelta(1, 2, 3, 4)
+    assert wtd.cformat('%') == '%'
+    assert wtd.cformat('%%') == '%'
+    assert wtd.cformat('%%%') == '%%'
+    assert wtd.cformat('abcd%') == 'abcd%'
+    assert wtd.cformat('%k') == '%k'
+    assert wtd.cformat('a%k') == 'a%k'
+    assert wtd.cformat('%k%') == '%k%'
 
     # invalid types
     for par in (1, (1,), [1], {1: 1}, None):
         with pytest.raises(TypeError):
-            western.cformat(par)
+            wtd.cformat(par)
 
 
-def test_50_to_time_pair():
-    for test_row in western_timedelta_test_data:
-        day_frac = Fraction(test_row[0])
-        hour = test_row[1][0]
-        minute = test_row[1][1]
-        second = Fraction(test_row[1][2])
-        assert WesternTime(hour, minute, second).to_time_pair() == (day_frac, None)
-        assert WesternTime(hour, minute, second, timezone="7.5").to_time_pair() == (day_frac, Fraction(5, 16))
-        assert WesternTime(hour, minute, second, timezone=-4).to_time_pair() == (day_frac, Fraction(-1, 6))
-    for test_timezone in timezone_test_data:
-        western = WesternTime(1, 2, 3, timezone=test_timezone[0])
-        assert western.to_time_pair()[1] == test_timezone[1] / 24
+def test_50_to_fractional_days():
+    for test_datum in western_timedelta_test_data:
+        fractional_days = Fraction(test_datum.fractional_days)
+        days = test_datum.days
+        hours = test_datum.hours
+        minutes = test_datum.minutes
+        seconds = test_datum.seconds
+        assert WesternTimeDelta(days, hours, minutes, seconds).to_fractional_days() == fractional_days
 
 
 def test_51_replace():
-    for test_row in western_timedelta_test_data:
-        hour = test_row[1][0]
-        minute = test_row[1][1]
-        second = Fraction(test_row[1][2])
-        western = WesternTime(hour, minute, second)
-        assert western_exactly_equal(western.replace(),  WesternTime(hour, minute, second))
-        assert western_exactly_equal(western.replace(hour=11),  WesternTime(11, minute, second))
-        assert western_exactly_equal(western.replace(minute=10),  WesternTime(hour, 10, second))
-        assert western_exactly_equal(western.replace(second=9),  WesternTime(hour, minute, 9))
-        assert western_exactly_equal(western.replace(minute=10, hour=11),  WesternTime(11, 10, second))
-        assert western_exactly_equal(western.replace(second=9, hour=11),  WesternTime(11, minute, 9))
-        assert western_exactly_equal(western.replace(second=9, minute=10),  WesternTime(hour, 10, 9))
-        assert western_exactly_equal(western.replace(second=9, minute=10, hour=11),  WesternTime(11, 10, 9))
-    for test_timezone in timezone_test_data:
-        western = WesternTime(1, 2, 3, timezone=test_timezone[0])
-        assert western_exactly_equal(western.replace(hour=11, timezone=-1),  WesternTime(11, 2, 3, timezone=-1))
-        assert western_exactly_equal(western.replace(minute=22, timezone=2),  WesternTime(1, 22, 3, timezone=2))
-        assert western_exactly_equal(western.replace(second=33, timezone=-3),  WesternTime(1, 2, 33, timezone=-3))
+    for test_datum in western_timedelta_test_data:
+        days = test_datum.days
+        hours = test_datum.hours
+        minutes = test_datum.minutes
+        seconds = test_datum.seconds
+        wtd = WesternTimeDelta(days, hours, minutes, seconds)
+        assert western_timedelta_exactly_equal(wtd.replace(),  WesternTimeDelta(days, hours, minutes, seconds))
+        assert western_timedelta_exactly_equal(wtd.replace(days=12),  WesternTimeDelta(12, hours, minutes, seconds))
+        assert western_timedelta_exactly_equal(wtd.replace(hours=11),  WesternTimeDelta(days, 11, minutes, seconds))
+        assert western_timedelta_exactly_equal(wtd.replace(minutes=10),  WesternTimeDelta(days, hours, 10, seconds))
+        assert western_timedelta_exactly_equal(wtd.replace(seconds=9),  WesternTimeDelta(days, hours, minutes, 9))
+        assert western_timedelta_exactly_equal(wtd.replace(hours=11, days=12),  WesternTimeDelta(12, 11, minutes, seconds))
+        assert western_timedelta_exactly_equal(wtd.replace(minutes=10, days=12),  WesternTimeDelta(12, hours, 10, seconds))
+        assert western_timedelta_exactly_equal(wtd.replace(seconds=9, days=12),  WesternTimeDelta(12, hours, minutes, 9))
+        assert western_timedelta_exactly_equal(wtd.replace(minutes=10, hours=11),  WesternTimeDelta(days, 11, 10, seconds))
+        assert western_timedelta_exactly_equal(wtd.replace(seconds=9, hours=11),  WesternTimeDelta(days, 11, minutes, 9))
+        assert western_timedelta_exactly_equal(wtd.replace(seconds=9, minutes=10),  WesternTimeDelta(days, hours, 10, 9))
+        assert western_timedelta_exactly_equal(wtd.replace(minutes=10, hours=11, days=12),  WesternTimeDelta(12, 11, 10, seconds))
+        assert western_timedelta_exactly_equal(wtd.replace(seconds=9, hours=11, days=12),  WesternTimeDelta(12, 11, 9, seconds))
+        assert western_timedelta_exactly_equal(wtd.replace(seconds=9, minutes=10, days=12),  WesternTimeDelta(12, hours, 10, 9))
+        assert western_timedelta_exactly_equal(wtd.replace(seconds=9, minutes=10, hours=11),  WesternTimeDelta(days, 11, 10, 9))
+        assert western_timedelta_exactly_equal(wtd.replace(second=9, minute=10, hour=11, days=12),  WesternTimeDelta(12, 11, 10, 9))
 
-    ### invalid types
-    western = WesternTime(11, 10, 9)
-    western_t = WesternTime(11, 10, 9, timezone=4)
+    # invalid types
+    wtd = WesternTimeDelta(12, 11, 10, 9)
     # exception for positional parameters
     with pytest.raises(TypeError):
-        western.replace(1)
+        wtd.replace(1)
     # exception with non-numeric types
     for par in ("1", (1,), [1], {1: 1}, (), [], {}):
         with pytest.raises(TypeError):
-            western.replace(hour=par)
+            wtd.replace(hour=par)
         with pytest.raises(TypeError):
-            western.replace(minute=par)
+            wtd.replace(minute=par)
     for par in ((1,), [1], {1: 1}, (), [], {}):
         with pytest.raises(TypeError):
-            western.replace(second=par)
-        with pytest.raises(TypeError):
-            western_t.replace(timezone=par)
+            wtd.replace(second=par)
     # exception with invalid numeric types
     for par in (1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN):
         with pytest.raises(TypeError):
-            western.replace(hour=par)
+            wtd.replace(hour=par)
         with pytest.raises(TypeError):
-            western.replace(minute=par)
+            wtd.replace(minute=par)
     for par in (1j, 1 + 1j, INF):
         with pytest.raises(TypeError):
-            western.replace(second=par)
-        with pytest.raises(TypeError):
-            western_t.replace(timezone=par)
+            wtd.replace(second=par)
 
     # invalid values
     with pytest.raises(ValueError):
-        western.replace(hour=-1)
+        wtd.replace(hour=-1)
     with pytest.raises(ValueError):
-        western.replace(hour=24)
+        wtd.replace(hour=24)
     with pytest.raises(ValueError):
-        western.replace(minute=-1)
+        wtd.replace(minute=-1)
     with pytest.raises(ValueError):
-        western.replace(minute=60)
+        wtd.replace(minute=60)
     with pytest.raises(ValueError):
-        western.replace(second='-1/1000000')
+        wtd.replace(second='-1/1000000')
     with pytest.raises(ValueError):
-        western.replace(second=60)
+        wtd.replace(second=60)
     with pytest.raises(TypeError):
-        western.replace(second=NAN)
-    with pytest.raises(ValueError):
-        western_t.replace(timezone='-24000001/1000000')
-    with pytest.raises(ValueError):
-        western_t.replace(timezone='24000001/1000000')
-    with pytest.raises(TypeError):
-        western_t.replace(timezone=NAN)
-
-    # replacing timezone in a naive instance
-    with pytest.raises(TypeError):
-        western.replace(timezone=3)
+        wtd.replace(second=NAN)
