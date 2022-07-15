@@ -12,6 +12,9 @@
 
 Interface
 ^^^^^^^^^
+
+.. TODO: review this paragraph
+
 Base classes of the :mod:`datetime2` module have little if no practical
 use as they natively are: even if it stands out for its simplicity,
 rata die is not a common way of representing dates in the real world.
@@ -210,6 +213,17 @@ These methods are detailed below:
    ``TimeInterface`` must obey the requirements for the :mod:`datetime2`
    interface classes, otherwise a :exc:`TypeError` exception is raised.
 
+.. classmethod:: TimeDelta.register_new_time_interval(access_attribute, TimeDeltaInterface)
+
+   Register the ``TimeDeltaInterface`` class to the :class:`TimeDelta` class,
+   using the ``access_attribute`` identifier to access it. If
+   ``access_attribute`` is already defined, an :exc:`AttributeError`
+   exception is raised. If ``access_attribute`` isn't a valid identifier, a
+   :exc:`ValueError` exception is raised.
+
+   ``TimeDeltaInterface`` must obey the requirements for the :mod:`datetime2`
+   interface classes, otherwise a :exc:`TypeError` exception is raised.
+
 .. classmethod:: calendar_class.from_rata_die(day_count)
 
    Return a calendar object that corresponds to the day identified by the
@@ -231,6 +245,16 @@ These methods are detailed below:
    corresponding to the moment of the day identified by the time object, the
    second is null for naive time objects, or is a fraction of day to be added
    to UTC to get the time of day object.
+
+.. classmethod:: time_interval_class.from_fractional_days(fractional_days)
+
+   Return a time interval object that corresponds to the interval identified
+   by the given number of possibly fractional days.
+
+.. method:: time_interval_obj.to_fractional_days()
+
+   Return a possibly fractional number of days that corresponds to the time
+   interval represented by the object.
 
 
 Inner workings
