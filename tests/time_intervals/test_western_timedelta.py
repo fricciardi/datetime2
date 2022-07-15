@@ -283,9 +283,9 @@ def test_00_constructor():
         assert isinstance(wtd.hours, int)
         assert wtd.hours == 2
         assert isinstance(wtd.minutes, int)
-        assert wtd.minute == 3
+        assert wtd.minutes == 3
         assert isinstance(wtd.seconds, Fraction)
-        assert wtd.second == Fraction(4, 1)
+        assert wtd.seconds == Fraction(4, 1)
     for integer_second in (-4, '-4'):
         wtd = WesternTimeDelta(-1, -2, -3, integer_second)
         assert isinstance(wtd.days, int)
@@ -293,17 +293,17 @@ def test_00_constructor():
         assert isinstance(wtd.hours, int)
         assert wtd.hours == -2
         assert isinstance(wtd.minutes, int)
-        assert wtd.minute == -3
+        assert wtd.minutes == -3
         assert isinstance(wtd.seconds, Fraction)
-        assert wtd.second == Fraction(-4, 1)
+        assert wtd.seconds == Fraction(-4, 1)
     for fractional_seconds in (11.25, Fraction(45, 4), '11.25', Decimal('11.25'), '45/4'):
         wtd = WesternTimeDelta(2, 3, 4, fractional_seconds)
         assert isinstance(wtd.seconds, Fraction)
-        assert wtd.second == Fraction(45, 4)
+        assert wtd.seconds == Fraction(45, 4)
     for fractional_seconds in (-11.25, Fraction(-45, 4), '-11.25', Decimal('-11.25'), '-45/4'):
         wtd = WesternTimeDelta(-2, -3, -4, fractional_seconds)
         assert isinstance(wtd.seconds, Fraction)
-        assert wtd.second == Fraction(-45, 4)
+        assert wtd.seconds == Fraction(-45, 4)
 
     # exception with none, two or five parameters
     with pytest.raises(TypeError):
