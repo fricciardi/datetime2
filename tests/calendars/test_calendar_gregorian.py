@@ -440,6 +440,7 @@ def test_32_cformat():
         assert greg.cformat('%W') == WNM
 
     # check percent
+    # TODO: improve these tests
     greg = GregorianCalendar(1, 2, 3)
     assert greg.cformat('%') == '%'
     assert greg.cformat('%%') == '%'

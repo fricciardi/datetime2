@@ -412,6 +412,7 @@ def test_32_cformat():
         assert western.cformat('%z') == test_cformat_timezone[1]
 
     # percent
+    # TODO: improve these tests
     western = WesternTime(1, 2, 3)
     assert western.cformat('%') == '%'
     assert western.cformat('%%') == '%'

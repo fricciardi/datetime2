@@ -474,6 +474,7 @@ def test_32_cformat():
         assert wtd.cformat('%f') == microseconds
 
     # percent
+    # TODO: improve these tests
     wtd = WesternTimeDelta(1, 2, 3, 4)
     assert wtd.cformat('%') == '%'
     assert wtd.cformat('%%') == '%'
