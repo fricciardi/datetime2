@@ -442,6 +442,7 @@ class WesternTimeDelta:
         "d": lambda self: str(self.days),
         "H": lambda self: f"{self.hours:02d}",
         "M": lambda self: f"{self.minutes:02d}",
+        "S": lambda self: f"{int(self.seconds):02d}",
         "f": lambda self: f"{int((self.seconds - int(self.seconds)) * 1000000):06d}",
     }
 

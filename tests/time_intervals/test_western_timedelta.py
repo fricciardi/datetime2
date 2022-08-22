@@ -505,7 +505,7 @@ def test_32_cformat():
 
     # microseconds
     for fraction, microseconds in western_timedelta_microseconds:
-        wtd = WesternTimeDelta(12, 34, Fraction(fraction) + 56)
+        wtd = WesternTimeDelta(0, 12, 34, Fraction(fraction) + 56)
         assert wtd.cformat('%f') == microseconds
 
     # percent
