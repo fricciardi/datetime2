@@ -352,3 +352,115 @@ class WesternTime:
                 chunk_pieces.append(part[1:])
             output_pieces.append("".join(chunk_pieces))
         return "%".join(output_pieces)
+
+
+##############################################################################
+# Western time interval
+class WesternTimeDelta:
+    def __init__(self, days, hours, minutes, seconds):
+        if not isinstance(days, int) or not isinstance(hours, int) or not isinstance(minutes, int):
+            raise TypeError("Days, hours and minutes must be integer")
+        verified_seconds = verify_fractional_value(seconds)
+        if days > 0 and (hours < 0 or minutes < 0 or verified_seconds < 0) or \
+           days < 0 and (hours > 0 or minutes > 0 or verified_seconds > 0) or \
+           hours > 0 and (minutes < 0 or verified_seconds < 0) or \
+           hours < 0 and (minutes > 0 or verified_seconds > 0) or \
+           minutes > 0 and verified_seconds < 0 or \
+           minutes < 0 and verified_seconds > 0:
+            raise ValueError("Days, hours, minutes and seconds must have the same sign")
+        abs_h = abs(hours)
+        if abs_h < 0 or abs_h > 23:
+            raise ValueError("Hours must be between 0 and 23 in absolute value.")
+        abs_m = abs(minutes)
+        if abs_m < 0 or abs_m > 59:
+            raise ValueError("Minutes must be between 0 and 59 in absolute value.")
+        # we have already checked that verified_seconds is a valid Fraction
+        abs_s = abs(verified_seconds)
+        if abs_s >= 60:
+            raise ValueError("Absolute value of seconds must be less than 60")
+        self._days = days
+        self._hours = hours
+        self._minutes = minutes
+        self._seconds = verified_seconds
+
+    @property
+    def days(self):
+        return self._days
+
+    @property
+    def hours(self):
+        return self._hours
+
+    @property
+    def minutes(self):
+        return self._minutes
+
+    @property
+    def seconds(self):
+        return self._seconds
+
+    @classmethod
+    def from_fractional_days(cls, fractional_days):
+        if not isinstance(fractional_days, Fraction):
+            raise TypeError("Fractional days must be a Python Fraction.")
+        days = int(fractional_days)
+        hours = int((fractional_days - days) * 24)
+        minutes = int((fractional_days - days - Fraction(hours, 24)) * 1440)
+        seconds = (fractional_days - days - Fraction(hours, 24) - Fraction(minutes, 1440)) * 86400
+        return cls(days, hours, minutes, seconds)
+
+    def to_fractional_days(self):
+        return Fraction(self.seconds, 86400) + Fraction(self.minutes, 1440) + Fraction(self.hours, 24) + self.days
+
+    def replace(self, *, days=None, hours=None, minutes=None, seconds=None):
+        if days is None:
+            days = self.days
+        if hours is None:
+            hours = self.hours
+        if minutes is None:
+            minutes = self.minutes
+        if seconds is None:
+            seconds = self.seconds
+        return type(self)(days, hours, minutes, seconds)
+
+    def __repr__(self):
+        return f"datetime2.western.{type(self).__name__}({self.days}, {self.hours}, {self.minutes}, {self.seconds!r})"
+
+    def __str__(self):
+        int_sec = int(self.seconds)
+        if self.days == self.hours == self.minutes == int_sec == 0:
+            return "0 days"
+        str_d = f"{self.days!s} day{'s' if abs(self.days) != 1 else ''}"
+        str_h = f"{self.hours!s} hour{'s' if abs(self.hours) != 1 else ''}"
+        str_m = f"{self.minutes!s} minute{'s' if abs(self.minutes) != 1 else ''}"
+        str_s = f"{int_sec!s} second{'s' if abs(int_sec) != 1 else ''}"
+        str_list = [string for string in (str_d, str_h, str_m, str_s) if not string.startswith('0 ')]
+        string = ' and '.join(str_list)
+        return string.replace(' and ', ', ', len(str_list) - 2)
+
+    format_functions = {
+        "d": lambda self: str(self.days),
+        "H": lambda self: f"{self.hours:02d}",
+        "M": lambda self: f"{self.minutes:02d}",
+        "f": lambda self: f"{int((self.seconds - int(self.seconds)) * 1000000):06d}",
+    }
+
+    def cformat(self, format_string):
+        if not isinstance(format_string, str):
+            raise TypeError("Format must be specified with string.")
+        output_pieces = []
+        for format_chunk in format_string.split("%%"):
+            format_parts = format_chunk.split("%")
+            chunk_pieces = [format_parts[0]]
+            for part in format_parts[1:]:
+                if part == "":  # special case: last char is '%'
+                    value = "%"
+                else:
+                    try:
+                        value = self.format_functions[part[0]](self)
+                    except KeyError:
+                        value = "%" + part[0]
+                chunk_pieces.append(value)
+                chunk_pieces.append(part[1:])
+            output_pieces.append("".join(chunk_pieces))
+        return "%".join(output_pieces)

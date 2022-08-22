@@ -49,8 +49,8 @@ western_timedelta_test_data = [
     WesternTimeDeltaTestData("0/1",        0, 0, 0, Fraction(0, 1), "0 days"),
     WesternTimeDeltaTestData("1/86400",    0, 0, 0, Fraction(1, 1), "1 second"),
     WesternTimeDeltaTestData("-1/86400",   0, 0, 0, Fraction(-1, 1), "-1 second"),
-    WesternTimeDeltaTestData("1/192800",   0, 0, 0, Fraction(1, 2), "0 days"),
-    WesternTimeDeltaTestData("-1/192800",  0, 0, 0, Fraction(-1, 2), "0 days"),
+    WesternTimeDeltaTestData("1/172800",   0, 0, 0, Fraction(1, 2), "0 days"),
+    WesternTimeDeltaTestData("-1/172800",  0, 0, 0, Fraction(-1, 2), "0 days"),
     WesternTimeDeltaTestData("1/1440",     0, 0, 1, Fraction(0, 1), "1 minute"),
     WesternTimeDeltaTestData("-1/1440",    0, 0, -1, Fraction(0, 1), "-1 minute"),
     WesternTimeDeltaTestData("1/2880",     0, 0, 0, Fraction(30, 1), "30 seconds"),
@@ -72,7 +72,7 @@ western_timedelta_test_data = [
 
     # mixing days, hours, minutes and seconds
     WesternTimeDeltaTestData("1791334471/1814400", 987, 6, 54, Fraction(31, 21), "987 days, 6 hours, 54 minutes and 1 second"),
-    WesternTimeDeltaTestData("-546173/273600",   -1, -23, -45, Fraction(-678, 19), "-1 day, -23 hours, -45 minutes and 35 seconds"),
+    WesternTimeDeltaTestData("-1633389/820800",   -1, -23, -45, Fraction(-678, 19), "-1 day, -23 hours, -45 minutes and -35 seconds"),
 
     # testing str
     # days and hours
@@ -96,21 +96,21 @@ western_timedelta_test_data = [
     # days and seconds
     WesternTimeDeltaTestData("86401/86400", 1, 0, 0, Fraction(1, 1), "1 day and 1 second"),
     WesternTimeDeltaTestData("-86401/86400", -1, 0, 0, Fraction(-1, 1), "-1 day and -1 second"),
-    WesternTimeDeltaTestData("172801/172800", 2, 0, 0, Fraction(1, 1), "2 days and 1 second"),
-    WesternTimeDeltaTestData("-172801/172800", -2, 0, 0, Fraction(-1, 1), "-2 days and -1 second"),
+    WesternTimeDeltaTestData("172801/86400", 2, 0, 0, Fraction(1, 1), "2 days and 1 second"),
+    WesternTimeDeltaTestData("-172801/86400", -2, 0, 0, Fraction(-1, 1), "-2 days and -1 second"),
     WesternTimeDeltaTestData("43201/43200", 1, 0, 0, Fraction(2, 1), "1 day and 2 seconds"),
     WesternTimeDeltaTestData("-43201/43200", -1, 0, 0, Fraction(-2, 1), "-1 day and -2 seconds"),
     WesternTimeDeltaTestData("86401/43200", 2, 0, 0, Fraction(2, 1), "2 days and 2 seconds"),
-    WesternTimeDeltaTestData("-86401/43200", -2, 0, 0, Fraction(-2, 1), "-1 days and -2 seconds"),
+    WesternTimeDeltaTestData("-86401/43200", -2, 0, 0, Fraction(-2, 1), "-2 days and -2 seconds"),
     # hours and minutes
     WesternTimeDeltaTestData("61/1440", 0, 1, 1, Fraction(0, 1), "1 hour and 1 minute"),
     WesternTimeDeltaTestData("-61/1440", 0, -1, -1, Fraction(0, 1), "-1 hour and -1 minute"),
     WesternTimeDeltaTestData("121/1440", 0, 2, 1, Fraction(0, 1), "2 hours and 1 minute"),
     WesternTimeDeltaTestData("-121/1440", 0, -2, -1, Fraction(0, 1), "-2 hours and -1 minute"),
-    WesternTimeDeltaTestData("31/7200", 0, 1, 2, Fraction(0, 1), "1 hour and 2 minutes"),
-    WesternTimeDeltaTestData("-31/7200", 0, -1, -2, Fraction(0, 1), "-1 hour and -2 minutes"),
-    WesternTimeDeltaTestData("61/7200", 0, 2, 2, Fraction(0, 1), "2 hours and 2 minutes"),
-    WesternTimeDeltaTestData("-61/7200", 0, -2, -2, Fraction(0, 1), "-2 hours and -2 minutes"),
+    WesternTimeDeltaTestData("31/720", 0, 1, 2, Fraction(0, 1), "1 hour and 2 minutes"),
+    WesternTimeDeltaTestData("-31/720", 0, -1, -2, Fraction(0, 1), "-1 hour and -2 minutes"),
+    WesternTimeDeltaTestData("61/720", 0, 2, 2, Fraction(0, 1), "2 hours and 2 minutes"),
+    WesternTimeDeltaTestData("-61/720", 0, -2, -2, Fraction(0, 1), "-2 hours and -2 minutes"),
     # hours and seconds
     WesternTimeDeltaTestData("3601/86400", 0, 1, 0, Fraction(1, 1), "1 hour and 1 second"),
     WesternTimeDeltaTestData("-3601/86400", 0, -1, 0, Fraction(-1, 1), "-1 hour and -1 second"),
@@ -131,23 +131,23 @@ western_timedelta_test_data = [
     WesternTimeDeltaTestData("-61/43200", 0, -0, -2, Fraction(-2, 1), "-2 minutes and -2 seconds"),
     # days, hours and minutes
     WesternTimeDeltaTestData("1501/1440", 1, 1, 1, Fraction(0, 1), "1 day, 1 hour and 1 minute"),
-    WesternTimeDeltaTestData("-1501/1440", -1, -1, 1, Fraction(0, 1), "-1 day, -1 hour and -1 minute"),
+    WesternTimeDeltaTestData("-1501/1440", -1, -1, -1, Fraction(0, 1), "-1 day, -1 hour and -1 minute"),
     WesternTimeDeltaTestData("2941/1440", 2, 1, 1, Fraction(0, 1), "2 days, 1 hour and 1 minute"),
-    WesternTimeDeltaTestData("-2941/1440", -2, -1, 1, Fraction(0, 1), "-2 days, -1 hour and -1 minute"),
+    WesternTimeDeltaTestData("-2941/1440", -2, -1, -1, Fraction(0, 1), "-2 days, -1 hour and -1 minute"),
     WesternTimeDeltaTestData("1561/1440", 1, 2, 1, Fraction(0, 1), "1 day, 2 hours and 1 minute"),
-    WesternTimeDeltaTestData("-1561/1440", -1, -2, 1, Fraction(0, 1), "-1 day, -2 hours and -1 minute"),
+    WesternTimeDeltaTestData("-1561/1440", -1, -2, -1, Fraction(0, 1), "-1 day, -2 hours and -1 minute"),
     WesternTimeDeltaTestData("3001/1440", 2, 2, 1, Fraction(0, 1), "2 days, 2 hours and 1 minute"),
-    WesternTimeDeltaTestData("-3001/1440", -2, -2, 1, Fraction(0, 1), "-2 days, -2 hours and -1 minute"),
+    WesternTimeDeltaTestData("-3001/1440", -2, -2, -1, Fraction(0, 1), "-2 days, -2 hours and -1 minute"),
     WesternTimeDeltaTestData("3001/1440", 2, 2, 1, Fraction(0, 1), "2 days, 2 hours and 1 minute"),
-    WesternTimeDeltaTestData("-3001/1440", -2, -2, 1, Fraction(0, 1), "-2 days, -2 hours and -1 minute"),
+    WesternTimeDeltaTestData("-3001/1440", -2, -2, -1, Fraction(0, 1), "-2 days, -2 hours and -1 minute"),
     WesternTimeDeltaTestData("751/720", 1, 1, 2, Fraction(0, 1), "1 day, 1 hour and 2 minutes"),
-    WesternTimeDeltaTestData("-751/720", -1, -1, 2, Fraction(0, 1), "-1 day, -1 hour and -2 minutes"),
+    WesternTimeDeltaTestData("-751/720", -1, -1, -2, Fraction(0, 1), "-1 day, -1 hour and -2 minutes"),
     WesternTimeDeltaTestData("1471/720", 2, 1, 2, Fraction(0, 1), "2 days, 1 hour and 2 minutes"),
-    WesternTimeDeltaTestData("-1471/720", -2, -1, 2, Fraction(0, 1), "-2 days, -1 hour and -2 minutes"),
+    WesternTimeDeltaTestData("-1471/720", -2, -1, -2, Fraction(0, 1), "-2 days, -1 hour and -2 minutes"),
     WesternTimeDeltaTestData("781/720", 1, 2, 2, Fraction(0, 1), "1 day, 2 hours and 2 minutes"),
-    WesternTimeDeltaTestData("-781/720", -1, -2, 2, Fraction(0, 1), "-1 day, -2 hours and -2 minutes"),
+    WesternTimeDeltaTestData("-781/720", -1, -2, -2, Fraction(0, 1), "-1 day, -2 hours and -2 minutes"),
     WesternTimeDeltaTestData("1501/720", 2, 2, 2, Fraction(0, 1), "2 days, 2 hours and 2 minutes"),
-    WesternTimeDeltaTestData("-1501/720", -2, -2, 2, Fraction(0, 1), "-2 days, -2 hours and -2 minutes"),
+    WesternTimeDeltaTestData("-1501/720", -2, -2, -2, Fraction(0, 1), "-2 days, -2 hours and -2 minutes"),
     # days, hours and seconds
     WesternTimeDeltaTestData("90001/86400", 1, 1, 0, Fraction(1, 1), "1 day, 1 hour and 1 second"),
     WesternTimeDeltaTestData("-90001/86400", -1, -1, 0, Fraction(-1, 1), "-1 day, -1 hour and -1 second"),
@@ -172,8 +172,8 @@ western_timedelta_test_data = [
     WesternTimeDeltaTestData("-172861/86400", -2, 0, -1, Fraction(-1, 1), "-2 days, -1 minute and -1 second"),
     WesternTimeDeltaTestData("86521/86400", 1, 0, 2, Fraction(1, 1), "1 day, 2 minutes and 1 second"),
     WesternTimeDeltaTestData("-86521/86400", -1, 0, -2, Fraction(-1, 1), "-1 day, -2 minutes and -1 second"),
-    WesternTimeDeltaTestData("172921/86400", 2, 0, 2, Fraction(1, 1), "1 day, 2 minutes and 1 second"),
-    WesternTimeDeltaTestData("-172921/86400", -2, 0, -2, Fraction(-1, 1), "-1 day, -2 minutes and -1 second"),
+    WesternTimeDeltaTestData("172921/86400", 2, 0, 2, Fraction(1, 1), "2 days, 2 minutes and 1 second"),
+    WesternTimeDeltaTestData("-172921/86400", -2, 0, -2, Fraction(-1, 1), "-2 days, -2 minutes and -1 second"),
     WesternTimeDeltaTestData("43231/43200", 1, 0, 1, Fraction(2, 1), "1 day, 1 minute and 2 seconds"),
     WesternTimeDeltaTestData("-43231/43200", -1, 0, -1, Fraction(-2, 1), "-1 day, -1 minute and -2 seconds"),
     WesternTimeDeltaTestData("86431/43200", 2, 0, 1, Fraction(2, 1), "2 days, 1 minute and 2 seconds"),
@@ -185,8 +185,8 @@ western_timedelta_test_data = [
     # hours, minutes and seconds
     WesternTimeDeltaTestData("3661/86400", 0, 1, 1, Fraction(1, 1), "1 hour, 1 minute and 1 second"),
     WesternTimeDeltaTestData("-3661/86400", 0, -1, -1, Fraction(-1, 1), "-1 hour, -1 minute and -1 second"),
-    WesternTimeDeltaTestData("3661/86400", 0, 2, 1, Fraction(1, 1), "2 hours, 1 minute and 1 second"),
-    WesternTimeDeltaTestData("-3661/86400", 0, -2, -1, Fraction(-1, 1), "-2 hours, -1 minute and -1 second"),
+    WesternTimeDeltaTestData("7261/86400", 0, 2, 1, Fraction(1, 1), "2 hours, 1 minute and 1 second"),
+    WesternTimeDeltaTestData("-7261/86400", 0, -2, -1, Fraction(-1, 1), "-2 hours, -1 minute and -1 second"),
     WesternTimeDeltaTestData("3721/86400", 0, 1, 2, Fraction(1, 1), "1 hour, 2 minutes and 1 second"),
     WesternTimeDeltaTestData("-3721/86400", 0, -1, -2, Fraction(-1, 1), "-1 hour, -2 minutes and -1 second"),
     WesternTimeDeltaTestData("7321/86400", 0, 2, 2, Fraction(1, 1), "2 hours, 2 minutes and 1 second"),
@@ -204,10 +204,10 @@ western_timedelta_test_data = [
     WesternTimeDeltaTestData("-90061/86400", -1, -1, -1, Fraction(-1, 1), "-1 day, -1 hour, -1 minute and -1 second"),
     WesternTimeDeltaTestData("176461/86400", 2, 1, 1, Fraction(1, 1), "2 days, 1 hour, 1 minute and 1 second"),
     WesternTimeDeltaTestData("-176461/86400", -2, -1, -1, Fraction(-1, 1), "-2 days, -1 hour, -1 minute and -1 second"),
-    WesternTimeDeltaTestData("90061/86400", 1, 2, 1, Fraction(1, 1), "1 day, 2 hours, 1 minute and 1 second"),
-    WesternTimeDeltaTestData("-90061/86400", -1, -2, -1, Fraction(-1, 1), "-1 day, -2 hours, -1 minute and -1 second"),
-    WesternTimeDeltaTestData("180061/86400", 2, 2, 1, Fraction(1, 1), "2 day, 2 hours, 1 minute and 1 second"),
-    WesternTimeDeltaTestData("-180061/86400", -2, -2, -1, Fraction(-1, 1), "-2 day, -2 hours, -1 minute and -1 second"),
+    WesternTimeDeltaTestData("93661/86400", 1, 2, 1, Fraction(1, 1), "1 day, 2 hours, 1 minute and 1 second"),
+    WesternTimeDeltaTestData("-93661/86400", -1, -2, -1, Fraction(-1, 1), "-1 day, -2 hours, -1 minute and -1 second"),
+    WesternTimeDeltaTestData("180061/86400", 2, 2, 1, Fraction(1, 1), "2 days, 2 hours, 1 minute and 1 second"),
+    WesternTimeDeltaTestData("-180061/86400", -2, -2, -1, Fraction(-1, 1), "-2 days, -2 hours, -1 minute and -1 second"),
     WesternTimeDeltaTestData("90121/86400", 1, 1, 2, Fraction(1, 1), "1 day, 1 hour, 2 minutes and 1 second"),
     WesternTimeDeltaTestData("-90121/86400", -1, -1, -2, Fraction(-1, 1), "-1 day, -1 hour, -2 minutes and -1 second"),
     WesternTimeDeltaTestData("176521/86400", 2, 1, 2, Fraction(1, 1), "2 days, 1 hour, 2 minutes and 1 second"),
@@ -222,8 +222,8 @@ western_timedelta_test_data = [
     WesternTimeDeltaTestData("-88231/43200", -2, -1, -1, Fraction(-2, 1), "-2 days, -1 hour, -1 minute and -2 seconds"),
     WesternTimeDeltaTestData("46831/43200", 1, 2, 1, Fraction(2, 1), "1 day, 2 hours, 1 minute and 2 seconds"),
     WesternTimeDeltaTestData("-46831/43200", -1, -2, -1, Fraction(-2, 1), "-1 day, -2 hours, -1 minute and -2 seconds"),
-    WesternTimeDeltaTestData("90031/43200", 2, 2, 1, Fraction(2, 1), "1 day, 2 hours, 1 minute and 2 seconds"),
-    WesternTimeDeltaTestData("-90031/43200", -2, -2, -1, Fraction(-2, 1), "-1 day, -2 hours, -1 minute and -2 seconds"),
+    WesternTimeDeltaTestData("90031/43200", 2, 2, 1, Fraction(2, 1), "2 days, 2 hours, 1 minute and 2 seconds"),
+    WesternTimeDeltaTestData("-90031/43200", -2, -2, -1, Fraction(-2, 1), "-2 days, -2 hours, -1 minute and -2 seconds"),
     WesternTimeDeltaTestData("45061/43200", 1, 1, 2, Fraction(2, 1), "1 day, 1 hour, 2 minutes and 2 seconds"),
     WesternTimeDeltaTestData("-45061/43200", -1, -1, -2, Fraction(-2, 1), "-1 day, -1 hour, -2 minutes and -2 seconds"),
     WesternTimeDeltaTestData("88261/43200", 2, 1, 2, Fraction(2, 1), "2 days, 1 hour, 2 minutes and 2 seconds"),
@@ -249,12 +249,47 @@ western_timedelta_out_of_range_data = [
 ]
 
 western_timedelta_wrong_sign_data = [
-    WesternTimeDeltaTestData(None, 1, 1, 1, -1),
-    WesternTimeDeltaTestData(None, 1, 1, -1, 1),
-    WesternTimeDeltaTestData(None, 1, -1, 1, 1),
-    WesternTimeDeltaTestData(None, -1, -1, -1, 1),
-    WesternTimeDeltaTestData(None, -1, -1, 1, -1),
-    WesternTimeDeltaTestData(None, -1, 1, -1, -1)
+    WesternTimeDeltaTestData(None, 1, 1, 1, -1, ""),
+    WesternTimeDeltaTestData(None, 1, 1, 0, -1, ""),
+    WesternTimeDeltaTestData(None, 1, 1, -1, 1, ""),
+    WesternTimeDeltaTestData(None, 1, 1, -1, 0, ""),
+    WesternTimeDeltaTestData(None, 1, 1, -1, -1, ""),
+    WesternTimeDeltaTestData(None, 1, 0, 1, -1, ""),
+    WesternTimeDeltaTestData(None, 1, 0, 0, -1, ""),
+    WesternTimeDeltaTestData(None, 1, -1, 1, 1, ""),
+    WesternTimeDeltaTestData(None, 1, -1, 1, 0, ""),
+    WesternTimeDeltaTestData(None, 1, -1, 1, -1, ""),
+    WesternTimeDeltaTestData(None, 1, -1, 0, 1, ""),
+    WesternTimeDeltaTestData(None, 1, -1, 0, 0, ""),
+    WesternTimeDeltaTestData(None, 1, -1, 0, -1, ""),
+    WesternTimeDeltaTestData(None, 1, -1, -1, 1, ""),
+    WesternTimeDeltaTestData(None, 1, -1, -1, 0, ""),
+    WesternTimeDeltaTestData(None, 1, -1, -1, -1, ""),
+    WesternTimeDeltaTestData(None, 0, 1, 1, -1, ""),
+    WesternTimeDeltaTestData(None, 0, 1, 0, -1, ""),
+    WesternTimeDeltaTestData(None, 0, 1, -1, 1, ""),
+    WesternTimeDeltaTestData(None, 0, 1, -1, 0, ""),
+    WesternTimeDeltaTestData(None, 0, 1, -1, -1, ""),
+    WesternTimeDeltaTestData(None, 0, 0, 1, -1, ""),
+    WesternTimeDeltaTestData(None, 0, 0, -1, 1, ""),
+    WesternTimeDeltaTestData(None, -1, 1, 1, 1, ""),
+    WesternTimeDeltaTestData(None, -1, 1, 1, 0, ""),
+    WesternTimeDeltaTestData(None, -1, 1, 1, -1, ""),
+    WesternTimeDeltaTestData(None, -1, 1, 0, 1, ""),
+    WesternTimeDeltaTestData(None, -1, 1, 0, 0, ""),
+    WesternTimeDeltaTestData(None, -1, 1, 0, -1, ""),
+    WesternTimeDeltaTestData(None, -1, 1, -1, 1, ""),
+    WesternTimeDeltaTestData(None, -1, 1, -1, 0, ""),
+    WesternTimeDeltaTestData(None, -1, 1, -1, -1, ""),
+    WesternTimeDeltaTestData(None, -1, 0, 1, 1, ""),
+    WesternTimeDeltaTestData(None, -1, 0, 1, 0, ""),
+    WesternTimeDeltaTestData(None, -1, 0, 1, -1, ""),
+    WesternTimeDeltaTestData(None, -1, 0, 0, 1, ""),
+    WesternTimeDeltaTestData(None, -1, 0, -1, 1, ""),
+    WesternTimeDeltaTestData(None, -1, -1, 1, 1, ""),
+    WesternTimeDeltaTestData(None, -1, -1, 1, 0, ""),
+    WesternTimeDeltaTestData(None, -1, -1, 1, -1, ""),
+    WesternTimeDeltaTestData(None, -1, -1, -1, 1, "")
 ]
 
 western_timedelta_microseconds = [
@@ -271,7 +306,7 @@ western_timedelta_microseconds = [
 
 
 def western_timedelta_exactly_equal(first, second):
-    return first.days == second.days and first.hours == second.hours and first.minutes == second.minutse and first.seconds == second.seconds
+    return first.days == second.days and first.hours == second.hours and first.minutes == second.minutes and first.seconds == second.seconds
 
 
 def test_00_constructor():
@@ -382,7 +417,7 @@ def test_00_constructor():
 def test_02_constructor_from_fractional_days():
     # valid types
     for test_datum in western_timedelta_test_data:
-        wtd1 = WesternTimeDelta.from_fractional_days(test_datum.fractional_days)
+        wtd1 = WesternTimeDelta.from_fractional_days(Fraction(test_datum.fractional_days))
         assert isinstance(wtd1.days, int)
         assert isinstance(wtd1.hours, int)
         assert isinstance(wtd1.minutes, int)
@@ -503,26 +538,27 @@ def test_50_to_fractional_days():
 def test_51_replace():
     for test_datum in western_timedelta_test_data:
         days = test_datum.days
-        hours = test_datum.hours
-        minutes = test_datum.minutes
-        seconds = test_datum.seconds
-        wtd = WesternTimeDelta(days, hours, minutes, seconds)
-        assert western_timedelta_exactly_equal(wtd.replace(),  WesternTimeDelta(days, hours, minutes, seconds))
-        assert western_timedelta_exactly_equal(wtd.replace(days=12),  WesternTimeDelta(12, hours, minutes, seconds))
-        assert western_timedelta_exactly_equal(wtd.replace(hours=11),  WesternTimeDelta(days, 11, minutes, seconds))
-        assert western_timedelta_exactly_equal(wtd.replace(minutes=10),  WesternTimeDelta(days, hours, 10, seconds))
-        assert western_timedelta_exactly_equal(wtd.replace(seconds=9),  WesternTimeDelta(days, hours, minutes, 9))
-        assert western_timedelta_exactly_equal(wtd.replace(hours=11, days=12),  WesternTimeDelta(12, 11, minutes, seconds))
-        assert western_timedelta_exactly_equal(wtd.replace(minutes=10, days=12),  WesternTimeDelta(12, hours, 10, seconds))
-        assert western_timedelta_exactly_equal(wtd.replace(seconds=9, days=12),  WesternTimeDelta(12, hours, minutes, 9))
-        assert western_timedelta_exactly_equal(wtd.replace(minutes=10, hours=11),  WesternTimeDelta(days, 11, 10, seconds))
-        assert western_timedelta_exactly_equal(wtd.replace(seconds=9, hours=11),  WesternTimeDelta(days, 11, minutes, 9))
-        assert western_timedelta_exactly_equal(wtd.replace(seconds=9, minutes=10),  WesternTimeDelta(days, hours, 10, 9))
-        assert western_timedelta_exactly_equal(wtd.replace(minutes=10, hours=11, days=12),  WesternTimeDelta(12, 11, 10, seconds))
-        assert western_timedelta_exactly_equal(wtd.replace(seconds=9, hours=11, days=12),  WesternTimeDelta(12, 11, 9, seconds))
-        assert western_timedelta_exactly_equal(wtd.replace(seconds=9, minutes=10, days=12),  WesternTimeDelta(12, hours, 10, 9))
-        assert western_timedelta_exactly_equal(wtd.replace(seconds=9, minutes=10, hours=11),  WesternTimeDelta(days, 11, 10, 9))
-        assert western_timedelta_exactly_equal(wtd.replace(second=9, minute=10, hour=11, days=12),  WesternTimeDelta(12, 11, 10, 9))
+        if days > 0:   # We are going to test the replace function, and testing with negative value would complicate implementation giving non better coverage
+            hours = test_datum.hours
+            minutes = test_datum.minutes
+            seconds = test_datum.seconds
+            wtd = WesternTimeDelta(days, hours, minutes, seconds)
+            assert western_timedelta_exactly_equal(wtd.replace(),  WesternTimeDelta(days, hours, minutes, seconds))
+            assert western_timedelta_exactly_equal(wtd.replace(days=12),  WesternTimeDelta(12, hours, minutes, seconds))
+            assert western_timedelta_exactly_equal(wtd.replace(hours=11),  WesternTimeDelta(days, 11, minutes, seconds))
+            assert western_timedelta_exactly_equal(wtd.replace(minutes=10),  WesternTimeDelta(days, hours, 10, seconds))
+            assert western_timedelta_exactly_equal(wtd.replace(seconds=9),  WesternTimeDelta(days, hours, minutes, 9))
+            assert western_timedelta_exactly_equal(wtd.replace(hours=11, days=12),  WesternTimeDelta(12, 11, minutes, seconds))
+            assert western_timedelta_exactly_equal(wtd.replace(minutes=10, days=12),  WesternTimeDelta(12, hours, 10, seconds))
+            assert western_timedelta_exactly_equal(wtd.replace(seconds=9, days=12),  WesternTimeDelta(12, hours, minutes, 9))
+            assert western_timedelta_exactly_equal(wtd.replace(minutes=10, hours=11),  WesternTimeDelta(days, 11, 10, seconds))
+            assert western_timedelta_exactly_equal(wtd.replace(seconds=9, hours=11),  WesternTimeDelta(days, 11, minutes, 9))
+            assert western_timedelta_exactly_equal(wtd.replace(seconds=9, minutes=10),  WesternTimeDelta(days, hours, 10, 9))
+            assert western_timedelta_exactly_equal(wtd.replace(minutes=10, hours=11, days=12),  WesternTimeDelta(12, 11, 10, seconds))
+            assert western_timedelta_exactly_equal(wtd.replace(seconds=9, hours=11, days=12),  WesternTimeDelta(12, 11, minutes, 9))
+            assert western_timedelta_exactly_equal(wtd.replace(seconds=9, minutes=10, days=12),  WesternTimeDelta(12, hours, 10, 9))
+            assert western_timedelta_exactly_equal(wtd.replace(seconds=9, minutes=10, hours=11),  WesternTimeDelta(days, 11, 10, 9))
+            assert western_timedelta_exactly_equal(wtd.replace(seconds=9, minutes=10, hours=11, days=12), WesternTimeDelta(12, 11, 10, 9))
 
     # invalid types
     wtd = WesternTimeDelta(12, 11, 10, 9)
@@ -532,34 +568,34 @@ def test_51_replace():
     # exception with non-numeric types
     for par in ("1", (1,), [1], {1: 1}, (), [], {}):
         with pytest.raises(TypeError):
-            wtd.replace(hour=par)
+            wtd.replace(hours=par)
         with pytest.raises(TypeError):
-            wtd.replace(minute=par)
+            wtd.replace(minutes=par)
     for par in ((1,), [1], {1: 1}, (), [], {}):
         with pytest.raises(TypeError):
-            wtd.replace(second=par)
+            wtd.replace(seconds=par)
     # exception with invalid numeric types
     for par in (1.0, Fraction(1, 1), Decimal(1), 1j, 1 + 1j, INF, NAN):
         with pytest.raises(TypeError):
-            wtd.replace(hour=par)
+            wtd.replace(hours=par)
         with pytest.raises(TypeError):
-            wtd.replace(minute=par)
+            wtd.replace(minutes=par)
     for par in (1j, 1 + 1j, INF):
         with pytest.raises(TypeError):
-            wtd.replace(second=par)
+            wtd.replace(seconds=par)
 
     # invalid values
     with pytest.raises(ValueError):
-        wtd.replace(hour=-1)
+        wtd.replace(hours=-1)
     with pytest.raises(ValueError):
-        wtd.replace(hour=24)
+        wtd.replace(hours=24)
     with pytest.raises(ValueError):
-        wtd.replace(minute=-1)
+        wtd.replace(minutes=-1)
     with pytest.raises(ValueError):
-        wtd.replace(minute=60)
+        wtd.replace(minutes=60)
     with pytest.raises(ValueError):
-        wtd.replace(second='-1/1000000')
+        wtd.replace(seconds='-1/1000000')
     with pytest.raises(ValueError):
-        wtd.replace(second=60)
+        wtd.replace(seconds=60)
     with pytest.raises(TypeError):
-        wtd.replace(second=NAN)
+        wtd.replace(seconds=NAN)
