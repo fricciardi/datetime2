@@ -512,7 +512,7 @@ class ExampleTestTimeInterval:
         return cls(days, (fractional_days - days) * 1000)
 
     def to_fractional_days(self):
-        return self.thousandths / 1000 + self.days
+        return Fraction(self.thousandths, 1000) + self.days
 
 
 @pytest.fixture
@@ -529,23 +529,23 @@ def test_400_register_new_time_interval(clean_TimeDelta):
     assert not hasattr(TimeDelta, "test_1")
     with pytest.raises(AttributeError):
         TimeDelta.test_1
-    TimeDelta.register_new_time("test_1", ExampleTestTimeInterval)
+    TimeDelta.register_new_time_interval("test_1", ExampleTestTimeInterval)
     assert hasattr(TimeDelta, "test_1")
     TimeDelta.test_1
 
-    # existing time repr or attribute
+    # existing time interval or attribute
     with pytest.raises(AttributeError):
-        TimeDelta.register_new_time("western", ExampleTestTimeInterval)
+        TimeDelta.register_new_time_interval("western", ExampleTestTimeInterval)
     with pytest.raises(AttributeError):
-        TimeDelta.register_new_time("day_frac", ExampleTestTimeInterval)
+        TimeDelta.register_new_time_interval("frac", ExampleTestTimeInterval)
 
     # invalid attribute name
     with pytest.raises(ValueError):
-        TimeDelta.register_new_time("", ExampleTestTimeInterval)
+        TimeDelta.register_new_time_interval("", ExampleTestTimeInterval)
     with pytest.raises(ValueError):
-        TimeDelta.register_new_time("123new", ExampleTestTimeInterval)
+        TimeDelta.register_new_time_interval("123new", ExampleTestTimeInterval)
     with pytest.raises(ValueError):
-        TimeDelta.register_new_time(123, ExampleTestTimeInterval)
+        TimeDelta.register_new_time_interval(123, ExampleTestTimeInterval)
 
     # invalid time repr class
     class WithoutFromFractional:  # without from_fractional_days
@@ -622,7 +622,7 @@ def test_412_registered_timedelta_attribute_class_with_other_constructors(clean_
     assert td1.fractional_days == Fraction(617, 500)
     td2 = TimeDelta.test_2.with_microdays(40, 123, 456)
     assert type(td2) == TimeDelta
-    assert td2.fractional_days == Fraction(158170, 15625)
+    assert td2.fractional_days == Fraction(626929, 15625)
 
     # new attribute on TimeDelta instance, type and value are correct
     td3 = TimeDelta("1963/1250")
@@ -647,7 +647,7 @@ def test_414_registered_timedelta_attribute_class_with_static_methods(clean_Time
         def is_odd(number):
             return (number % 2) == 1
 
-    TimeDelta.register_new_time("test_3", ExampleTestTimeInterval3)
+    TimeDelta.register_new_time_interval("test_3", ExampleTestTimeInterval3)
 
     # Time attribute type and metaclass are correct
     assert TimeDelta.test_3.__name__ == "ExampleTestTimeInterval3InTimeDelta"
@@ -656,7 +656,7 @@ def test_414_registered_timedelta_attribute_class_with_static_methods(clean_Time
 
     # constructed Time type and value are is correct
     td1 = TimeDelta.test_3(3, 789)
-    assert type(td1) == Time
+    assert type(td1) == TimeDelta
     assert td1.fractional_days == Fraction(3789, 1000)
 
     # new attribute on Time instance, type and value are correct
@@ -706,7 +706,7 @@ def test_416_TimeDelta_has_attributes_but_instance_not():
     # td2.western
     # a TimeDelta instance created via the time interval class does have the
     # same attribute
-    td3 = TimeDelta.western(3, 4, 5)
+    td3 = TimeDelta.western(3, 4, 5, 6)
     assert hasattr(td3, "western")
     td3.western
 
