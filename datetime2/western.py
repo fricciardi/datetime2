@@ -302,12 +302,12 @@ class WesternTime:
             return f"{time_str}{tz_hour:+02d}:{tz_minute:02d}"
 
     format_functions = {
-        "H": lambda self: f"{self.hours:02d}",
-        "I": lambda self: f"{12 if self.hours == 0 else self.hours if self.hours <= 12 else self.hours - 12:02d}",
-        "p": lambda self: "AM" if self.hours < 12 else "PM",
-        "M": lambda self: f"{self.minutes:02d}",
-        "S": lambda self: f"{int(self.seconds):02d}",
-        "f": lambda self: f"{int((self.seconds - int(self.seconds)) * 1000000):06d}",
+        "H": lambda self: f"{self.hour:02d}",
+        "I": lambda self: f"{12 if self.hour == 0 else self.hour if self.hour <= 12 else self.hour - 12:02d}",
+        "p": lambda self: "AM" if self.hour < 12 else "PM",
+        "M": lambda self: f"{self.minute:02d}",
+        "S": lambda self: f"{int(self.second):02d}",
+        "f": lambda self: f"{int((self.second - int(self.second)) * 1000000):06d}",
     }
 
     def cformat(self, format_string):
