@@ -226,10 +226,16 @@ def test_32_cformat():
     assert internet.cformat("%") == "%"
     assert internet.cformat("%%") == "%"
     assert internet.cformat("%%%") == "%%"
+    assert internet.cformat("%%%%") == "%%"
     assert internet.cformat("abcd%") == "abcd%"
+    assert internet.cformat("abcd%%") == "abcd%"
     assert internet.cformat("%k") == "%k"
     assert internet.cformat("a%k") == "a%k"
     assert internet.cformat("%k%") == "%k%"
+    assert internet.cformat('%k%%') == '%k%'
+    assert internet.cformat('%kb') == '%kb'
+    assert internet.cformat('%k%b') == '%k002'
+    assert internet.cformat('%b%k') == '002%k'
 
     # invalid types
     for par in (1, (1,), [1], {1: 1}, None):

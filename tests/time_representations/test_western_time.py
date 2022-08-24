@@ -411,16 +411,21 @@ def test_32_cformat():
         western = WesternTime(1, 2, 3, timezone=test_cformat_timezone[0])
         assert western.cformat('%z') == test_cformat_timezone[1]
 
-    # percent
-    # TODO: improve these tests
+    # check percent
     western = WesternTime(1, 2, 3)
     assert western.cformat('%') == '%'
     assert western.cformat('%%') == '%'
     assert western.cformat('%%%') == '%%'
+    assert western.cformat('%%%%') == '%%'
     assert western.cformat('abcd%') == 'abcd%'
+    assert western.cformat('abcd%%') == 'abcd%'
     assert western.cformat('%k') == '%k'
     assert western.cformat('a%k') == 'a%k'
     assert western.cformat('%k%') == '%k%'
+    assert western.cformat('%k%%') == '%k%'
+    assert western.cformat('%kS') == '%kS'
+    assert western.cformat('%k%S') == '%k03'
+    assert western.cformat('%S%k') == '03%k'
 
     # invalid types
     for par in (1, (1,), [1], {1: 1}, None):

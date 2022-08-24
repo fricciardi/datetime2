@@ -514,10 +514,16 @@ def test_32_cformat():
     assert wtd.cformat('%') == '%'
     assert wtd.cformat('%%') == '%'
     assert wtd.cformat('%%%') == '%%'
+    assert wtd.cformat('%%%%') == '%%'
     assert wtd.cformat('abcd%') == 'abcd%'
+    assert wtd.cformat('abcd%%') == 'abcd%'
     assert wtd.cformat('%k') == '%k'
     assert wtd.cformat('a%k') == 'a%k'
     assert wtd.cformat('%k%') == '%k%'
+    assert wtd.cformat('%k%%') == '%k%'
+    assert wtd.cformat('%kM') == '%kM'
+    assert wtd.cformat('%k%M') == '%k03'
+    assert wtd.cformat('%M%k') == '03%k'
 
     # invalid types
     for par in (1, (1,), [1], {1: 1}, None):

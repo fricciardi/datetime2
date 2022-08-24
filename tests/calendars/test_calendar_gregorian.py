@@ -440,17 +440,22 @@ def test_32_cformat():
         assert greg.cformat('%W') == WNM
 
     # check percent
-    # TODO: improve these tests
     greg = GregorianCalendar(1, 2, 3)
     assert greg.cformat('%') == '%'
     assert greg.cformat('%%') == '%'
     assert greg.cformat('%%%') == '%%'
+    assert greg.cformat('%%%%') == '%%'
     assert greg.cformat('abcd%') == 'abcd%'
+    assert greg.cformat('abcd%%') == 'abcd%'
     assert greg.cformat('%k') == '%k'
     assert greg.cformat('a%k') == 'a%k'
     assert greg.cformat('%k%') == '%k%'
+    assert greg.cformat('%k%%') == '%k%'
+    assert greg.cformat('%kd') == '%kd'
+    assert greg.cformat('%k%d') == '%k03'
+    assert greg.cformat('%d%k') == '03%k'
 
-    # invlaid parameter
+    # invalid parameter
     greg = GregorianCalendar(1, 2, 3)
     for par in (1, (1,), [1], {1: 1}, None):
         with pytest.raises(TypeError):

@@ -388,10 +388,16 @@ def test_32_cformat():
     assert iso.cformat('%') == '%'
     assert iso.cformat('%%') == '%'
     assert iso.cformat('%%%') == '%%'
+    assert iso.cformat('%%%%') == '%%'
     assert iso.cformat('abcd%') == 'abcd%'
+    assert iso.cformat('abcd%%') == 'abcd%'
     assert iso.cformat('%k') == '%k'
     assert iso.cformat('a%k') == 'a%k'
     assert iso.cformat('%k%') == '%k%'
+    assert iso.cformat('%k%%') == '%k%'
+    assert iso.cformat('%kw') == '%kw'
+    assert iso.cformat('%k%w') == '%k3'
+    assert iso.cformat('%w%k') == '3%k'
 
     # invalid types
     for par in (1, (1,), [1], {1:1}, None):
