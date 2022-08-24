@@ -36,11 +36,10 @@ Current and future releases
 
 Current:
 
-* 0.9.2 and 0.9.3: Reorganization of documentation
+* 0.9.4: Implementation of WesternTimeDelta
 
 Planned:
 
-* 0.9.4: Implementation of WesternTimeDelta
 * 1.0: Implementation of DateTime, first production release
 * 1.1: Implementation of Julian and Hebrew calendars
 
