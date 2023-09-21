@@ -354,7 +354,7 @@ Notes:
    not true for :mod:`datetime2`, which only returns the English string.
 
 
-.. _western-time-delta:
+.. _western-timedelta:
 
 Western time interval
 ^^^^^^^^^^^^^^^^^^^^^
