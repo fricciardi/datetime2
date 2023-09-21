@@ -1,0 +1,96 @@
+{#
+    template for html fragment injected by auto_redirect extension
+
+    args
+    ----
+    redirector -- RedirectSettings instance
+        .subject
+        .domain_url
+        .domain_root
+        .timeout
+
+    NOTE: the html fragment is designed to layout properly, and provide a minimally functional
+    redirect, even if the JS fails.
+#}
+
+<div class="admonition warning without-title c-redirect-warning">
+    <p class="c-redirect-warning__header">
+        {{ redirector.domain_subject }} has moved to
+        <a class="c-redirect-warning__link" href="{{ redirector.domain_url }}">{{ redirector.domain_url }}</a>
+    </p>
+    <p class="c-redirect-warning__auto" style="display: none">
+        You will be redirected to the new location in
+        <span class="c-redirect-warning__count">{{ redirector.timeout }}</span> seconds.
+    </p>
+    {% if redirector.domain_footer %}
+        <p class="c-redirect-warning__footer">
+            {{ redirector.domain_footer|safe }}
+        </p>
+    {% endif %}
+</div>
+
+<script type="text/javascript">
+    $(function (){
+        // locate components & init state
+        var $overlay = $('<div class="c-redirect-overlay" />'),
+            $warning = $(".c-redirect-warning"),
+            $link = $(".c-redirect-warning__link"),
+            $auto = $(".c-redirect-warning__auto"),
+            $count = $(".c-redirect-warning__count"),
+            timeout = +new Date + {{ redirector.timeout }} * 1000,
+            pending = null,
+            target = $link.attr("href"),
+            domain_root = "{{ redirector.domain_root }}",
+            url = document.location.href,
+            root_url = CST.hosturl + CST.rootpath,
+            getSubUrl = CST.utils.getSubUrl;
+
+        // make redirect target point to equivalent page, not just document root
+        // XXX: could just pull from link[rel=canonical] instead...
+        var sub_url = getSubUrl(url, root_url);
+        if(domain_root && sub_url !== undefined){
+            target = domain_root + sub_url;
+            $link.attr("href", target);
+        }
+
+        // make warning clicks act like they clicked link
+        $warning.click(function (evt){
+            if(evt.which == 1) { window.location = target; }
+            evt.stopPropagation();
+        }).addClass("is-clickable");
+
+        // if came from within document, dont' show overlay or do auto redirect
+        if(getSubUrl(document.referrer || '', root_url) !== undefined){
+            return;
+        }
+
+        // mute everything but warning
+        $overlay.appendTo("body").append($warning);
+
+        // helper update counter & redirect after timeout
+        function update(){
+            var delta = timeout - new Date;
+            if(delta < 0){
+                window.location = target;
+                setTimeout(function (){ $auto.hide(); }, 250);
+            } else {
+                $count.html(Math.ceil(delta / 1000));
+                pending = setTimeout(update, 250);
+            }
+        }
+
+        // start counter
+        {% if redirector.timeout > 0 %}
+            update();
+            $auto.show();
+        {% endif %}
+
+        // stop auto-redirect if they click outside of warning
+        $(window).one("click", function (evt){
+            $auto.hide();
+            clearTimeout(pending);
+            $warning.prependTo(".body");
+            $overlay.remove();
+        });
+    });
+</script>

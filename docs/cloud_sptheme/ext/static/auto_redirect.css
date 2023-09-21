@@ -1,0 +1,76 @@
+/* css fragment used by cloud_sptheme.ext.auto_redirect */
+
+.c-redirect-overlay
+{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255,255,255,0.8);
+    z-index: 1000;
+}
+
+.c-redirect-warning
+{
+    text-align: center;
+    box-shadow: 0 2px 4px -1px rgba(0,0,0,0.5);
+}
+
+    /* hack to override docutils */
+    div.admonition.c-redirect-warning
+    {
+        background-position: 1em 50%;
+        padding: 2em 4em 1.5em;
+        border-width: 1em 1px;
+    }
+
+    .c-redirect-warning.is-clickable
+    {
+        cursor: pointer;
+    }
+
+    .c-redirect-overlay .c-redirect-warning
+    {
+        position: fixed;
+        top: 1em;
+        left: 2em;
+        right: 2em;
+        box-shadow: 0 4px 8px -1px rgba(0,0,0,0.5);
+    }
+
+    html.medium-up-screen .c-redirect-overlay .c-redirect-warning
+    {
+        width: max-content;
+        width: -moz-max-content;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+    }
+
+div.body p.c-redirect-warning__header
+{
+    display: block;
+    font-weight: bold;
+    text-align: center;
+}
+
+.c-redirect-warning__link
+{
+    display: block;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.1em;
+    padding: 0.5em;
+}
+
+.c-redirect-warning__link:before
+{
+    content: "↪ ";
+}
+
+div.body p.c-redirect-warning__auto,
+div.body p.c-redirect-warning__footer
+{
+    text-align: center;
+}
