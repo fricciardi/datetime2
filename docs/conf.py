@@ -20,7 +20,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'datetime2'
-copyright = '2023, Francesco Ricciardi'
+copyright = '2022, Francesco Ricciardi'
 author = 'Francesco Ricciardi'
 
 # The short X.Y version
@@ -76,7 +76,7 @@ pygments_style = None
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinxawesome_theme'
+html_theme = 'python_docs_theme'
 html_theme_path = ['.']
 
 # Theme options are theme-specific and customize the look and feel of a theme
