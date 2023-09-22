@@ -1,6 +1,6 @@
 # Gregorian calendar in calendars package
 
-# Copyright (c) 2012-2022 Francesco Ricciardi
+# Copyright (c) 2012-2023 Francesco Ricciardi
 #
 # All rights reserved.
 #

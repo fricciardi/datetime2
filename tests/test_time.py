@@ -1,6 +1,6 @@
 # Time class tests
 
-# Copyright (c) 2011-2022 Francesco Ricciardi
+# Copyright (c) 2011-2023 Francesco Ricciardi
 #
 # All rights reserved.
 #
