@@ -73,7 +73,7 @@ pygments_style = None
 # A list of prefixes that are ignored for sorting the Python module index
 # (e.g., if this is set to ['foo.'], then foo.bar is shown under B, not F).
 # This can be handy if you document a project that consists of a single package.
-modindex_common_prefix = 'datetime2'
+modindex_common_prefix = ['datetime2']
 
 
 # -- Options for internationalization ----------------------------------------
