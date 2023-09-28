@@ -394,21 +394,21 @@ read-only numbers: an attempt to change them will raise an
 :exc:`AttributeError` exception. These attributes store the corresponding
 values in the constructor:
 
-.. attribute:: WesternTime.days
+.. attribute:: WesternTimeDelta.days
 
    An integer of any value.
 
-.. attribute:: WesternTime.hours
+.. attribute:: WesternTimeDelta.hours
 
    An integer of the same sign as ``days`` and with absolute value between
    ``0`` and ``23``.
 
-.. attribute:: WesternTime.minutes
+.. attribute:: WesternTimeDelta.minutes
 
    An integer of the same sign as ``days`` and with absolute value between
    ``0`` and ``59``.
 
-.. attribute:: WesternTime.seconds
+.. attribute:: WesternTimeDelta.seconds
 
    A Python Fraction of the same sign as ``days`` and with absolute value
    grater or equal to ``0`` and less than ``60``.
