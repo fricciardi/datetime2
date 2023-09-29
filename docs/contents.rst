@@ -3,7 +3,6 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-.. currentmodule:: datetime2
 
 .. testsetup::
 
@@ -87,7 +86,7 @@ The relation between time objects can be either implicit, i.e. depending on
 implementation, or explicit, which means that the objects know how they
 relate to each other. Then standard way for the latter is with UTC. An object
 of the first kind is said to be *naive*, of the second kind is called *aware*
-(like in :ref:`datetime-naive-aware` of the :mod:`datetime2` module). For
+(like in :ref:`datetime-naive-aware` of the :mod:`datetime` module). For
 aware objects a second value is used in the constructor to indicate the
 distance from UTC.
 
