@@ -3,14 +3,15 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+:mod:`datetime2` overview
+=========================
+
 .. testsetup::
 
    from datetime2 import Time
    from fractions import Fraction
    from datetime2 import Date
 
-:mod:`datetime2` overview
-=========================
 
 The definition of a moment in history is independent from the way it is
 represented in different cultures. Indeed the same day is represented in
