@@ -189,6 +189,7 @@ Index
 
 .. toctree::
 
+   index
    base_classes
    western
    modern
