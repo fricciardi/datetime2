@@ -56,7 +56,7 @@ templates_path = ['_templates']
 source_suffix = {'.rst': 'restructuredtext'}
 
 # The master toctree document.
-root_doc = 'contents'
+root_doc = 'index'
 
 # If true, Sphinx will warn about all references where the target cannot be found.
 # Default is False.
